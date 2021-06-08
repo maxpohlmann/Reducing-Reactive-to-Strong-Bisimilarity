@@ -1,0 +1,1688 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Reactive{\isacharunderscore}{\kern0pt}Bisimilarity}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsection{Reactive Bisimilarity%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+\label{sec:reactive_bisimilarity}%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+In the examples of the previous section, we saw that there are \LTSt{}s with transitions that can never be performed or that can only be performed in certain environments. The behavioural equivalence implied hereby is defined in \cite{rbs} as \emph{strong reactive bisimilarity}.
+
+\example{%
+The processes $p$ and $q$ are behaviourally equivalent for \LTSt{} semantics, i.e.\@ strongly reactive bisimilar.
+
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (p3) [below left of=p2]         {$p_3$};
+    \node[state]    (p4) [below right of=p2]        {$p_4$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$t$}   (p2)
+            (p2) edge node[above left]  {$\tau$}(p3)
+                 edge node              {$a$}   (p4);
+                 
+    \node[state]    (q0) [right of=p0,xshift=5cm]   {$q$};
+    \node[state]    (q1) [below left of=q0]         {$q_1$};
+    \node[state]    (q2) [below right of=q0]        {$q_2$};
+    \node[state]    (q3) [below left of=q2]         {$q_3$};
+    
+    \path   (q0) edge node[above left]  {$a$}   (q1)
+                 edge node              {$t$}   (q2)
+            (q2) edge node[above left]  {$\tau$}(q3);
+}}%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Strong Reactive Bisimulations%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Van~Glabbeek introduces several characterisations of this equivalence, beginning with \emph{strong reactive bisimulation} (SRB) relations. These differ from strong bisimulations in that the relations contain not only pairs of processes $(p,q)$, but additionally triples consisting of two processes and a set of actions, $(p,X,q)$. The following definition of SRB relations is quoted, with minor adaptations, from \cite[Definition 1]{rbs}:
+
+A \emph{strong reactive bisimulation} is a symmetric relation 
+$$\mathcal{R} \subseteq (\Proc \times \mathcal{P}(A) \times \Proc) \cup (\Proc \times \Proc)$$
+(meaning that $(p,X,q)\!\in\!\mathcal{R}\!\iff\!(q,X,p)\!\in\!\mathcal{R}$ and
+$(p,q)\!\in\!\mathcal{R}\!\iff\!(q,p)\!\in\!\mathcal{R}$),\\
+such that, for all $(p,q) \in \mathcal{R}$:
+\begin{enumerate}
+    \item if $p \xrightarrow{\tau} p'$, then there exists a $q'$ such that $q \xrightarrow{\tau} q'$ and $(p',q') \in \mathcal{R}$,
+    \item $(p,X,q) \in \mathcal{R}$ for all $X \subseteq A$,
+\end{enumerate}
+and for all $(p,X,q) \in \mathcal{R}$:
+\begin{enumerate}
+    \setcounter{enumi}{2}
+    \item if $p \xrightarrow{a} p'$ with $a \in X$, then $\exists q'$ such that $q \xrightarrow{a} q'$ and $(p',q') \in \mathcal{R}$,
+    \item if $p \xrightarrow{\tau} p'$, then there exists a $q'$ such that $q \xrightarrow{\tau} q'$ and $(p',X,q') \in \mathcal{R}$,
+    \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$, then $(p,q) \in \mathcal{R}$, and
+    \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$ and $p \xrightarrow{t} p'$, then there exists a $q'$ such that $q \xrightarrow{t} q'$ and $(p',X,q') \in \mathcal{R}$.
+\end{enumerate}
+
+This definition explicitly formalises the semantics of \LTSt{}s. We can derive the following intuitions: an environment can either be stable, allowing a specific set of actions, or indeterminate. Indeterminate environments cannot facilitate any transitions, but they can stabilise into arbitrary stable environments. This is expressed by clause 2. Hence, $X$-bisimilarity is behavioural equivalence in stable environments~$X$, and reactive bisimilarity is behavioural equivalence in indeterminate environments (and thus in arbitrary stable environments).
+
+Since only stable environments can facilitate transitions, there are no clauses involving visible action transitions for $(p,q) \in \mathcal{R}$. However, $\tau$-transitions can be performed regardless of the environment, hence clause 1.
+
+At this point, it is important to discuss what exactly it means for an action to be visible or hidden in this context: as we saw in the last section, the environment cannot react (change its set of allowed actions) when the system performs a $\tau$- or a $t$-transition, since these are hidden actions. However, since we are talking about a \emph{strong} bisimilarity (as opposed to e.g.\@ weak bisimilarity briefly mentioned in \cref{sec:strong_bisimilarity}), the performance of $\tau$- or $t$-transitions is still relevant when examining and comparing the behavior of systems.
+
+Therewith, we can look more closely at the remaining clauses:
+in clause 3, given $(p,X,q) \in \mathcal{R}$, for $p \xrightarrow{a} p'$ with $a \in X$, we require for the \enquote{mirroring} state $q'$ that $(p',q') \in \mathcal{R}$, because $a$ is a visible action and the transition can thus trigger a change of the environment;%
+\footnote{This is why van~Glabbeek talks about \emph{triggered} environments rather than indeterminate ones. I will use both terms interchangeably.}
+on the other hand, in clause 4, for $p \xrightarrow{\tau} p'$, and in clause 6, for $p \xrightarrow{t} p'$, we require $(p',X,q') \in \mathcal{R}$, because these actions are hidden and cannot trigger a change of the environment.
+
+Lastly, clause 5 formalises the possibility of the environment timing out (i.e.\@ turning into an indeterminate environment) instead of the system.
+
+These intuitions also form the basis for the process mapping which will be presented in \cref{sec:mapping_lts}.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Strong Reactive/$X$-Bisimilarity%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Two processes $p$ and $q$ are \emph{strongly reactive bisimilar} (written $p \leftrightarrow_r q$) iff there is an SRB containing $(p,q)$, and \emph{strongly $X$-bisimilar} (written $p \leftrightarrow_r^X q$), i.e.\@ \enquote{equivalent} in environments~$X$, when there is an SRB containing $(p,X,q)$.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Generalised Strong Reactive Bisimulations%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Another characterisation of reactive bisimilarity uses \emph{generalised strong reactive bisimulation} (GSRB) relations, defined over the same set as SRBs, but with different clauses \cite[Definition 3]{rbs}. It is proved that both characterisations do, in fact, characterise the same equivalence.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Isabelle%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+I first formalise both SRB and GSRB relations (as well as strong reactive bisimilarity, defined by the existence of an SRB, as above), and then replicate the proof of their correspondence.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Strong Reactive Bisimulations%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+SRB relations are defined over the set
+$$(\Proc \times \mathscr{P}(A) \times \Proc) \cup (\Proc \times \Proc).$$
+
+As can be easily seen, this set it isomorphic to
+$$(\Proc \times (\mathscr{P}(A) \cup \{\bot\}) \times \Proc),$$
+which is a subset of
+$$(\Proc \times (\mathscr{P}(\Act) \cup \{\bot\}) \times \Proc).$$ 
+
+This last set can now be easily formalised in terms of a type, where we formalise
+$\mathscr{P}(\Act) \cup \{\bot\}$
+as \isa{{\isacharprime}{\kern0pt}a\ set\ option}.
+
+The fact that SRBs are defined using the power set of visible actions ($A$), whereas our type uses all actions ($\Act$ / \isa{{\isacharprime}{\kern0pt}a}), is handled by the first line of the definition below. The second line formalises that symmetry is required by definition. All other lines are direct formalisations of the clauses of the original definition.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{context}\isamarkupfalse%
+\ lts{\isacharunderscore}{\kern0pt}timeout\ \isakeyword{begin}\isanewline
+\isanewline
+%
+\isamarkupcmt{strong reactive bisimulation \cite[Definition 1]{rbs}%
+}\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ SRB\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isacharparenright}{\kern0pt}\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}SRB\ R\ {\isasymequiv}\isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ X\ q{\isachardot}{\kern0pt}\ R\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q\ \ {\isasymlongrightarrow}\ \ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ XoN\ q{\isachardot}{\kern0pt}\ R\ p\ XoN\ q\ \ {\isasymlongrightarrow}\ \ R\ q\ XoN\ p{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ q{\isachardot}{\kern0pt}\ R\ p\ None\ q\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}\ \ {\isasymlongrightarrow}\ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}q\ {\isasymlongmapsto}{\isasymtau}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}R\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ X\ q{\isachardot}{\kern0pt}\ R\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}\ a{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}\ {\isasymand}\ a\ {\isasymin}\ X\ \ {\isasymlongrightarrow}\ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}q\ {\isasymlongmapsto}a\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ \isanewline
+\ \ \ \ \ \ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}\ \ {\isasymlongrightarrow}\ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}q\ {\isasymlongmapsto}{\isasymtau}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}idle\ p\ X\ \ {\isasymlongrightarrow}\ \ R\ p\ None\ q{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ idle\ p\ X\ {\isasymand}\ {\isacharparenleft}{\kern0pt}p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ \ {\isasymlongrightarrow}\ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}t\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ \isanewline
+\ \ \ \ \ \ R\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\isanewline
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isatagunimportant
+%
+\endisatagunimportant
+{\isafoldunimportant}%
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Strong Reactive/$X$-Bisimilarity%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Van~Glabbeek differentiates between strong reactive bisimilarity ($(p,q) \in \mathcal{R}$ for an SRB $\mathcal{R}$) and strong $X$-bisimilarity ($(p,X,q) \in \mathcal{R}$ for an SRB $\mathcal{R}$).%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{definition}\isamarkupfalse%
+\ strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}bisimilar\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isacharunderscore}{\kern0pt}\ {\isasymleftrightarrow}\isactrlsub r\ {\isacharunderscore}{\kern0pt}{\isacartoucheclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}p\ {\isasymleftrightarrow}\isactrlsub r\ q\ {\isasymequiv}\ {\isasymexists}\ R{\isachardot}{\kern0pt}\ SRB\ R\ {\isasymand}\ R\ p\ None\ q{\isacartoucheclose}\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ strongly{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isacharunderscore}{\kern0pt}\ {\isasymleftrightarrow}\isactrlsub r\isactrlsup {\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isacartoucheclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}p\ {\isasymleftrightarrow}\isactrlsub r\isactrlsup X\ q\ {\isasymequiv}\ {\isasymexists}\ R{\isachardot}{\kern0pt}\ SRB\ R\ {\isasymand}\ R\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}%
+\begin{isamarkuptext}%
+For the upcoming proofs, it is useful to combine both reactive and $X$-bisimilarity into a single one.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{definition}\isamarkupfalse%
+\ strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar\ \isanewline
+\ \ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar\ p\ XoN\ q\ \isanewline
+\ \ \ \ {\isasymequiv}\ {\isasymexists}\ R{\isachardot}{\kern0pt}\ SRB\ R\ {\isasymand}\ R\ p\ XoN\ q{\isacartoucheclose}%
+\begin{isamarkuptext}%
+Obviously, then, these predicates coincide accordingly.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{corollary}\isamarkupfalse%
+\ {\isacartoucheopen}p\ {\isasymleftrightarrow}\isactrlsub r\ q\ {\isasymLongleftrightarrow}\ strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar\ p\ None\ q{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}def\ strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ force%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isacommand{corollary}\isamarkupfalse%
+\ {\isacartoucheopen}p\ {\isasymleftrightarrow}\isactrlsub r\isactrlsup X\ q\ {\isasymLongleftrightarrow}\ strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ strongly{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}def\ strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ force%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Generalised Strong Reactive Bisimulations%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Since GSRBs are defined over the same set as SRBs, the same considerations as above hold.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isamarkupcmt{generalised strong reactive bisimulation \cite[Definition 3]{rbs}%
+}\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ GSRB\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isacharparenright}{\kern0pt}\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}GSRB\ R\ {\isasymequiv}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ X\ q{\isachardot}{\kern0pt}\ R\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q\ \ {\isasymlongrightarrow}\ \ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ XoN\ q{\isachardot}{\kern0pt}\ R\ p\ XoN\ q\ \ {\isasymlongrightarrow}\ \ R\ q\ XoN\ p{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ q{\isachardot}{\kern0pt}\ R\ p\ None\ q\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}\ a{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}\ {\isasymand}\ a\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymtau}{\isacharbraceright}{\kern0pt}\ \ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}a\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ X\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ idle\ p\ X\ {\isasymand}\ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymand}\ p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}\ \ {\isasymlongrightarrow}\ \ \isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}t\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ Y\ q{\isachardot}{\kern0pt}\ R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}\ a{\isachardot}{\kern0pt}\ a\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymand}\ p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}a{\isasymin}Y\ {\isasymor}\ idle\ p\ Y{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}a\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}\ \ {\isasymlongrightarrow}\ \ \isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}{\isasymtau}\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}\ X{\isachardot}{\kern0pt}\ idle\ p\ {\isacharparenleft}{\kern0pt}X{\isasymunion}Y{\isacharparenright}{\kern0pt}\ {\isasymand}\ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymand}\ p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}\ \ {\isasymlongrightarrow}\ \ \isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}t\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\isanewline
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isatagunimportant
+%
+\endisatagunimportant
+{\isafoldunimportant}%
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{GSRBs characterise strong reactive/$X$-bisimilarity%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+\cite[Proposition 4]{rbs} reads (notation adapted): \enquote{$p \leftrightarrow_r q$ iff there exists a GSRB $\mathcal{R}$ with $(p,q) \in \mathcal{R}$. Likewise, $p \leftrightarrow_r^X q$ iff there exists a GSRB $\mathcal{R}$ with $(p,X,q) \in \mathcal{R}$.} We shall now replicate the proof of this proposition. First, we prove that each SRB is a GSRB (by showing that each SRB satisfies all clauses of the definition of GSRBs).%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{lemma}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}GSRB{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}SRB\ R{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}GSRB\ R{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}def\isanewline
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}safe{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ XoN\ q\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ XoN\ q{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}R\ q\ XoN\ p{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ X\ q\ x\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}x\ {\isasymin}\ X{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}x\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ q\ p{\isacharprime}{\kern0pt}\ a\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ None\ q{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}a\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}a\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{4}}{\isacharcomma}{\kern0pt}\ {\isadigit{5}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharcomma}{\kern0pt}\ \isakeyword{where}\ {\isacharquery}{\kern0pt}X\ {\isacharequal}{\kern0pt}\ {\isacartoucheopen}{\isacharbraceleft}{\kern0pt}a{\isacharbraceright}{\kern0pt}{\isacartoucheclose}{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ q\ p{\isacharprime}{\kern0pt}\ a\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ None\ q{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}p\ {\isasymlongmapsto}{\isasymtau}\ \ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}{\isasymtau}\ \ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ q\ X\ p{\isacharprime}{\kern0pt}\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ None\ q{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}idle\ p\ X{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}t\ \ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{4}}{\isacharcomma}{\kern0pt}\ {\isadigit{8}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ Y\ q\ p{\isacharprime}{\kern0pt}\ a\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}a\ {\isasymin}\ Y{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}a\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{5}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ Y\ q\ p{\isacharprime}{\kern0pt}\ a\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}a\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ {\isacartoucheopen}p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ None\ q{\isacartoucheclose}\ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{7}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ {\isacharbraceleft}{\kern0pt}a{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{4}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ {\isacartoucheopen}a\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}a\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{5}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ {\isacartoucheopen}p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ Y\ q\ p{\isacharprime}{\kern0pt}\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}{\isasymtau}\ \ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{6}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ Y\ q\ p{\isacharprime}{\kern0pt}\ X\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ {\isacharparenleft}{\kern0pt}X\ {\isasymunion}\ Y{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ {\isacartoucheopen}p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{from}\isamarkupfalse%
+\ {\isacartoucheopen}idle\ p\ {\isacharparenleft}{\kern0pt}X\ {\isasymunion}\ Y{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isakeyword{and}\ {\isacartoucheopen}idle\ p\ X{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ Int{\isacharunderscore}{\kern0pt}Un{\isacharunderscore}{\kern0pt}distrib{\isacharparenright}{\kern0pt}{\isacharplus}{\kern0pt}\isanewline
+\ \ \isacommand{from}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ None\ q{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{7}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{with}\isamarkupfalse%
+\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{4}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{with}\isamarkupfalse%
+\ {\isacartoucheopen}idle\ p\ X{\isacartoucheclose}\ {\isacartoucheopen}p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isacommand{show}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}t\ \ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{8}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Then, we show that each GSRB can be extended to yield an SRB. First, we define this extension. Generally, GSRBs can be smaller than SRBs when proving reactive bisimilarity, because they require triples $(p,X,q)$ only after encountering $t$-transitions, whereas SRBs require these triples for all processes and environments. These triples (and also some process pairs $(p,q)$ related to environment time-outs) are re-added by this extension.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{definition}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension\ \isanewline
+\ \ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}s{\isasymRightarrow}{\isacharprime}{\kern0pt}a\ set\ option{\isasymRightarrow}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isacharparenright}{\kern0pt}{\isasymRightarrow}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}s{\isasymRightarrow}{\isacharprime}{\kern0pt}a\ set\ option{\isasymRightarrow}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}GSRB{\isacharunderscore}{\kern0pt}extension\ R{\isacharparenright}{\kern0pt}\ p\ XoN\ q\ {\isasymequiv}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}R\ p\ XoN\ q{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymor}\ {\isacharparenleft}{\kern0pt}some{\isacharunderscore}{\kern0pt}visible{\isacharunderscore}{\kern0pt}subset\ XoN\ {\isasymand}\ R\ p\ None\ q{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymor}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}XoN\ {\isacharequal}{\kern0pt}\ None\ {\isasymor}\ some{\isacharunderscore}{\kern0pt}visible{\isacharunderscore}{\kern0pt}subset\ XoN{\isacharparenright}{\kern0pt}\ \isanewline
+\ \ \ \ \ \ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ Y{\isachardot}{\kern0pt}\ R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q\ {\isasymand}\ idle\ p\ Y{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}%
+\begin{isamarkuptext}%
+Now we show that this extension does, in fact, yield an SRB (again, by showing that all clauses of the definition of SRBs are satisfied).%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isatagunimportant
+%
+\endisatagunimportant
+{\isafoldunimportant}%
+%
+\isadelimunimportant
+\isanewline
+%
+\endisadelimunimportant
+\isacommand{lemma}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}SRB{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isacartoucheopen}GSRB\ R{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isacartoucheopen}SRB\ {\isacharparenleft}{\kern0pt}GSRB{\isacharunderscore}{\kern0pt}extension\ R{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ {\isacharparenleft}{\kern0pt}\isakeyword{is}\ {\isacartoucheopen}SRB\ {\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext{\isacartoucheclose}{\isacharparenright}{\kern0pt}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{unfolding}\isamarkupfalse%
+\ SRB{\isacharunderscore}{\kern0pt}def\isanewline
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}safe{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ XoN\ q\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ XoN\ q{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ q\ XoN\ p{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}R\ q\ XoN\ p{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ assms\ GSRB{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}some{\isacharunderscore}{\kern0pt}visible{\isacharunderscore}{\kern0pt}subset\ XoN\ {\isasymand}\ R\ q\ None\ p{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ assms\ GSRB{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{obtain}\isamarkupfalse%
+\ Y\ \isakeyword{where}\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}R\ q\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ p{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ assms\ GSRB{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}idle\ q\ Y{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}preserves{\isacharunderscore}{\kern0pt}idleness{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isacommand{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ {\isadigit{3}}\ {\isacartoucheopen}R\ q\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ p{\isacartoucheclose}\ {\isacartoucheopen}idle\ q\ Y{\isacartoucheclose}\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ X\ q\ x\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}x\ {\isasymin}\ X{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}x\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ q\ p{\isacharprime}{\kern0pt}\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ None\ q{\isacartoucheclose}\ {\isacartoucheopen}p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}{\isasymtau}\ \ q{\isacharprime}{\kern0pt}\ {\isasymand}\ {\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{obtain}\isamarkupfalse%
+\ q{\isacharprime}{\kern0pt}\ \isakeyword{where}\ {\isacartoucheopen}q\ {\isasymlongmapsto}{\isasymtau}\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\ {\isacartoucheopen}R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}axioms\ \isacommand{by}\isamarkupfalse%
+\ fastforce\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{thm}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{5}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharcomma}{\kern0pt}\ \isakeyword{where}\ {\isacharquery}{\kern0pt}a{\isacharequal}{\kern0pt}{\isasymtau}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}{\isasymtau}\ \ q{\isacharprime}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ initial{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ fastforce\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ q\ X\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ None\ q{\isacartoucheclose}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}some{\isacharunderscore}{\kern0pt}visible{\isacharunderscore}{\kern0pt}subset\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \ \ \isacommand{with}\isamarkupfalse%
+\ {\isadigit{3}}\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ X\ q\ p{\isacharprime}{\kern0pt}\ a\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\ {\isacartoucheopen}a\ {\isasymin}\ X{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}a\ q{\isacharprime}{\kern0pt}\ {\isasymand}\ {\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p{\isacharprime}{\kern0pt}\ None\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharcomma}{\kern0pt}{\isadigit{5}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{obtain}\isamarkupfalse%
+\ Y\ \isakeyword{where}\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \ \ \isacommand{with}\isamarkupfalse%
+\ {\isadigit{3}}\ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}a\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ {\isadigit{3}}\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{5}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}a\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ X\ q\ p{\isacharprime}{\kern0pt}\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}{\isasymtau}\ \ q{\isacharprime}{\kern0pt}\ {\isasymand}\ {\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{6}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ meson\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{obtain}\isamarkupfalse%
+\ Y\ \isakeyword{where}\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \ \ \isacommand{with}\isamarkupfalse%
+\ {\isadigit{3}}{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ \isacommand{have}\isamarkupfalse%
+\ False\ \isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ initial{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ X\ q\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ X{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ None\ q{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\ p\ X\ q\ p{\isacharprime}{\kern0pt}\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacartoucheopen}{\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ X{\isacartoucheclose}\ {\isacartoucheopen}p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymexists}q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}t\ \ q{\isacharprime}{\kern0pt}\ {\isasymand}\ {\isacharquery}{\kern0pt}R{\isacharunderscore}{\kern0pt}ext\ p{\isacharprime}{\kern0pt}\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ {\isadigit{1}}{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}idle\ p\ {\isacharparenleft}{\kern0pt}X\ {\isasymunion}\ X{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms\ {\isadigit{1}}{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{7}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms\ {\isadigit{1}}{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ {\isacartoucheopen}idle\ p\ {\isacharparenleft}{\kern0pt}X\ {\isasymunion}\ X{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ {\isadigit{1}}{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{4}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ option{\isachardot}{\kern0pt}inject{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{obtain}\isamarkupfalse%
+\ Y\ \isakeyword{where}\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ {\isacartoucheopen}idle\ p\ X{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ Y{\isacartoucheclose}\ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}idle\ p\ {\isacharparenleft}{\kern0pt}X\ {\isasymunion}\ Y{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ bot{\isacharunderscore}{\kern0pt}eq{\isacharunderscore}{\kern0pt}sup{\isacharunderscore}{\kern0pt}iff\ inf{\isacharunderscore}{\kern0pt}sup{\isacharunderscore}{\kern0pt}distrib{\isadigit{1}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ {\isadigit{3}}{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ \isacommand{have}\isamarkupfalse%
+\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}ruleformat{\isacharparenleft}{\kern0pt}{\isadigit{7}}{\isacharparenright}{\kern0pt}{\isacharbrackleft}{\kern0pt}OF\ assms\ {\isacartoucheopen}R\ p\ {\isacharparenleft}{\kern0pt}Some\ Y{\isacharparenright}{\kern0pt}\ q{\isacartoucheclose}\ {\isacartoucheopen}idle\ p\ {\isacharparenleft}{\kern0pt}X\ {\isasymunion}\ Y{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ {\isadigit{3}}{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Finally, we can conclude the following:%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{lemma}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}whenever{\isacharunderscore}{\kern0pt}SRB{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isasymexists}\ R{\isachardot}{\kern0pt}\ GSRB\ R\ {\isasymand}\ R\ p\ XoN\ q{\isacharparenright}{\kern0pt}\ \ {\isasymLongleftrightarrow}\ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ R{\isachardot}{\kern0pt}\ SRB\ R\ {\isasymand}\ R\ p\ XoN\ q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}def\ GSRB{\isacharunderscore}{\kern0pt}extension{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}SRB\ SRB{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}GSRB{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+This, now, directly implies that GSRBs do charactarise strong reactive/$X$-bisimilarity.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimvisible
+%
+\endisadelimvisible
+%
+\isatagvisible
+\isacommand{proposition}\isamarkupfalse%
+\ GSRBs{\isacharunderscore}{\kern0pt}characterise{\isacharunderscore}{\kern0pt}strong{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}bisimilarity{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isacartoucheopen}p\ {\isasymleftrightarrow}\isactrlsub r\ q\ {\isasymLongleftrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ R{\isachardot}{\kern0pt}\ GSRB\ R\ {\isasymand}\ R\ p\ None\ q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}whenever{\isacharunderscore}{\kern0pt}SRB\ strongly{\isacharunderscore}{\kern0pt}reactive{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isanewline
+\isacommand{proposition}\isamarkupfalse%
+\ GSRBs{\isacharunderscore}{\kern0pt}characterise{\isacharunderscore}{\kern0pt}strong{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilarity{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isacartoucheopen}p\ {\isasymleftrightarrow}\isactrlsub r\isactrlsup X\ q\ {\isasymLongleftrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ R{\isachardot}{\kern0pt}\ GSRB\ R\ {\isasymand}\ R\ p\ {\isacharparenleft}{\kern0pt}Some\ X{\isacharparenright}{\kern0pt}\ q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isacommand{using}\isamarkupfalse%
+\ GSRB{\isacharunderscore}{\kern0pt}whenever{\isacharunderscore}{\kern0pt}SRB\ strongly{\isacharunderscore}{\kern0pt}X{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ blast%
+\endisatagvisible
+{\isafoldvisible}%
+%
+\isadelimvisible
+%
+\endisadelimvisible
+\isanewline
+\isanewline
+\isacommand{end}\isamarkupfalse%
+\ %
+\isamarkupcmt{of \isa{context\ lts{\isacharunderscore}{\kern0pt}timeout}%
+}%
+\begin{isamarkuptext}%
+As a little meta-comment, I would like to point out that van~Glabbeek's proof spans a total of five lines (\enquote{Clearly, \textelp{}}, \enquote{It is straightforward to check \textelp{}}), whereas the Isabelle proof takes up around 250 lines of code. This just goes to show that for things which are clear and straightforward for humans, it might require quite some effort to \enquote{explain} them to a computer.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/reactive-bisimilarity-reduction/Reactive_Bisimilarity.thy%:%
+%:%24=8%:%
+%:%36=9%:%
+%:%40=11%:%
+%:%41=12%:%
+%:%42=13%:%
+%:%43=14%:%
+%:%44=15%:%
+%:%45=16%:%
+%:%46=17%:%
+%:%47=18%:%
+%:%48=19%:%
+%:%49=20%:%
+%:%50=21%:%
+%:%51=22%:%
+%:%52=23%:%
+%:%53=24%:%
+%:%54=25%:%
+%:%55=26%:%
+%:%56=27%:%
+%:%57=28%:%
+%:%58=29%:%
+%:%59=30%:%
+%:%60=31%:%
+%:%61=32%:%
+%:%62=33%:%
+%:%63=34%:%
+%:%64=35%:%
+%:%65=36%:%
+%:%74=38%:%
+%:%86=39%:%
+%:%87=40%:%
+%:%88=41%:%
+%:%89=42%:%
+%:%90=43%:%
+%:%91=44%:%
+%:%92=45%:%
+%:%93=46%:%
+%:%94=47%:%
+%:%95=48%:%
+%:%96=49%:%
+%:%97=50%:%
+%:%98=51%:%
+%:%99=52%:%
+%:%100=53%:%
+%:%101=54%:%
+%:%102=55%:%
+%:%103=56%:%
+%:%104=57%:%
+%:%105=58%:%
+%:%106=59%:%
+%:%107=60%:%
+%:%108=61%:%
+%:%109=62%:%
+%:%110=63%:%
+%:%111=64%:%
+%:%112=65%:%
+%:%113=66%:%
+%:%114=67%:%
+%:%115=68%:%
+%:%116=69%:%
+%:%117=70%:%
+%:%118=71%:%
+%:%119=72%:%
+%:%128=75%:%
+%:%140=76%:%
+%:%149=79%:%
+%:%161=80%:%
+%:%170=83%:%
+%:%182=85%:%
+%:%191=88%:%
+%:%203=90%:%
+%:%204=91%:%
+%:%205=92%:%
+%:%206=93%:%
+%:%207=94%:%
+%:%208=95%:%
+%:%209=96%:%
+%:%210=97%:%
+%:%211=98%:%
+%:%212=99%:%
+%:%213=100%:%
+%:%214=101%:%
+%:%215=102%:%
+%:%217=104%:%
+%:%218=104%:%
+%:%219=105%:%
+%:%221=106%:%
+%:%222=106%:%
+%:%223=107%:%
+%:%224=107%:%
+%:%225=108%:%
+%:%239=122%:%
+%:%240=123%:%
+%:%261=140%:%
+%:%273=142%:%
+%:%275=144%:%
+%:%276=144%:%
+%:%277=145%:%
+%:%278=146%:%
+%:%279=147%:%
+%:%280=148%:%
+%:%281=148%:%
+%:%282=149%:%
+%:%283=150%:%
+%:%285=152%:%
+%:%287=154%:%
+%:%288=154%:%
+%:%289=155%:%
+%:%290=156%:%
+%:%293=159%:%
+%:%295=161%:%
+%:%296=161%:%
+%:%299=162%:%
+%:%303=162%:%
+%:%304=162%:%
+%:%305=162%:%
+%:%310=162%:%
+%:%313=163%:%
+%:%314=163%:%
+%:%317=164%:%
+%:%321=164%:%
+%:%322=164%:%
+%:%323=164%:%
+%:%337=167%:%
+%:%349=169%:%
+%:%352=171%:%
+%:%353=171%:%
+%:%354=172%:%
+%:%355=172%:%
+%:%356=173%:%
+%:%372=189%:%
+%:%373=190%:%
+%:%394=207%:%
+%:%406=209%:%
+%:%408=211%:%
+%:%409=211%:%
+%:%410=212%:%
+%:%411=213%:%
+%:%414=214%:%
+%:%418=214%:%
+%:%419=214%:%
+%:%420=215%:%
+%:%421=215%:%
+%:%422=216%:%
+%:%423=216%:%
+%:%424=217%:%
+%:%425=217%:%
+%:%426=218%:%
+%:%427=218%:%
+%:%428=219%:%
+%:%429=219%:%
+%:%430=219%:%
+%:%431=220%:%
+%:%432=220%:%
+%:%433=221%:%
+%:%434=221%:%
+%:%435=222%:%
+%:%436=222%:%
+%:%437=223%:%
+%:%438=223%:%
+%:%439=224%:%
+%:%440=224%:%
+%:%441=224%:%
+%:%442=225%:%
+%:%443=225%:%
+%:%444=226%:%
+%:%445=226%:%
+%:%446=227%:%
+%:%447=227%:%
+%:%448=228%:%
+%:%449=228%:%
+%:%450=229%:%
+%:%451=229%:%
+%:%452=229%:%
+%:%453=230%:%
+%:%454=230%:%
+%:%455=231%:%
+%:%456=231%:%
+%:%457=232%:%
+%:%458=232%:%
+%:%459=233%:%
+%:%460=233%:%
+%:%461=234%:%
+%:%462=234%:%
+%:%463=234%:%
+%:%464=235%:%
+%:%465=235%:%
+%:%466=236%:%
+%:%467=236%:%
+%:%468=237%:%
+%:%469=237%:%
+%:%470=238%:%
+%:%471=238%:%
+%:%472=239%:%
+%:%473=239%:%
+%:%474=239%:%
+%:%475=240%:%
+%:%476=240%:%
+%:%477=241%:%
+%:%478=241%:%
+%:%479=242%:%
+%:%480=242%:%
+%:%481=243%:%
+%:%482=243%:%
+%:%483=244%:%
+%:%484=244%:%
+%:%485=244%:%
+%:%486=245%:%
+%:%487=245%:%
+%:%488=246%:%
+%:%489=246%:%
+%:%490=247%:%
+%:%491=247%:%
+%:%492=248%:%
+%:%493=248%:%
+%:%494=248%:%
+%:%495=248%:%
+%:%496=249%:%
+%:%497=249%:%
+%:%498=249%:%
+%:%499=249%:%
+%:%500=250%:%
+%:%501=250%:%
+%:%502=250%:%
+%:%503=250%:%
+%:%504=251%:%
+%:%505=251%:%
+%:%506=252%:%
+%:%507=252%:%
+%:%508=253%:%
+%:%509=253%:%
+%:%510=254%:%
+%:%511=254%:%
+%:%512=255%:%
+%:%513=255%:%
+%:%514=255%:%
+%:%515=256%:%
+%:%516=256%:%
+%:%517=257%:%
+%:%518=257%:%
+%:%519=258%:%
+%:%520=258%:%
+%:%521=259%:%
+%:%522=259%:%
+%:%523=259%:%
+%:%524=260%:%
+%:%525=260%:%
+%:%526=261%:%
+%:%527=261%:%
+%:%528=261%:%
+%:%529=262%:%
+%:%530=262%:%
+%:%531=262%:%
+%:%532=263%:%
+%:%533=263%:%
+%:%534=263%:%
+%:%535=264%:%
+%:%536=264%:%
+%:%537=264%:%
+%:%538=265%:%
+%:%539=265%:%
+%:%540=265%:%
+%:%541=266%:%
+%:%542=266%:%
+%:%543=266%:%
+%:%544=267%:%
+%:%554=269%:%
+%:%556=271%:%
+%:%557=271%:%
+%:%558=272%:%
+%:%559=273%:%
+%:%565=279%:%
+%:%578=317%:%
+%:%581=318%:%
+%:%582=318%:%
+%:%583=319%:%
+%:%584=320%:%
+%:%585=321%:%
+%:%586=322%:%
+%:%589=323%:%
+%:%593=323%:%
+%:%594=323%:%
+%:%595=324%:%
+%:%596=324%:%
+%:%597=325%:%
+%:%598=325%:%
+%:%599=326%:%
+%:%600=326%:%
+%:%601=327%:%
+%:%602=327%:%
+%:%603=328%:%
+%:%604=328%:%
+%:%605=329%:%
+%:%606=329%:%
+%:%607=330%:%
+%:%608=330%:%
+%:%609=331%:%
+%:%610=331%:%
+%:%611=332%:%
+%:%612=332%:%
+%:%613=332%:%
+%:%614=333%:%
+%:%615=333%:%
+%:%616=333%:%
+%:%617=334%:%
+%:%618=334%:%
+%:%619=335%:%
+%:%620=335%:%
+%:%621=336%:%
+%:%622=336%:%
+%:%623=337%:%
+%:%624=337%:%
+%:%625=337%:%
+%:%626=338%:%
+%:%627=338%:%
+%:%628=338%:%
+%:%629=339%:%
+%:%630=339%:%
+%:%631=340%:%
+%:%632=340%:%
+%:%633=341%:%
+%:%634=341%:%
+%:%635=341%:%
+%:%636=341%:%
+%:%637=342%:%
+%:%638=342%:%
+%:%639=343%:%
+%:%640=343%:%
+%:%641=343%:%
+%:%642=344%:%
+%:%643=344%:%
+%:%644=345%:%
+%:%645=345%:%
+%:%646=345%:%
+%:%647=346%:%
+%:%648=346%:%
+%:%649=346%:%
+%:%650=346%:%
+%:%651=347%:%
+%:%652=347%:%
+%:%653=348%:%
+%:%654=348%:%
+%:%655=349%:%
+%:%656=349%:%
+%:%657=350%:%
+%:%658=350%:%
+%:%659=351%:%
+%:%660=351%:%
+%:%661=352%:%
+%:%662=352%:%
+%:%663=353%:%
+%:%664=353%:%
+%:%665=354%:%
+%:%666=354%:%
+%:%667=355%:%
+%:%668=355%:%
+%:%669=355%:%
+%:%670=355%:%
+%:%671=356%:%
+%:%672=356%:%
+%:%673=357%:%
+%:%674=357%:%
+%:%675=358%:%
+%:%676=358%:%
+%:%677=358%:%
+%:%678=359%:%
+%:%679=359%:%
+%:%680=360%:%
+%:%681=360%:%
+%:%682=361%:%
+%:%683=361%:%
+%:%684=361%:%
+%:%685=362%:%
+%:%686=362%:%
+%:%687=363%:%
+%:%688=363%:%
+%:%689=364%:%
+%:%690=364%:%
+%:%691=365%:%
+%:%692=365%:%
+%:%693=366%:%
+%:%694=366%:%
+%:%695=367%:%
+%:%696=367%:%
+%:%697=368%:%
+%:%698=368%:%
+%:%699=369%:%
+%:%700=369%:%
+%:%701=370%:%
+%:%702=370%:%
+%:%703=370%:%
+%:%704=371%:%
+%:%705=371%:%
+%:%706=371%:%
+%:%707=372%:%
+%:%708=372%:%
+%:%709=372%:%
+%:%710=373%:%
+%:%711=373%:%
+%:%712=374%:%
+%:%713=374%:%
+%:%714=375%:%
+%:%715=375%:%
+%:%716=375%:%
+%:%717=376%:%
+%:%718=376%:%
+%:%719=376%:%
+%:%720=377%:%
+%:%721=377%:%
+%:%722=378%:%
+%:%723=378%:%
+%:%724=379%:%
+%:%725=379%:%
+%:%726=380%:%
+%:%727=380%:%
+%:%728=381%:%
+%:%729=381%:%
+%:%730=381%:%
+%:%731=382%:%
+%:%732=382%:%
+%:%733=382%:%
+%:%734=383%:%
+%:%735=383%:%
+%:%736=384%:%
+%:%737=384%:%
+%:%738=385%:%
+%:%739=385%:%
+%:%740=386%:%
+%:%741=386%:%
+%:%742=387%:%
+%:%743=387%:%
+%:%744=388%:%
+%:%745=388%:%
+%:%746=389%:%
+%:%747=389%:%
+%:%748=390%:%
+%:%749=390%:%
+%:%750=391%:%
+%:%751=391%:%
+%:%752=391%:%
+%:%753=392%:%
+%:%754=392%:%
+%:%755=393%:%
+%:%756=393%:%
+%:%757=394%:%
+%:%758=394%:%
+%:%759=394%:%
+%:%760=395%:%
+%:%761=395%:%
+%:%762=395%:%
+%:%763=396%:%
+%:%764=396%:%
+%:%765=397%:%
+%:%766=397%:%
+%:%767=398%:%
+%:%768=398%:%
+%:%769=398%:%
+%:%770=399%:%
+%:%771=399%:%
+%:%772=399%:%
+%:%773=399%:%
+%:%774=400%:%
+%:%775=400%:%
+%:%776=401%:%
+%:%777=401%:%
+%:%778=402%:%
+%:%779=402%:%
+%:%780=403%:%
+%:%781=403%:%
+%:%782=404%:%
+%:%783=404%:%
+%:%784=405%:%
+%:%785=405%:%
+%:%786=406%:%
+%:%787=406%:%
+%:%788=407%:%
+%:%789=407%:%
+%:%790=408%:%
+%:%791=408%:%
+%:%792=409%:%
+%:%793=409%:%
+%:%794=409%:%
+%:%795=410%:%
+%:%796=410%:%
+%:%797=411%:%
+%:%798=411%:%
+%:%799=412%:%
+%:%800=412%:%
+%:%801=413%:%
+%:%802=413%:%
+%:%803=413%:%
+%:%804=414%:%
+%:%805=414%:%
+%:%806=415%:%
+%:%807=415%:%
+%:%808=416%:%
+%:%809=416%:%
+%:%810=416%:%
+%:%811=416%:%
+%:%812=417%:%
+%:%813=417%:%
+%:%814=417%:%
+%:%815=418%:%
+%:%816=418%:%
+%:%817=418%:%
+%:%818=419%:%
+%:%819=419%:%
+%:%820=419%:%
+%:%821=420%:%
+%:%822=420%:%
+%:%823=420%:%
+%:%824=421%:%
+%:%825=421%:%
+%:%826=422%:%
+%:%827=422%:%
+%:%828=423%:%
+%:%829=423%:%
+%:%830=424%:%
+%:%831=424%:%
+%:%832=425%:%
+%:%833=425%:%
+%:%834=426%:%
+%:%835=426%:%
+%:%836=427%:%
+%:%837=427%:%
+%:%838=428%:%
+%:%839=428%:%
+%:%840=429%:%
+%:%841=429%:%
+%:%842=430%:%
+%:%843=430%:%
+%:%844=430%:%
+%:%845=431%:%
+%:%846=431%:%
+%:%847=432%:%
+%:%848=432%:%
+%:%849=433%:%
+%:%850=433%:%
+%:%851=434%:%
+%:%852=434%:%
+%:%853=434%:%
+%:%854=435%:%
+%:%855=435%:%
+%:%856=436%:%
+%:%857=436%:%
+%:%858=437%:%
+%:%859=437%:%
+%:%860=437%:%
+%:%861=437%:%
+%:%862=438%:%
+%:%863=438%:%
+%:%864=438%:%
+%:%865=439%:%
+%:%866=439%:%
+%:%867=439%:%
+%:%868=440%:%
+%:%869=440%:%
+%:%870=440%:%
+%:%871=441%:%
+%:%872=441%:%
+%:%873=442%:%
+%:%874=442%:%
+%:%875=443%:%
+%:%876=443%:%
+%:%877=444%:%
+%:%878=444%:%
+%:%879=445%:%
+%:%880=445%:%
+%:%881=446%:%
+%:%882=446%:%
+%:%883=446%:%
+%:%884=447%:%
+%:%885=447%:%
+%:%886=448%:%
+%:%887=448%:%
+%:%888=449%:%
+%:%889=449%:%
+%:%890=450%:%
+%:%891=450%:%
+%:%892=451%:%
+%:%893=451%:%
+%:%894=452%:%
+%:%895=452%:%
+%:%896=453%:%
+%:%897=453%:%
+%:%898=454%:%
+%:%899=454%:%
+%:%900=454%:%
+%:%901=454%:%
+%:%902=455%:%
+%:%903=455%:%
+%:%904=455%:%
+%:%905=455%:%
+%:%906=456%:%
+%:%907=456%:%
+%:%908=457%:%
+%:%909=457%:%
+%:%910=457%:%
+%:%911=458%:%
+%:%912=458%:%
+%:%913=459%:%
+%:%914=459%:%
+%:%915=460%:%
+%:%916=460%:%
+%:%917=461%:%
+%:%918=461%:%
+%:%919=462%:%
+%:%920=462%:%
+%:%921=463%:%
+%:%922=463%:%
+%:%923=464%:%
+%:%924=464%:%
+%:%925=465%:%
+%:%926=465%:%
+%:%927=465%:%
+%:%928=465%:%
+%:%929=466%:%
+%:%930=466%:%
+%:%931=466%:%
+%:%932=467%:%
+%:%933=467%:%
+%:%934=468%:%
+%:%935=468%:%
+%:%936=468%:%
+%:%937=468%:%
+%:%938=469%:%
+%:%939=469%:%
+%:%940=470%:%
+%:%941=470%:%
+%:%942=470%:%
+%:%943=471%:%
+%:%944=471%:%
+%:%945=472%:%
+%:%955=474%:%
+%:%957=476%:%
+%:%958=476%:%
+%:%959=477%:%
+%:%962=478%:%
+%:%966=478%:%
+%:%967=478%:%
+%:%976=480%:%
+%:%984=482%:%
+%:%985=482%:%
+%:%986=483%:%
+%:%987=484%:%
+%:%988=484%:%
+%:%989=484%:%
+%:%990=485%:%
+%:%991=486%:%
+%:%992=486%:%
+%:%993=487%:%
+%:%994=488%:%
+%:%995=488%:%
+%:%996=488%:%
+%:%1003=488%:%
+%:%1004=489%:%
+%:%1005=490%:%
+%:%1006=490%:%
+%:%1007=490%:%
+%:%1010=493%:%

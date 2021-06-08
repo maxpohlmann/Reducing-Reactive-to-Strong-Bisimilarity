@@ -1,0 +1,199 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Discussion}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupchapter{Discussion%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+\label{chap:discussion}%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+We have shown that checking strong reactive/$X$-bisimilarity (in an \LTSt{}) is reducable to checking strong bisimilarity. This result may be useful in the context of automated tools for checking equivalences on LTSs.
+Since, the mapping creates a state for every subset of the visible actions $A$, for each original state, plus another triggered state (i.e.\@ 
+$|\Proc_\vartheta| = |\Proc| \cdot (1+2^{|A|})$),
+checking reactive bisimilarity by using the mapping would be exponentially harder (in the worst case) than simply checking ordinary bisimilarity. However, at least for SRBs, the size of the relations also grows exponentially with the number of visible actions (due to the clause $(p,q)\in\mathcal{R} \Longrightarrow (p,X,q)\in\mathcal{R}$ for $X\subseteq A$), so a a naïve implementation using SRBs would not necessarily be more efficient. Below, I propose an optimisation that significantly reduces the number of states for a large number of LTSs.
+
+As I mentioned in \cref{sec:mapping_lts}, the mapped LTS represents the closed system consisting of the original reactive system and its environment. Hence, the reduction does in no way challenge the semantic value offered by \LTSt{}s, e.g.\@ for protocol specifications. Rather, when shown as a graph, the mapping offers a useful view at systems specified as \LTSt{}s that explicilty shows them in all possible \enquote{situations}. In a mapped LTS, for example, it is easy to find states that are unreachable, or reachable only in certain environments, whereas the reachability of states in an \LTSt{} may not be directly obvious, as we saw in the example on \cpageref{fig:mapping_example}. Admittedly, the mapping gets very crowded even for small \LTSt{}s; on a local level or merely as a thinking aid, however, the \enquote{explicitness} of the mapping may be useful.
+
+The formula mapping is probably less useful in that regard, due to the large number of disjunctions. It might, however, also be useful in the context of automated tools.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Possible Optimisations%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Let $\mathcal{I}^*(p)$ be the set of visible actions that can be encountered as initial actions after arbitrary sequences of $\tau$- and $t$-transitions starting at $p$.
+
+More concretely, for $n \in \mathbb{N}$, let 
+\begin{align*}
+    p_0 \xrightarrow{X}\!\!\raisebox{1pt}{*}\; p_n &\equiv \exists p_1,\dots,p_{n-1} .\;
+    \forall i \in [0,n\!-\!1] .\; \exists \alpha\!\in\!X .\; p_i \xrightarrow{\alpha} p_{i+1}; \\
+    \text{reach}(p,X) &\equiv \{ p' \mid p \xrightarrow{X}\!\!\raisebox{1pt}{*}\; p' \}; \\
+    \mathcal{I}^*(p) &\equiv \bigcup_{p' \in \text{reach}(p,\{\tau,t\})} \mathcal{I}(p').
+\end{align*}
+Then%
+\footnote{Note that $p \in \text{reach}(p,X)$ for all $p$ and $X$.}
+we can modify first rule of the process mapping (from \cref{sec:mapping_lts}) by changing the side condition from $X \subseteq A$ to $X \subseteq \mathcal{I}^*(p)$, yielding:
+
+$$
+(1)\,\frac{}{\vartheta(p) \xrightarrow{\varepsilon_X}_\vartheta \vartheta_X(p)} \; X \subseteq \mathcal{I}^*(p).
+$$
+
+This way, we only include environment stabilisations that are relevant for the current process: all transitions other than $\tau$ and $t$ will always trigger a change in the environment; hence, after having stabilised, the actions in $\mathcal{I}^*(p)$ are the only ones the process $p$ could ever perform before triggering the environment.
+
+In the worst case, the number of mapping-states is still exponential in the size of the alphabet, i.e.\@ $|\Proc_\vartheta| = \mathcal{O}(|\Proc| \cdot 2^{|\Act|})$. For a large number of \LTSt{}s, however, this alteration would reduce the number of mapping-states significantly.
+
+Unfortunately, I did not manage to prove the reduction with this altered mapping, but I am convinced that it is possible.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Necessity of Special Actions%
+}
+\isamarkuptrue%
+%
+\isamarkupparagraph{Environment Time-Outs \boldmath{$t_\varepsilon$}%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+It should be possible to replace the action $t_\varepsilon$ by the normal time-out action $t$ in the mapping. Since, in the present version, all $t_\varepsilon$-transitions end in a $\vartheta(p)$-state, where always at least an $\varepsilon_\emptyset$-transition can be performed, whereas all $t$-transitions end in a $\vartheta_X(p)$-state, where no $\varepsilon_Y$-transition can ever be performed, the distinction between environment time-outs and system time-outs should be possible without distinguishing the actions $t$ and $t_\varepsilon$.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupparagraph{Environment Stabilisations \boldmath{$\varepsilon_X$}%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+In the first version of the mapping, I used a single stabilisation action $s_\varepsilon$, but got stuck trying to prove that $\vartheta(p) \leftrightarrow \vartheta(q)$ implies $\forall X \subseteq A .\; \vartheta_X(p) \leftrightarrow \vartheta_X(q)$, which lead me to define the family of stabilisation actions instead. Sadly, I did not manage to find a counterexample where the reduction using this simpler mapping does not work. 
+
+However, in the context of \HMLt{}, there would be no obvious way to define the formula mapping for $\sigma(\langle X \rangle \varphi)$; in the present version, the mapping relies on being able to use $\varepsilon_X$ in this case (see \cref{sec:mapping_formulas}). Hence, I have come believe that the $\varepsilon_X$-actions are indeed required in their present form.
+
+Furthermore, although including the environment information both in the states $\vartheta_X(p)$ as well as the stabilisation actions $\varepsilon_X$ may seem redundant, it might be required. As we discussed in \cref{sec:strong_bisimilarity}, the intensional identity of the state is not \enquote{knowable for bisimilarity}; rather, only the observable transitions are relevant. Hence, it is plausible that the information about allowed actions is required to be included in the transition labels themselves, in order for the reduction to work.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/reactive-bisimilarity-reduction/Discussion.thy%:%
+%:%24=7%:%
+%:%36=8%:%
+%:%40=10%:%
+%:%41=11%:%
+%:%42=12%:%
+%:%43=13%:%
+%:%44=14%:%
+%:%45=15%:%
+%:%46=16%:%
+%:%47=17%:%
+%:%56=20%:%
+%:%68=22%:%
+%:%69=23%:%
+%:%70=24%:%
+%:%71=25%:%
+%:%72=26%:%
+%:%73=27%:%
+%:%74=28%:%
+%:%75=29%:%
+%:%76=30%:%
+%:%77=31%:%
+%:%78=32%:%
+%:%79=33%:%
+%:%80=34%:%
+%:%81=35%:%
+%:%82=36%:%
+%:%83=37%:%
+%:%84=38%:%
+%:%85=39%:%
+%:%86=40%:%
+%:%87=41%:%
+%:%88=42%:%
+%:%89=43%:%
+%:%98=46%:%
+%:%102=48%:%
+%:%114=49%:%
+%:%123=51%:%
+%:%135=52%:%
+%:%136=53%:%
+%:%137=54%:%
+%:%138=55%:%
+%:%139=56%:%

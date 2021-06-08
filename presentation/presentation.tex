@@ -1,0 +1,1025 @@
+\documentclass[american]{beamer}
+\usetheme{Boadilla}
+\beamertemplatenavigationsymbolsempty
+
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{babel}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage[mathscr]{euscript}
+\usepackage{csquotes}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,shapes,positioning}
+\usepackage{xcolor}
+
+\newcommand{\LTSt}{LTS\textsubscript{t}}
+\newcommand{\HMLt}{HML\textsubscript{t}}
+
+\newcommand{\lts}[1]{%
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,every node/.style={scale=.85},node distance=1.8cm]
+\tikzstyle{every state}=[ellipse]
+{#1}
+\end{tikzpicture}
+\end{center}
+}
+
+\newcommand{\outlinegraph}[1]{%
+\begin{center}
+\scalebox{0.7}{
+\begin{tikzpicture}[node distance=0.5cm and 2cm]
+    \tikzstyle{every node}=[draw, inner sep=10pt]
+    {#1}
+\end{tikzpicture}
+}
+\end{center}
+}
+
+\title{Reducing Reactive to Strong Bisimilarity}
+\subtitle{Bachelor's thesis}
+\author{Max Pohlmann}
+\institute{TU Berlin}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{Outline}
+
+\begin{frame}{Outline}
+\outlinegraph{
+    \onslide<1->{\node[rectangle] (21) {LTS};}
+    \onslide<1->{\node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB};}
+    \onslide<4->{\node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML};}
+    
+    \onslide<2->{\node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}};}
+    \onslide<2->{\node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB};}
+    \onslide<5->{\node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};}
+    
+    \onslide<3->{\node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};}
+    \onslide<3->{\node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};}
+    \onslide<6->{\node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};}
+    \onslide<6->{\node[ellipse] (34) [right=of 33] {R2};}
+    
+    \onslide<1->{\draw[shorten <=5pt,shorten >=5pt] (21) to (22);}
+    \onslide<4->{\draw[shorten <=5pt,shorten >=5pt] (21) to (23);}
+    \onslide<4->{\draw[<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);}
+    
+    \onslide<2->{\draw[shorten <=5pt,shorten >=5pt] (24) to (25);}
+    \onslide<5->{\draw[shorten <=5pt,shorten >=5pt] (24) to (26);}
+    \onslide<5->{\draw[<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);}
+    
+    \onslide<3->{\draw[shorten <=5pt] (21) to (31);}
+    \onslide<3->{\draw[shorten <=5pt] (24) to (31);}
+    \onslide<3->{\draw[shorten <=5pt] (22) to (32);}
+    \onslide<3->{\draw[shorten <=5pt] (25) to (32);}
+    \onslide<6->{\draw[shorten <=5pt] (23) to (33);}
+    \onslide<6->{\draw[shorten <=5pt] (26) to (33);}
+    \onslide<6->{\draw[shorten <=5pt] (23) to[in=90,out=-40] (34);}
+    \onslide<6->{\draw[shorten <=5pt] (26) to[in=-90,out=30] (34);}
+    
+    \onslide<3->{\draw[->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);}
+    \onslide<6->{\draw[->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);}
+    \onslide<6->{\draw[->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);}
+}
+\end{frame}
+
+\section{Labelled Transition Systems}
+
+\begin{frame}{Labelled Transition Systems}
+\outlinegraph{
+    \node[red,rectangle] (21) {LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[ellipse] (34) [right=of 33] {R2};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}{Labelled Transition Systems}
+\begin{itemize}
+    \item labelled directed graph
+    \item reactive system: \\behaviour depends on continuous interaction with environment
+    \item e.g.\@ a machine and a user
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Labelled Transition Systems}
+\lts{
+    \node[state]    (p0) {$p$};
+    \node[state]    (p1) [below of=p0] {$p_1$};
+    \node[state]    (p2) [below left of=p1,xshift=-10pt] {$p_2$};
+    \node[state]    (p3) [below of=p1] {$p_3$};
+    \node[state]    (p4) [below right of=p1,xshift=10pt] {$p_4$};
+    
+    \path   (p0) edge node[right] {coin} (p1)
+            (p1) edge node[above left] {choc} (p2)
+                 edge node[right] {nuts} (p3)
+                 edge node[above right] {crisps} (p4);
+                 
+    \draw (p2) to[out=150, in=210, looseness=1, edge node={node [left] {$\tau$}}] (p0);
+    \draw (p4) to[out=30, in=-30, looseness=1, edge node={node [right] {$\tau$}}] (p0);
+    \draw (p3) to[out=-20, in=0, looseness=2.5, edge node={node [right] {$\tau$}}] (p0);
+}
+\end{frame}
+
+\begin{frame}{Labelled Transition Systems}
+\lts{
+    \node[state]    (p0)                        {$p$};
+    \node[state]    (p1) [below left of=p0]     {$p_1$};
+    \node[state]    (p2) [below of=p0]          {$p_2$};
+    \node[state]    (p3) [below right of=p0]    {$p_3$};
+    
+    \path   (p0) edge node[above left]          {$a$}   (p1)
+                 edge node[above right]         {$a$}   (p2)
+                 edge node[above right]         {$b$}   (p3);
+}
+\end{frame}
+
+\section{Strong Bisimilarity}
+
+\begin{frame}{Strong Bisimilarity}
+\outlinegraph{
+    \node[rectangle] (21) {LTS}; 
+    \node[red,rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[ellipse] (34) [right=of 33] {R2};
+    
+    \draw [red,shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}{Strong Bisimilarity}
+\only<1>{
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (q0) [right of=p0,xshift=2cm]   {$q$};
+    \node[state]    (q1) [below of=q0]              {$q_1$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$a$}   (p2)
+            (q0) edge node              {$a$}   (q1);
+}
+$$p \leftrightarrow q$$
+}
+
+\only<2>{
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below of=p1]              {$p_2$};
+    \node[state]    (p3) [below right of=p0]        {$p_3$};
+    \node[state]    (p4) [below of=p3]              {$p_4$};
+    \node[state]    (q0) [right of=p0,xshift=2cm]   {$q$};
+    \node[state]    (q1) [below of=q0]              {$q_1$};
+    \node[state]    (q2) [below of=q1]              {$q_2$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$a$}   (p3)
+            (p1) edge node[left]        {$a$}   (p2)
+            (p3) edge node[left]        {$a$}   (p4)
+            (q0) edge node              {$a$}   (q1)
+            (q1) edge node              {$a$}   (q2);
+}
+$$p \leftrightarrow q$$
+}
+
+\only<3>{
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below of=p1]              {$p_2$};
+    \node[state]    (p3) [below right of=p0]        {$p_3$};
+    \node[state]    (p4) [below of=p3]              {$p_4$};
+    \node[state]    (q0) [right of=p0,xshift=2cm]   {$q$};
+    \node[state]    (q1) [below of=q0]              {$q_1$};
+    \node[state]    (q2) [below of=q1]              {$q_2$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$a$}   (p3)
+            (p1) edge node[left]        {$a$}   (p2)
+            (p3) edge node[left]        {$b$}   (p4)
+            (q0) edge node              {$a$}   (q1)
+            (q1) edge node              {$a$}   (q2);
+}
+$$p \not\leftrightarrow q$$
+}
+
+\only<4>{
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below of=p1]              {$p_2$};
+    \node[state]    (p3) [below right of=p0]        {$p_3$};
+    \node[state]    (q0) [right of=p0,xshift=2cm]   {$q$};
+    \node[state]    (q1) [below of=q0]              {$q_1$};
+    \node[state]    (q2) [below of=q1]              {$q_2$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$a$}   (p3)
+            (p1) edge node[left]        {$a$}   (p2)
+            (q0) edge node              {$a$}   (q1)
+            (q1) edge node              {$a$}   (q2);
+}
+$$p \not\leftrightarrow q$$
+}
+\end{frame}
+
+\begin{frame}{Strong Bisimilarity}
+$$p \leftrightarrow q \text{ if and only if:}$$
+\begin{align*}
+& \forall \alpha, p' \text{ with } p \xrightarrow{\alpha} p'.\;
+\exists q' \text{ with } q \xrightarrow{\alpha} q' \text{ and } p' \leftrightarrow q'
+\text{, and}\\
+& \forall \alpha, q' \text{ with } q \xrightarrow{\alpha} q'.\;
+\exists p' \text{ with } p \xrightarrow{\alpha} p' \text{ and } p' \leftrightarrow q'.
+\end{align*}
+\end{frame}
+
+\section{Labelled Transition Systems with Time-Outs}
+
+\begin{frame}{Labelled Transition Systems with Time-Outs}
+\outlinegraph{
+    \node[rectangle] (21) {LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[red,rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[ellipse] (34) [right=of 33] {R2};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}{Labelled Transition Systems with Time-Outs}
+\only<1>{
+\lts{
+    \node[state]    (p0) {$p$};
+    \node[state]    (p1) [below of=p0] {$p_1$};
+    \node[state]    (p2) [below left of=p1,xshift=-10pt] {$p_2$};
+    \node[state]    (p3) [below of=p1] {$p_3$};
+    \node[state]    (p4) [below right of=p1,xshift=10pt] {$p_4$};
+    
+    \path   (p0) edge node[right] {coin} (p1)
+            (p1) edge node[above left] {choc} (p2)
+                 edge node[right] {nuts} (p3)
+                 edge node[above right] {crisps} (p4);
+                 
+    \draw (p2) to[out=150, in=180, looseness=2, edge node={node [left] {$\tau$}}] (p0);
+    \draw (p4) to[out=30, in=-30, looseness=1, edge node={node [right] {$\tau$}}] (p0);
+    \draw (p3) to[out=-20, in=0, looseness=2.5, edge node={node [right] {$\tau$}}] (p0);
+    \draw (p1) to[out=150, in=230, looseness=.8, edge node={node [left] {$\tau$}}] (p0);
+}}
+
+\only<2>{
+\lts{
+    \node[state]    (p0) {$p$};
+    \node[state]    (p1) [below of=p0] {$p_1$};
+    \node[state]    (p11) [below left of=p0,xshift=-10pt] {$p_1'$};
+    \node[state]    (p2) [below left of=p1,xshift=-10pt] {$p_2$};
+    \node[state]    (p3) [below of=p1] {$p_3$};
+    \node[state]    (p4) [below right of=p1,xshift=10pt] {$p_4$};
+    
+    \path   (p0) edge node[right] {coin} (p1)
+            (p1) edge node[above left] {choc} (p2)
+                 edge node[right] {nuts} (p3)
+                 edge node[above right] {crisps} (p4)
+            (p1) edge node[above] {$t$} (p11)
+            (p11) edge node[left] {$\tau$} (p0);
+                 
+    \draw (p2) to[out=150, in=180, looseness=2, edge node={node [left] {$\tau$}}] (p0);
+    \draw (p4) to[out=30, in=-30, looseness=1, edge node={node [right] {$\tau$}}] (p0);
+    \draw (p3) to[out=-20, in=0, looseness=2.5, edge node={node [right] {$\tau$}}] (p0);
+}}
+\end{frame}
+
+\begin{frame}{Labelled Transition Systems with Time-Outs}
+\begin{itemize}
+    \item in each given moment, there is a fixed set of actions that the environment allows
+    \pause
+    \item if a system state has a transition that is currently allowed, it will be performed immediately
+    \pause
+    \item only when no non--time-out transition is allowed by the environment, a state may perform a $t$-transition
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Labelled Transition Systems with Time-Outs}
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (q0) [right of=p0,xshift=3cm]   {$q$};
+    \node[state]    (q1) [below left of=q0]         {$q_1$};
+    \node[state]    (q2) [below right of=q0]        {$q_2$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$t$}   (p2)
+            (q0) edge node[above left]  {$\tau$}(q1)
+                 edge node              {$t$}   (q2);
+}
+\end{frame}
+\begin{frame}{Labelled Transition Systems with Time-Outs}
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (p3) [below left of=p2]         {$p_3$};
+    \node[state]    (p4) [below right of=p2]        {$p_4$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$t$}   (p2)
+            (p2) edge node[above left]  {$\tau$}   (p3)
+                 edge node              {$a$}(p4);
+}
+\end{frame}
+\begin{frame}{Labelled Transition Systems with Time-Outs}
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (p3) [below of=p2]              {$p_3$};
+    \node[state]    (p4) [below left of=p3]         {$p_4$};
+    \node[state]    (p5) [below right of=p3]        {$p_5$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$t$}   (p2)
+            (p2) edge node              {$b$}   (p3)
+            (p3) edge node[above left]  {$\tau$}   (p4)
+                 edge node              {$a$}(p5);
+}
+\end{frame}
+
+\section{Strong Reactive Bisimilarity}
+
+\begin{frame}{Strong Reactive Bisimilarity}
+\outlinegraph{
+    \node[rectangle] (21) {LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[red,rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[ellipse] (34) [right=of 33] {R2};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [red,shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}{Strong Reactive Bisimilarity}
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (p3) [below left of=p2]         {$p_3$};
+    \node[state]    (p4) [below right of=p2]        {$p_4$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$t$}   (p2)
+            (p2) edge node[above left]  {$\tau$}(p3)
+                 edge node              {$a$}   (p4);
+                 
+    \node[state]    (q0) [right of=p0,xshift=5cm]   {$q$};
+    \node[state]    (q1) [below left of=q0]         {$q_1$};
+    \node[state]    (q2) [below right of=q0]        {$q_2$};
+    \node[state]    (q3) [below left of=q2]         {$q_3$};
+    
+    \path   (q0) edge node[above left]  {$a$}   (q1)
+                 edge node              {$t$}   (q2)
+            (q2) edge node[above left]  {$\tau$}(q3);
+}
+$$p \leftrightarrow_r q$$
+\end{frame}
+
+\begin{frame}{Strong Reactive Bisimilarity}
+A \emph{strong reactive bisimulation} is a symmetric relation 
+$$\mathcal{R} \subseteq (\mathit{Proc} \times \mathit{P}(A) \times \mathit{Proc}) \cup (\mathit{Proc} \times \mathit{Proc}),$$
+such that, for all $(p,q) \in \mathcal{R}$:
+\begin{enumerate}
+    \item if $p \xrightarrow{\tau} p'$, then there exists a $q'$ such that $q \xrightarrow{\tau} q'$ and $(p',q') \in \mathcal{R}$,
+    \item $(p,X,q) \in \mathcal{R}$ for all $X \subseteq A$,
+\end{enumerate}
+and for all $(p,X,q) \in \mathcal{R}$:
+\begin{enumerate}
+    \setcounter{enumi}{2}
+    \item if $p \xrightarrow{a} p'$ with $a \in X$, then there exists a $q'$ such that $q \xrightarrow{a} q'$ \\and $(p',q') \in \mathcal{R}$,
+    \item if $p \xrightarrow{\tau} p'$, then there exists a $q'$ such that $q \xrightarrow{\tau} q'$ and $(p',X,q') \in \mathcal{R}$,
+    \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$, then $(p,q) \in \mathcal{R}$, and
+    \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$ and $p \xrightarrow{t} p'$, then there exists a $q'$ \\such that $q \xrightarrow{t} q'$ and $(p',X,q') \in \mathcal{R}$.
+\end{enumerate}
+\footnotesize($\mathcal{I}(p) := \{ \alpha \mid p \xrightarrow{\alpha} \wedge \alpha \neq t \}$)
+\end{frame}
+
+\section{Reducing Reactive to Strong Bisimilarity}
+
+
+
+\begin{frame}{Reducing Reactive to Strong Bisimilarity}
+\outlinegraph{
+    \node[rectangle] (21) {LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[red,ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[red,ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[ellipse] (34) [right=of 33] {R2};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [red,shorten <=5pt] (21) to (31);
+    \draw [red,shorten <=5pt] (24) to (31);
+    \draw [red,shorten <=5pt] (22) to (32);
+    \draw [red,shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [red,->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}{Reducing Reactive to Strong Bisimilarity}
+For an \LTSt{} $\mathbb{T}$ with $\mathbb{T} = (\mathit{Proc}, \mathit{Act}, \rightarrow)$,
+
+let $\mathbb{T}_\vartheta$ be an LTS with $\mathbb{T}_\vartheta = (\mathit{Proc}_\vartheta, \mathit{Act}_\vartheta, \rightarrow_\vartheta)$.
+\only<2>{
+\\[2em]
+$$\text{Goal:\quad} p \leftrightarrow_r q \iff \vartheta(p) \leftrightarrow \vartheta(q),$$
+\\[1em]
+with $p,q \in \mathit{Proc}$ and $\vartheta(p), \vartheta(q) \in \mathit{Proc}_\vartheta$.
+}
+\only<3,4>{
+\begin{align*}
+    \mathit{Proc}_\vartheta &= \{ \vartheta(p) \mid p \in \mathit{Proc} \} \cup \{ \vartheta_X(p) \mid p \in \mathit{Proc} \wedge X \subseteq (\mathit{Act} \setminus \{\tau,t\}) \}\\[1em]
+    \only<4>{\mathit{Act}_\vartheta &= \mathit{Act} \cup \{t_\varepsilon\} \cup \{ \varepsilon_X \mid X \subseteq (\mathit{Act} \setminus \{\tau,t\}) \}}
+\end{align*}
+}
+\only<5>{
+$$
+(1)\,\frac{}{\vartheta(p) \xrightarrow{\varepsilon_X}_\vartheta \vartheta_X(p)} \; X \subseteq A
+\qquad
+(2)\,\frac{p \xrightarrow{\tau} p'}{\vartheta(p) \xrightarrow{\tau}_\vartheta \vartheta(p')}
+$$
+\\
+$$
+(3)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\}}
+{\vartheta_X(p) \xrightarrow{t_\varepsilon}_\vartheta \vartheta(p)}
+$$
+\\
+$$
+(4)\,\frac{p \xrightarrow{a} p'}{\vartheta_X(p) \xrightarrow{a}_\vartheta \vartheta(p')} \; a \in X
+\qquad
+(5)\,\frac{p \xrightarrow{\tau} p'}{\vartheta_X(p) \xrightarrow{\tau}_\vartheta \vartheta_X(p')}
+$$
+\\
+$$
+(6)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\} \quad p \xrightarrow{t} p'}
+{\vartheta_X(p) \xrightarrow{t}_\vartheta \vartheta_X(p')}
+$$
+}
+\end{frame}
+
+\begin{frame}{Reducing Reactive to Strong Bisimilarity}
+\scalebox{0.85}{\vbox{\lts{
+    \node<-2,4->[state] (P) {$p$};
+    \node<3>[red,state] (P) {$p$};
+
+    \node[state] (Q) [below left of=P] {$p_1$};
+    \node[state] (R) [below right of=P] {$p_2$};
+    \node[state] (S) [below left of=R] {$p_3$};
+    \node[state] (T) [below right of=R] {$p_4$};
+    
+    \draw<-4,6->[->,shorten >=1pt] (P) to node[above left] {$a$} (Q);
+    \draw<5>[red,->,shorten >=1pt] (P) to node[above left] {$a$} (Q);
+
+    \draw<-3,5->[->,shorten >=1pt] (P) to node[above right] {$t$} (R);
+    \draw<4>[red,->,shorten >=1pt] (P) to node[above right] {$t$} (R);
+    
+    \draw<-5>[->,shorten >=1pt] (R) to node[above left] {$\tau$} (S);
+    \draw<6,7>[red,->,shorten >=1pt] (R) to node[above left] {$\tau$} (S);
+    
+    \draw[->,shorten >=1pt] (R) to node[above right] {$a$} (T);
+
+
+    \node[state] (Pt) [right of=P, xshift=4.5cm] {$\vartheta(p)$};
+    \node[state] (Pa) [below left of=Pt] {$\vartheta_{\{a\}}(p)$};
+    \node[state] (Pe) [below right of=Pt] {$\vartheta_\emptyset(p)$};
+    \node[state] (Rt) [right of=Pe] {$\vartheta(p_2)$};
+    \node[state] (Qt) [below of=Pa] {$\vartheta(p_1)$};
+    \node[state] (Re) [below of=Pe] {$\vartheta_\emptyset(p_2)$};
+    \node[state] (Se) [below of=Re] {$\vartheta_\emptyset(p_3)$};
+    \node[state] (Ra) [below of=Rt,xshift=1.8cm] {$\vartheta_{\{a\}}(p_2)$};
+    \node[state] (Tt) [right of=Ra,xshift=.7cm] {$\vartheta(p_4)$};
+    \node[state] (Sa) [below of=Ra] {$\vartheta_{\{a\}}(p_3)$};
+    \node[state] (St) [right of=Se,yshift=-2cm] {$\vartheta(p_3)$};
+    
+    \draw<1,3->[->,shorten >=1pt] (Pt) to node[above left] {$\varepsilon_{\{a\}}$} (Pa);
+    \draw<2>[red,->,shorten >=1pt] (Pt) to node[above left] {$\varepsilon_{\{a\}}$} (Pa);
+
+    \draw<1,3->[->,shorten >=1pt] (Pt) to node[left] {$\varepsilon_\emptyset$} (Pe);
+    \draw<2>[red,->,shorten >=1pt] (Pt) to node[left] {$\varepsilon_\emptyset$} (Pe);
+
+    \draw<-2,4->[->,shorten >=1pt] (Pe) to[bend right] node[right] {$t_\varepsilon$} (Pt);
+    \draw<3>[red,->,shorten >=1pt] (Pe) to[bend right] node[right] {$t_\varepsilon$} (Pt);
+
+    \draw<-4,6->[->,shorten >=1pt] (Pa) to node[left] {$a$} (Qt);
+    \draw<5>[red,->,shorten >=1pt] (Pa) to node[left] {$a$} (Qt);
+
+    \draw<-3,5->[->,shorten >=1pt] (Pe) to node[left] {$t$} (Re);
+    \draw<4>[red,->,shorten >=1pt] (Pe) to node[left] {$t$} (Re);
+
+    \draw<-5,7->[->,shorten >=1pt] (Re) to node[left] {$\tau$} (Se);
+    \draw<6>[red,->,shorten >=1pt] (Re) to node[left] {$\tau$} (Se);
+    
+    \draw[->,shorten >=1pt] (Rt) to node[right] {$\varepsilon_{\{a\}}$} (Ra);
+    \draw[->,shorten >=1pt] (Rt) to node[left] {$\varepsilon_\emptyset$} (Re);
+    \draw[->,shorten >=1pt] (Ra) to node[above] {$a$} (Tt);
+    
+    \draw<-5,7->[->,shorten >=1pt] (Ra) to node[left] {$\tau$} (Sa);
+    \draw<6>[red,->,shorten >=1pt] (Ra) to node[left] {$\tau$} (Sa);
+    
+    \draw[->,shorten >=1pt] (Se) to node[above] {$t_\varepsilon$} (St);
+    \draw[->,shorten >=1pt] (St) to[bend left] node[left] {$\varepsilon_\emptyset$} (Se);
+    \draw[->,shorten >=1pt] (Sa) to node[above] {$t_\varepsilon$} (St);
+    \draw[->,shorten >=1pt] (St) to[bend right] node[right] {$\varepsilon_{\{a\}}$} (Sa);
+
+    \draw<-6>[->,shorten >=1pt] (Rt) to node[right] {$\tau$} (St);
+    \draw<7>[red,->,shorten >=1pt] (Rt) to node[right] {$\tau$} (St);
+            
+    \coordinate [below of=Qt,yshift=10pt] (Qc);
+    \coordinate [below of=Tt,yshift=10pt] (Tc);
+            
+    \draw [dotted,->,shorten >= 7pt] (Qt) to[bend right] node[left] {$\varepsilon_{\dots}$} (Qc);
+    \draw [dotted,->,shorten <= 7pt] (Qc) to[bend right] node[right] {$t_\varepsilon$} (Qt);
+    \draw [dotted,->,shorten >= 7pt] (Tt) to[bend right] node[left] {$\varepsilon_{\dots}$} (Tc);
+    \draw [dotted,->,shorten <= 7pt] (Tc) to[bend right] node[right] {$t_\varepsilon$} (Tt);
+}}}
+\only<2>{$(1)\,\frac{}{\vartheta(p) \xrightarrow{\varepsilon_X}_\vartheta \vartheta_X(p)} \; X \subseteq A$}
+\only<7>{$(2)\,\frac{p \xrightarrow{\tau} p'}{\vartheta(p) \xrightarrow{\tau}_\vartheta \vartheta(p')}$}
+\only<3>{$(3)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\}}{\vartheta_X(p) \xrightarrow{t_\varepsilon}_\vartheta \vartheta(p)}$}
+\only<5>{$(4)\,\frac{p \xrightarrow{a} p'}{\vartheta_X(p) \xrightarrow{a}_\vartheta \vartheta(p')} \; a \in X$}
+\only<6>{$(5)\,\frac{p \xrightarrow{\tau} p'}{\vartheta_X(p) \xrightarrow{\tau}_\vartheta \vartheta_X(p')}$}
+\only<4>{$(6)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\} \quad p \xrightarrow{t} p'}{\vartheta_X(p) \xrightarrow{t}_\vartheta \vartheta_X(p')}$}
+\end{frame}
+
+\begin{frame}{Reducing Reactive to Strong Bisimilarity}
+\begin{theorem}
+For an \LTSt{} $\mathbb{T}$ with $\mathbb{T} = (\mathit{Proc}, \mathit{Act}, \rightarrow)$,
+
+let $\mathbb{T}_\vartheta$ be an LTS with $\mathbb{T}_\vartheta = (\mathit{Proc}_\vartheta, \mathit{Act}_\vartheta, \rightarrow_\vartheta)$ defined as above.
+\\[1em]
+Then we have, for all $p,q \in \mathit{Proc}$:
+
+$$p \leftrightarrow_r q \iff \vartheta(p) \leftrightarrow \vartheta(q),$$
+\color{gray}
+$$p \leftrightarrow_r^X q \iff \vartheta_X(p) \leftrightarrow \vartheta_X(q).$$
+\\[1em]
+\end{theorem}
+\end{frame}
+
+\section{Hennessy-Milner Logic}
+
+\begin{frame}{Hennessy-Milner Logic}
+\outlinegraph{
+    \node[rectangle] (21) {LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[red,rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[ellipse] (34) [right=of 33] {R2};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [red,shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}{Hennessy-Milner Logic}
+$$\varphi ::= t\!t \mid \varphi_1 \;\wedge\; \varphi_2 \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
+\pause
+\begin{columns}
+\column{0.5\textwidth}
+\lts{
+    \node<4>[state]    (q0) [right of=p0,xshift=2cm]   {$p$};
+    \node<2,3,5,6>[red,state]    (q0) [right of=p0,xshift=2cm]   {$p$};
+    \node<2,3,5,6>[state]    (q1) [below of=q0]              {$p_1$};
+    \node<4>[red,state]    (q1) [below of=q0]              {$p_1$};
+    \node[state]    (q2) [below of=q1]              {$p_2$};
+    
+    \draw<2,4,5,6> [->,>=stealth'] (q0) to node {$a$} (q1);
+    \draw<3> [red,->,>=stealth'] (q0) to node {$a$} (q1);
+    \draw [->,>=stealth'] (q1) to node {$b$} (q2);
+}
+\column{0.5\textwidth}
+\only<2-5>{$$\langle a \rangle t\!t \wedge \neg(\langle b \rangle t\!t)$$}
+
+\only<3>{$$\langle a \rangle t\!t$$}
+\only<4>{$$t\!t$$}
+\only<5>{$$\neg(\langle b \rangle t\!t)$$}
+\only<6>{$$p \vDash \langle a \rangle t\!t \wedge \neg(\langle b \rangle t\!t)$$}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Hennessy-Milner Logic}
+\begin{columns}
+\column{0.5\textwidth}
+\lts{
+    \node<3,4>[state]    (q0) [right of=p0,xshift=2cm]   {$p$};
+    \node<1,2,5>[red,state]    (q0) [right of=p0,xshift=2cm]   {$p$};
+    
+    \node<1,2,5>[state]    (q1) [below of=q0]              {$p_1$};
+    \node<3,4>[red,state]    (q1) [below of=q0]              {$p_1$};
+    
+    \node<1,2,3,5>[state]    (q2) [below of=q1]              {$p_2$};
+    \node<4>[red,state]    (q2) [below of=q1]              {$p_2$};
+    
+    \draw<1,3,4,5> [->,>=stealth'] (q0) to node {$a$} (q1);
+    \draw<2> [red,->,>=stealth'] (q0) to node {$a$} (q1);
+    
+    \draw<1,2,3,5> [->,>=stealth'] (q1) to node {$b$} (q2);
+    \draw<4> [red,->,>=stealth'] (q1) to node {$b$} (q2);
+}
+\column{0.5\textwidth}
+\only<1-4>{$$\langle a \rangle (\neg(\langle b \rangle t\!t))$$}
+
+\only<2>{$$\langle a \rangle (\dots)$$}
+\only<3>{$$\neg(\langle b \rangle t\!t)$$}
+\only<4>{$$\neg(\langle b \rangle t\!t)\quad\lightning$$}
+\only<5>{$$p \not\vDash \langle a \rangle (\neg(\langle b \rangle t\!t))$$}
+\end{columns}
+\end{frame}
+
+\section{Hennessy-Milner Logic with Time-Outs}
+
+\begin{frame}{Hennessy-Milner Logic with Time-Outs}
+\outlinegraph{
+    \node[rectangle] (21) {LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[red,rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[ellipse] (34) [right=of 33] {R2};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [red,shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}{Hennessy-Milner Logic with Time-Outs}
+$$p \vDash \langle X \rangle \varphi$$
+\only<2>{$$p \vDash \langle t \rangle_X \; \varphi$$}
+\only<3>{$$p \vDash_X \varphi$$}
+\end{frame}
+
+\begin{frame}{Hennessy-Milner Logic with Time-Outs}
+\begin{tabular}{l l l}
+    $p \vDash \bigwedge_{i \in I} \varphi_i$ 
+    & \text{if} 
+    & $\forall i \in I.\; p \vDash \varphi_i$ \\
+    
+    $p \vDash \neg\varphi$
+    & \text{if} 
+    & $p \not\vDash \varphi$ \\
+    
+    $p \vDash \langle \alpha \rangle \varphi$ \quad with $\alpha \in A \cup \{\tau\}$
+    & \text{if} 
+    & $\exists p'.\; p \xrightarrow{\alpha} p' \wedge p' \vDash \varphi$ \\
+    
+    $p \vDash \langle X \rangle \varphi$ \quad with $X \subseteq A$
+    & \text{if} 
+    & $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset \;\wedge$ \\
+    && $\exists p'.\; p \xrightarrow{t} p' \wedge p' \vDash_X \varphi$ \\[1em]
+    
+    
+    $p \vDash_X \bigwedge_{i \in I} \varphi_i$ 
+    & \text{if} 
+    & $\forall i \in I.\; p \vDash_X \varphi_i$ \\
+    
+    $p \vDash_X \neg\varphi$
+    & \text{if} 
+    & $p \not\vDash_X \varphi$ \\
+    
+    $p \vDash_X \langle a \rangle \varphi$ \quad with $a \in A$
+    & \text{if} 
+    & $a \in X \wedge \exists p'.\; p \xrightarrow{a} p' \wedge p' \vDash \varphi$ \\
+    
+    $p \vDash_X \langle \tau \rangle \varphi$
+    & \text{if} 
+    & $\exists p'.\; p \xrightarrow{\tau} p' \wedge p' \vDash_X \varphi$ \\[0.5em]
+    
+    
+    $p \vDash_X \varphi$
+    & \text{if} 
+    & $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset \wedge p \vDash \varphi$
+\end{tabular}
+\\[2em]
+\footnotesize($\mathcal{I}(p) := \{ \alpha \mid p \xrightarrow{\alpha} \wedge \alpha \neq t \}$)
+\end{frame}
+
+\section{Reducing HMLt to HML formula satisfaction}
+
+\begin{frame}{Reducing \HMLt{} to HML formula satisfaction}
+\outlinegraph{
+    \node[rectangle] (21) {LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[red,ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[red,ellipse] (34) [right=of 33] {R2};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [red,shorten <=5pt] (23) to (33);
+    \draw [red,shorten <=5pt] (26) to (33);
+    \draw [red,shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [red,shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [red,->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [red,->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}{Reducing \HMLt{} to HML formula satisfaction}
+$\text{Goal:\quad} \sigma : (\text{\HMLt{} formulas}) \longrightarrow (\text{HML formulas})$, such that:
+$$p \vDash \varphi \iff \vartheta(p) \vDash \sigma(\varphi)$$
+\end{frame}
+
+\begin{frame}{Reducing \HMLt{} to HML formula satisfaction}
+Let $\sigma : (\text{\HMLt{} formulas}) \longrightarrow (\text{HML formulas})$ be recursively defined by
+\begin{align*}
+    \sigma(\textstyle\bigwedge_{i \in I} \varphi_i) =\;& \textstyle\bigwedge_{i \in I} \sigma(\varphi_i) &\\
+    \sigma(\neg\varphi) =\;& \neg\,\sigma(\varphi)\\
+    \sigma(\langle\tau\rangle\varphi) =\;& \langle\tau\rangle\,\sigma(\varphi)\\
+    \sigma(\langle\alpha\rangle\varphi) =\;& 
+        \langle\alpha\rangle\,\sigma(\varphi)\;\vee\\
+        &\langle\varepsilon_A\rangle\langle\alpha\rangle\,\sigma(\varphi)\;\vee\\ 
+        &\langle{}t_\varepsilon\rangle\langle\varepsilon_A\rangle\langle\alpha\rangle\,\sigma(\varphi) && \text{if $\alpha \in A$}\\
+    \sigma(\langle\alpha\rangle\varphi) =\;& f\!\!f && \text{if $\alpha \notin A \cup \{\tau\}$}\\
+    \sigma(\langle{}X\rangle\varphi) =\;&
+        \langle\varepsilon_X\rangle\langle{}t\rangle\,\sigma(\varphi)\;\vee\\
+        &\langle{}t_\varepsilon\rangle\langle\varepsilon_X\rangle\langle{}t\rangle\,\sigma(\varphi) && \text{if $X \subseteq A$} \\
+    \sigma(\langle{}X\rangle\varphi) =\;& f\!\!f && \text{if $X \not\subseteq A$}
+\end{align*}
+\end{frame}
+
+\begin{frame}{Reducing \HMLt{} to HML formula satisfaction}
+\begin{theorem}
+For some \LTSt{} $\mathbb{T}$, let $\mathbb{T}_\vartheta$ and $\sigma$ be defined as above. Then, for all $p \in \mathit{Proc}$ and $\varphi : \text{\HMLt{} formulas}$, we have:
+
+$$p \vDash \varphi \iff \vartheta(p) \vDash \sigma(\varphi),$$
+$$p \vDash_X \varphi \iff \vartheta_X(p) \vDash \sigma(\varphi).$$
+\\[1em]
+\end{theorem}
+\end{frame}
+
+\section{Outro}
+
+\begin{frame}{That's all, folks!}
+\outlinegraph{
+    \node[rectangle] (21) {LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-6cm] {\LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-6cm] {SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-6cm] {\HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-3cm] {$\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-1.5cm] {R1};
+    \node[ellipse] (33) [below=of 23,yshift=-3cm] {$\sigma$};
+    \node[ellipse] (34) [right=of 33] {R2};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,>=angle 90,dashed,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,bend left,shorten <=5pt,shorten >=5pt] (31) to (34);
+}
+\end{frame}
+
+\begin{frame}
+\textbf{Main Resource:}
+
+van Glabbeek, Rob. \enquote{Reactive Bisimulation Semantics for a Process Algebra with Time-Outs.} arXiv preprint arXiv:2008.11499 (2020).
+\\[2em]
+
+\textbf{My Thesis on GitHub:}
+
+https://github.com/maxpohlmann
+
+\vspace{2em}
+\begin{flushright}
+\scalebox{.7}{%
+\includegraphics{{/Users/max/Desktop/presentation/isabellelogo.png}}}
+\end{flushright}
+\end{frame}
+
+\end{document}

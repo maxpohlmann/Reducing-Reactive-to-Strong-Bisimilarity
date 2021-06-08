@@ -1,0 +1,461 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{HM{\isacharunderscore}{\kern0pt}Logic{\isacharunderscore}{\kern0pt}with{\isacharunderscore}{\kern0pt}TimeOuts}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsection{Hennessy-Milner Logic with Time-Outs%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+\label{sec:HMLt}%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+In \cite[Section 3]{rbs}, van~Glabbeek extends Hennessy-Milner logic by a family of new modal operators $\langle X \rangle \varphi$, for $X \subseteq A$, as well as additional satisfaction relations $\vDash_X$ for each $X \subseteq A$. Intuitively, $p \vDash \langle X \rangle \varphi$ means that $p$ is idle when placed in an environment~$X$ \emph{and} $p$ can perform a $t$-transition into a state that satisfies $\varphi$; $p \vDash_X \varphi$ means that $p$ satisfies $\varphi$ in environments~$X$.
+
+I call this extension \emph{Hennessy-Milner Logic with Time-Outs} (\HMLt{}) and $\langle X \rangle$ for $X \subseteq A$ the \emph{time-out--possibility operators} (to be distinguished from the ordinary possibility operators $\langle \alpha \rangle$ for $\alpha \in \Act$).
+
+The precise semantics are given by the following inductive definition of the satisfaction relation \cite[Section 3]{rbs} (notation slightly adapted):
+
+\begin{tabular}{l l l}
+    $p \vDash \bigwedge_{i \in I} \varphi_i$ 
+    & \text{if} 
+    & $\forall i \in I.\; p \vDash \varphi_i$ \\
+    
+    $p \vDash \neg\varphi$
+    & \text{if} 
+    & $p \not\vDash \varphi$ \\
+    
+    $p \vDash \langle \alpha \rangle \varphi$ \quad with $\alpha \in A \cup \{\tau\}$
+    & \text{if} 
+    & $\exists p'.\; p \xrightarrow{\alpha} p' \wedge p' \vDash \varphi$ \\
+    
+    $p \vDash \langle X \rangle \varphi$ \quad with $X \subseteq A$
+    & \text{if} 
+    & $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset \wedge \exists p'.\; p \xrightarrow{t} p' \wedge p' \vDash_X \varphi$ \\[1em]
+    
+    
+    $p \vDash_X \bigwedge_{i \in I} \varphi_i$ 
+    & \text{if} 
+    & $\forall i \in I.\; p \vDash_X \varphi_i$ \\
+    
+    $p \vDash_X \neg\varphi$
+    & \text{if} 
+    & $p \not\vDash_X \varphi$ \\
+    
+    $p \vDash_X \langle a \rangle \varphi$ \quad with $a \in A$
+    & \text{if} 
+    & $a \in X \wedge \exists p'.\; p \xrightarrow{a} p' \wedge p' \vDash \varphi$ \\
+    
+    $p \vDash_X \langle \tau \rangle \varphi$
+    & \text{if} 
+    & $\exists p'.\; p \xrightarrow{\tau} p' \wedge p' \vDash_X \varphi$ \\[0.5em]
+    
+    
+    $p \vDash_X \varphi$
+    & \text{if} 
+    & $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset \wedge p \vDash \varphi$
+\end{tabular}%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+The same intuitions regarding triggered and stable environments as for the definition of strong reactive bisimulations in \cref{sec:strong_bisimilarity} hold. $\vDash$ expresses that a property holds in triggered environments and $\vDash_X$ that a property holds in environments~$X$. The last clause expresses the possibility of stable environments timing out into triggered environments.
+
+Van~Glabbeek then also proves that \HMLt{} characterises strong reactive/$X$-bisimilarity, i.e.\@ that 
+$p \leftrightarrow_r q \iff (\forall \varphi .\; p \vDash \varphi \longleftrightarrow q \vDash \varphi)$ and 
+$p \leftrightarrow_r^X q \iff (\forall \varphi .\; p \vDash_X \varphi \longleftrightarrow q \vDash_X \varphi)$,
+where $\varphi$ are formulas of \HMLt{}.
+A replication of the proof of this characterisation, however, is not part of this thesis.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Isabelle%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+The following formalisation is analogous to the one in \cref{sec:HML}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{datatype}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula\ {\isacharequal}{\kern0pt}\isanewline
+\ \ HMLt{\isacharunderscore}{\kern0pt}conj\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula\ cset{\isacartoucheclose}\ %
+\isamarkupcmt{$\bigwedge \Phi$%
+}\ \isanewline
+{\isacharbar}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}neg\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula{\isacartoucheclose}\ %
+\isamarkupcmt{$\neg\varphi$%
+}\ \isanewline
+{\isacharbar}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}poss\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a{\isacartoucheclose}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula{\isacartoucheclose}\ %
+\isamarkupcmt{$\langle\alpha\rangle\varphi$%
+}\ \isanewline
+{\isacharbar}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}time\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ set{\isacartoucheclose}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula{\isacartoucheclose}\ %
+\isamarkupcmt{$\langle X \rangle\varphi$%
+}\isanewline
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isatagunimportant
+%
+\endisatagunimportant
+{\isafoldunimportant}%
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\begin{isamarkuptext}%
+In order to formalise the semantics, I combined both the usual satisfaction relation $\vDash$ and the environment satisfaction relations $\vDash_X$ into one predicate, which is formalised by the function \isa{HMLt{\isacharunderscore}{\kern0pt}sat} below, where \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isasymphi}} corresponds to $p \vDash \varphi$ and \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isasymphi}} corresponds to $p \vDash_X \varphi$. 
+
+Note that, in Isabelle code, I use the symbol \isa{{\isasymTTurnstile}} for all satisfaction relations in the context of \HMLt{}, whereas I use \isa{{\isasymTurnstile}} for satisfaction relations in the context of ordinary HML. 
+This notational nuance will be important when we examine the relationship between the satisfaction relations of \HMLt{} and HML in the context of the reduction in \cref{sec:reduction_satisfaction}.
+
+The first four clauses of my formalisation, then, are clearly direct translations of the clauses for the satisfaction relation $\vDash$ quoted above. To see that the next four clauses do, in fact, correspond to the five clauses for $\vDash_X$ above is less straightforward. 
+
+First, each of the four clauses requires that \isa{X} is a subset of the visible actions; in the original definition, the satisfaction relations $\vDash_X$ are only defined for those $X$ to begin with.
+
+Next, the clause for \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}} combines the original clauses for $p \vDash_X \langle a \rangle \varphi$ and $p \vDash_X \langle \tau \rangle \varphi$. 
+
+Lastly and most importantly, the last clause of the original definition, stating that $p \vDash_X \varphi$ if $p$ is idle in environments~$X$ and $p \vDash \varphi$, is added disjunctively to the cases \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}} and \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}time\ Y\ {\isasymphi}{\isacharparenright}{\kern0pt}}; the latter case is not part of the original definition and can only be true by virtue of the last clause of the original definition, wherefore this is the only way for the last clause of the function definition below to be true. 
+
+I will show below that this is sufficient to assure that my satisfaction function satisfies the last clause of the original definition, i.e.\@ that it does not need to be added disjunctively to the cases \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}conj\ {\isasymPhi}{\isacharparenright}{\kern0pt}} and \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}neg\ {\isasymphi}{\isacharparenright}{\kern0pt}}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{context}\isamarkupfalse%
+\ lts{\isacharunderscore}{\kern0pt}timeout\ \isakeyword{begin}\isanewline
+\isanewline
+\isacommand{function}\isamarkupfalse%
+\ HMLt{\isacharunderscore}{\kern0pt}sat\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ set\ option\ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isacharunderscore}{\kern0pt}\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isacartoucheclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{5}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{where}\isanewline
+\ \ \ \ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}conj\ {\isasymPhi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ {\isasymphi}{\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\isactrlsub c\ {\isasymPhi}\ {\isasymlongrightarrow}\ p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}neg\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymnot}\ p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymtau}{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ \isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}\ {\isasymand}\ p{\isacharprime}{\kern0pt}\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}time\ X\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}idle\ p\ X{\isacharparenright}{\kern0pt}\ {\isasymand}\ \isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}\ {\isasymand}\ p{\isacharprime}{\kern0pt}\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}conj\ {\isasymPhi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ {\isasymphi}{\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\isactrlsub c\ {\isasymPhi}\ {\isasymlongrightarrow}\ p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}neg\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymnot}\ p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isasymin}\ X{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}\ {\isasymand}\ p{\isacharprime}{\kern0pt}\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymor}\ \isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isacharequal}{\kern0pt}\ {\isasymtau}{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}\ {\isasymand}\ p{\isacharprime}{\kern0pt}\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymor}\ \isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}idle\ p\ X{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}time\ Y\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}idle\ p\ X{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}time\ Y\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}exhaust\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ {\isacharparenleft}{\kern0pt}no{\isacharunderscore}{\kern0pt}types{\isacharcomma}{\kern0pt}\ hide{\isacharunderscore}{\kern0pt}lams{\isacharparenright}{\kern0pt}\ not{\isacharunderscore}{\kern0pt}Some{\isacharunderscore}{\kern0pt}eq\ prod{\isacharunderscore}{\kern0pt}cases{\isadigit{3}}{\isacharcomma}{\kern0pt}\ fast{\isacharplus}{\kern0pt}{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The well-founded relation used for the termination proof of the satisfaction function is considerably more difficult due to the last line of the definition containing the same formula on both sides of the implication (as opposed to the other lines of the definition, where the premises only contain subformulas of the formula in the conclusion). This required me to define two relations, prove their well-foundedness separately, and then prove that their union is well-founded using the theorem \isa{{\isasymlbrakk}wf\ R{\isacharsemicolon}{\kern0pt}\ wf\ S{\isacharsemicolon}{\kern0pt}\ R\ O\ S\ {\isasymsubseteq}\ R{\isasymrbrakk}\ {\isasymLongrightarrow}\ wf\ {\isacharparenleft}{\kern0pt}R\ {\isasymunion}\ S{\isacharparenright}{\kern0pt}} (where \isa{O} is relation composition). Further details have been excluded from the thesis document.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isatagunimportant
+%
+\endisatagunimportant
+{\isafoldunimportant}%
+%
+\isadelimunimportant
+\isanewline
+%
+\endisadelimunimportant
+\isacommand{termination}\isamarkupfalse%
+\ HMLt{\isacharunderscore}{\kern0pt}sat%
+\isadelimproof
+\ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ HMLt{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}wf\ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}standard{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isacharunderscore}{\kern0pt}{\isadigit{1}}{\isachardot}{\kern0pt}intros\ HMLt{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isacharunderscore}{\kern0pt}{\isadigit{2}}{\isachardot}{\kern0pt}intros{\isacharparenright}{\kern0pt}{\isacharplus}{\kern0pt}{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+We can now introduce the more readable notation (more closely corresponding to the notation in \cite{rbs}) through abbreviations.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{abbreviation}\isamarkupfalse%
+\ HMLt{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}triggered\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s{\isasymRightarrow}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymTTurnstile}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{5}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}p\ {\isasymTTurnstile}\ {\isasymphi}\ {\isasymequiv}\ p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacartoucheclose}\isanewline
+\isacommand{abbreviation}\isamarkupfalse%
+\ HMLt{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}stable\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s{\isasymRightarrow}{\isacharprime}{\kern0pt}a\ set{\isasymRightarrow}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymTTurnstile}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{8}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}p\ {\isasymTTurnstile}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymphi}\ {\isasymequiv}\ p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacartoucheclose}%
+\begin{isamarkuptext}%
+Lastly, we show (by induction over \isa{{\isasymphi}}) that the function \isa{HMLt{\isacharunderscore}{\kern0pt}sat} does indeed satisfy the last clause of the original definition.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isatagunimportant
+%
+\endisatagunimportant
+{\isafoldunimportant}%
+%
+\isadelimunimportant
+\isanewline
+%
+\endisadelimunimportant
+\isacommand{proposition}\isamarkupfalse%
+\isanewline
+\ \ \isakeyword{assumes}\ \isanewline
+\ \ \ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\isanewline
+\ \ \ \ {\isacartoucheopen}idle\ p\ X{\isacartoucheclose}\isanewline
+\ \ \ \ {\isacartoucheopen}p\ {\isasymTTurnstile}\ {\isasymphi}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ \isanewline
+\ \ \ \ {\isacartoucheopen}p\ {\isasymTTurnstile}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymphi}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ idle{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}lemma{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharcomma}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ assms{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ \isacommand{{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+As the last clause of van Glabbeek definition is the main difference to the function definition of \isa{HMLt{\isacharunderscore}{\kern0pt}sat}, this proposition gives confidence that the original definition and the function definition correspond.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{end}\isamarkupfalse%
+\ %
+\isamarkupcmt{of \isa{context\ lts{\isacharunderscore}{\kern0pt}timeout}%
+}%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/reactive-bisimilarity-reduction/HM_Logic_with_TimeOuts.thy%:%
+%:%24=9%:%
+%:%36=10%:%
+%:%40=12%:%
+%:%41=13%:%
+%:%42=14%:%
+%:%43=15%:%
+%:%44=16%:%
+%:%45=17%:%
+%:%46=18%:%
+%:%47=19%:%
+%:%48=20%:%
+%:%49=21%:%
+%:%50=22%:%
+%:%51=23%:%
+%:%52=24%:%
+%:%53=25%:%
+%:%54=26%:%
+%:%55=27%:%
+%:%56=28%:%
+%:%57=29%:%
+%:%58=30%:%
+%:%59=31%:%
+%:%60=32%:%
+%:%61=33%:%
+%:%62=34%:%
+%:%63=35%:%
+%:%64=36%:%
+%:%65=37%:%
+%:%66=38%:%
+%:%67=39%:%
+%:%68=40%:%
+%:%69=41%:%
+%:%70=42%:%
+%:%71=43%:%
+%:%72=44%:%
+%:%73=45%:%
+%:%74=46%:%
+%:%75=47%:%
+%:%76=48%:%
+%:%77=49%:%
+%:%78=50%:%
+%:%79=51%:%
+%:%80=52%:%
+%:%81=53%:%
+%:%82=54%:%
+%:%83=55%:%
+%:%84=56%:%
+%:%88=58%:%
+%:%89=59%:%
+%:%90=60%:%
+%:%91=61%:%
+%:%92=62%:%
+%:%93=63%:%
+%:%94=64%:%
+%:%103=67%:%
+%:%115=69%:%
+%:%117=71%:%
+%:%118=71%:%
+%:%119=72%:%
+%:%120=72%:%
+%:%121=72%:%
+%:%122=73%:%
+%:%123=73%:%
+%:%124=73%:%
+%:%125=74%:%
+%:%126=74%:%
+%:%127=74%:%
+%:%128=75%:%
+%:%129=75%:%
+%:%130=75%:%
+%:%146=81%:%
+%:%147=82%:%
+%:%148=83%:%
+%:%149=84%:%
+%:%150=85%:%
+%:%151=86%:%
+%:%152=87%:%
+%:%153=88%:%
+%:%154=89%:%
+%:%155=90%:%
+%:%156=91%:%
+%:%157=92%:%
+%:%158=93%:%
+%:%159=94%:%
+%:%161=96%:%
+%:%162=96%:%
+%:%163=97%:%
+%:%164=98%:%
+%:%165=98%:%
+%:%166=99%:%
+%:%167=100%:%
+%:%168=101%:%
+%:%169=102%:%
+%:%170=103%:%
+%:%171=104%:%
+%:%172=105%:%
+%:%174=107%:%
+%:%175=108%:%
+%:%177=110%:%
+%:%178=111%:%
+%:%179=112%:%
+%:%180=113%:%
+%:%181=114%:%
+%:%182=115%:%
+%:%183=116%:%
+%:%186=119%:%
+%:%187=120%:%
+%:%188=121%:%
+%:%191=122%:%
+%:%195=122%:%
+%:%196=122%:%
+%:%197=123%:%
+%:%198=123%:%
+%:%207=125%:%
+%:%220=185%:%
+%:%223=186%:%
+%:%224=186%:%
+%:%226=186%:%
+%:%230=186%:%
+%:%231=186%:%
+%:%232=186%:%
+%:%241=188%:%
+%:%243=190%:%
+%:%244=190%:%
+%:%245=191%:%
+%:%246=192%:%
+%:%247=193%:%
+%:%248=193%:%
+%:%249=194%:%
+%:%250=195%:%
+%:%252=197%:%
+%:%265=234%:%
+%:%268=235%:%
+%:%269=235%:%
+%:%270=236%:%
+%:%271=237%:%
+%:%272=238%:%
+%:%273=239%:%
+%:%274=240%:%
+%:%275=241%:%
+%:%278=242%:%
+%:%282=242%:%
+%:%283=242%:%
+%:%293=244%:%
+%:%295=246%:%
+%:%296=246%:%
+%:%297=246%:%

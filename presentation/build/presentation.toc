@@ -1,0 +1,11 @@
+\babel@toc {american}{}
+\beamer@sectionintoc {1}{Outline}{2}{0}{1}
+\beamer@sectionintoc {2}{Labelled Transition Systems}{8}{0}{2}
+\beamer@sectionintoc {3}{Strong Bisimilarity}{12}{0}{3}
+\beamer@sectionintoc {4}{Labelled Transition Systems with Time-Outs}{18}{0}{4}
+\beamer@sectionintoc {5}{Strong Reactive Bisimilarity}{27}{0}{5}
+\beamer@sectionintoc {6}{Reducing Reactive to Strong Bisimilarity}{30}{0}{6}
+\beamer@sectionintoc {7}{Hennessy-Milner Logic}{44}{0}{7}
+\beamer@sectionintoc {8}{Hennessy-Milner Logic with Time-Outs}{56}{0}{8}
+\beamer@sectionintoc {9}{Reducing HMLt to HML formula satisfaction}{61}{0}{9}
+\beamer@sectionintoc {10}{Outro}{65}{0}{10}

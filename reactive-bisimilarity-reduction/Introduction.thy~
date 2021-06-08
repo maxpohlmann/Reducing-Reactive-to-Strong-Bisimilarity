@@ -1,0 +1,45 @@
+(*<*)
+theory Introduction
+  imports 
+    Pure
+begin
+(*>*)
+
+chapter \<open>Introduction\<close>
+text \<open>\label{chap:introduction}\<close>
+
+text \<open>Labelled Transition Systems (LTSs) @{cite keller76} are often used to model \emph{reactive systems}, i.e.\@ systems which continuously interact with their environment (e.g.\@ a user) and whose behaviour is largely dependent on this interaction @{cite harel85}.
+Roughly, an LTS is a labelled directed graph, whose nodes correspond to states of system and whose edges correspond to transitions between those states.%
+\footnote{The topics of this thesis are applicable to any such graphs in an abstract way. However, I will continue to use motivations and terminology derived from the interpretation of LTSs as reactive systems.}
+
+A user interacting with the system can only perceive it in terms of the interactions it reacts to, i.e.\@ the internal state of the system is hidden from the user. This begets a notion of behavioural/observational equivalence: two non-identical systems can exhibit equivalent behaviour as observed by the user. The simplest such equivalence is known as \emph{strong bisimilarity}.
+
+In classical LTSs, a system cannot react to the absence of interaction, as it would be assumed to simply wait for any interaction. Intuitively, however, a system may be equipped with a clock and perform some activity when it has seen no interaction from the user for a specified time. Such a system would not be describable with classical LTS semantics. Amongst these systems are, e.g., systems implementing mutual exclusion protocols \cite{rbs}.
+
+In @{cite vanglabbeek2021failure}, Rob van~Glabbeek introduces Labelled Transition Systems with Time-Outs (\LTSt{}), which allow for modelling such systems as well.
+The appertaining equivalence is given in @{cite rbs} as \emph{strong reactive bisimilarity}.
+
+In this thesis, I show that it is possible to reduce checking strong reactive bisimilarity (of processes of an \LTSt{}) to checking strong bisimilarity (of processes of an LTS obtained through a mapping). This is in line with reductions of other behavioural equivalences to strong bisimilarity. For example, a strategy used to reduce \emph{weak bisimilarity} to strong bisimilarity is called \emph{saturation} and is described in @{cite \<open>Section 3.2.5\<close> advBC_algorithmics}.
+
+The reduction of reactive bisimilarity could be of use in the context of automated model checking tools: there are known algorithms for checking equivalences (e.g.\@ see @{cite advBC_algorithmics}) and tools with efficient implementations thereof;%
+\footnote{e.g. see LTSmin at \code{\href{https://github.com/utwente-fmt/ltsmin}{github.com/utwente-fmt/ltsmin}}}
+instead of implementing an algorithm for checking strong reactive bisimilarity from scratch, an implementation of the reduction would allow the use of these existing implementations.
+Moreover, the mapping used for the reduction may aid in the analysis of system specifications utilising \LTSt{}s, by providing a more explicit view at the system.
+
+Another interesting way to examine the behaviour of an LTS is through the use of a modal logic, where formulas describe certain properties and are evaluated on states of an LTS. One such logic is known as Hennessy-Milner logic (HML). 
+An extension of HML for evaluation on states of an \LTSt{} is also given in @{cite rbs}; I call it Hennessy-Milner logic with time-outs (\HMLt{}).
+
+For the second main result of this thesis, I show that is possible to reduce formula satisfaction of \HMLt{} on \LTSt{}s to formula satisfaction of HML on LTSs (using another mapping for formulas, along with the mapping from the first reduction).\<close>
+
+subsubsection \<open>How This Thesis is Structured\<close>
+
+text \<open>This thesis document was generated using the Isabelle document preparation system (see @{cite isa_system}), which generates \LaTeX{} markup from Isabelle code (and, of course, integrates markup written manually). As mentioned in the last section, the Isabelle formalisations are integrated into the main part of this thesis. However, almost all proofs are hidden (and replaced simply by \<open>\<proof>\<close>) and some lemmas excluded. In these cases, an indication of the proof strategy used is given in text. A web version of this thesis, that includes all formalisations, propositions, and proofs, as well as all the text, can be found on GitHub Pages, with one page for each section of this thesis.%
+\footnote{Not yet.}
+
+All of the sections of \cref{chap:foundations,chap:reductions} are split in two parts: one containing a prosaic and mathematical description of the topics, and one containing the (documented) formalisation/implementation in Isabelle. I try to clearly distinguish between mathematical structures and their implementation. Although the two are, necessarily, closely related, they are not identical. The former is written in \LaTeX{} math mode in this $italic\;font$ (with $\alpha, \vartheta, \vDash, \xrightarrow{a}, \dots$); the latter is Isabelle code in this \<open>monospaced font\<close> (with \<open>\<alpha>, \<theta>, \<Turnstile>, \<longmapsto>a, \<dots>\<close>).
+
+Contentwise, the remainder of this thesis is split into \nameref{chap:foundations}, where LTSs, bisimilarity, and Hennessy-Milner logic, all without and with time-outs, are discussed an formalised, and \nameref{chap:reductions}, where the two reductions mentioned above are presented in detail and proved.\<close>
+
+(*<*)
+end
+(*>*)

@@ -1,0 +1,154 @@
+\documentclass[11pt,a4paper]{book}
+\usepackage{isabelle,isabellesym}
+
+\usepackage[UKenglish]{babel}
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[mathscr]{euscript}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[explicit]{titlesec}
+\usepackage{tocbibind}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,shapes,positioning}
+\usepackage{pdfsetup}
+\usepackage[nameinlink]{cleveref}
+
+\urlstyle{rm}
+\isabellestyle{tt}
+
+\renewcommand{\isamarkupsubsection}[1]{\subsection*{#1}}
+\providecommand*{\code}[1]{\texttt{#1}}
+
+\def\headline#1{\hbox to \hsize{\hrulefill\quad\lower.3em\hbox{#1}\quad\hrulefill}}
+\titleformat{\section}
+  {\vspace{1.5em}\normalfont\Large\bfseries}{\thesection}{1em}{#1\hrule height 1pt\vspace{-1.5em}}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}{}{0}{\headline{#1}}
+
+\newcommand{\example}[1]{\bigbreak\textbf{Example}\quad {#1}\bigbreak}
+
+\newcommand{\LTSt}{LTS\textsubscript{t}}
+\newcommand{\HMLt}{HML\textsubscript{t}}
+
+\newcommand{\Proc}{\mathit{Proc}}
+\newcommand{\Act}{\mathit{Act}}
+
+\newcommand{\lts}[1]{%
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,every node/.style={scale=.85},node distance=1.8cm]
+\tikzstyle{every state}=[ellipse]
+{#1}
+\end{tikzpicture}
+\end{center}
+}
+
+
+\begin{document}
+
+\title{Reducing Reactive Bisimilarity\\to Strong Bisimilarity}
+\author{Maximilian Pohlmann}
+\maketitle
+\newpage\null\thispagestyle{empty}\newpage
+
+\tableofcontents
+\newpage
+\subsubsection{Graphical Overview of Main Contents}
+\begin{center}
+\begin{tikzpicture}[node distance=1cm and 2cm]
+    \tikzstyle{every node}=[draw, inner sep=10pt]
+    
+    \node[rectangle] (21) {2.1 LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-2cm] {2.2 SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=2cm] {2.3 HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-10cm] {2.4 \LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-10cm] {2.5 SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-10cm] {2.6 \HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-5cm] {3.1 $\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-3cm] {3.2};
+    \node[ellipse] (33) [below=of 23,yshift=-5cm] {3.3 $\sigma$};
+    \node[ellipse] (34) [right=of 33] {3.4};
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,dashed,>=angle 90,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to[in=145,out=35] (34);
+\end{tikzpicture}
+\end{center}
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{Introduction}
+\input{Foundations}
+\input{Labelled_Transition_Systems}
+\input{Strong_Bisimilarity}
+\input{HM_Logic}
+\input{Labelled_Transition_Systems_with_TimeOuts}
+\input{Reactive_Bisimilarity}
+\input{HM_Logic_with_TimeOuts}
+\input{Reductions}
+\input{Mapping_for_Transition_Systems}
+\input{Reduction_of_Bisimilarity}
+\input{Mapping_for_Formulas}
+\input{Reduction_of_Satisfaction}
+\input{Discussion}
+
+% optional bibliography
+\bibliographystyle{alphaurl}
+\bibliography{root}
+
+\appendix
+\input{HM_Logic_infinitary}
+\input{Example_Instantiation}
+
+\newpage\null\thispagestyle{empty}\newpage
+
+\chapter*{Zusammenfassung in Deutscher Sprache}
+
+Etikettierte Übergangssysteme
+
+
+\thispagestyle{empty}
+\newpage\null\thispagestyle{empty}\newpage
+
+\chapter*{Eidesstattliche Versicherung}
+
+Hiermit erkläre ich, dass ich die vorliegende Arbeit selbstständig und eigenhändigsowie ohne unerlaubte fremde Hilfe und ausschließlich unter Verwendung der aufgeführten Quellen und Hilfsmittel angefertigt habe.
+
+\vspace{4cm}
+
+\hspace{2cm} Ort, Datum \hfill Unterschrift \hspace{2cm}
+
+
+\thispagestyle{empty}
+
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

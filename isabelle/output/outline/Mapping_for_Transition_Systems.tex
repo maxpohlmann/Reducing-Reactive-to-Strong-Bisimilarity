@@ -1,0 +1,1187 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Mapping{\isacharunderscore}{\kern0pt}for{\isacharunderscore}{\kern0pt}Transition{\isacharunderscore}{\kern0pt}Systems}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsection{A Mapping for Transition Systems%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+\label{sec:mapping_lts}%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+Let $\mathbb{T} = (\Proc, \Act, \rightarrow)$ be an \LTSt{}. Let $A = \Act \!\setminus\! \{\tau, t\}$.
+
+In reference to van~Glabbeek's $\theta_X$-operators, I introduce a family of operators $\vartheta_X$ with similar but not identical semantics. Additionally, I introduce the operator $\vartheta$ that places a process in an indeterminate environment.
+
+Furthermore, I introduce a family of special actions $\varepsilon_X$ for $X \subseteq A$ that represent a triggered environment stabilising into an environment~$X$, as well as a special action $t_\varepsilon$ that represents a time-out of the environment.
+
+We assume that $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$. 
+
+Then we define $\mathbb{T}_\vartheta = (\Proc_\vartheta, \Act_\vartheta, \rightarrow_\vartheta)$ with
+\begin{align*}
+    \Proc_\vartheta &= \{ \vartheta(p) \mid p \in \Proc \} \cup \{ \vartheta_X(p) \mid p \in \Proc \wedge X \subseteq A \}, \\
+    \Act_\vartheta &= \Act \cup \{t_\varepsilon\} \cup \{ \varepsilon_X \mid X \subseteq A \},
+\end{align*}
+and $\rightarrow_\vartheta$ defined by the following rules:
+
+$$
+(1)\,\frac{}{\vartheta(p) \xrightarrow{\varepsilon_X}_\vartheta \vartheta_X(p)} \; X \subseteq A
+\qquad
+(2)\,\frac{p \xrightarrow{\tau} p'}{\vartheta(p) \xrightarrow{\tau}_\vartheta \vartheta(p')}
+$$
+\\[-5pt]
+$$
+(3)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\}}
+{\vartheta_X(p) \xrightarrow{t_\varepsilon}_\vartheta \vartheta(p)}
+$$
+\\[-5pt]
+$$
+(4)\,\frac{p \xrightarrow{a} p'}{\vartheta_X(p) \xrightarrow{a}_\vartheta \vartheta(p')} \; a \in X
+\qquad
+(5)\,\frac{p \xrightarrow{\tau} p'}{\vartheta_X(p) \xrightarrow{\tau}_\vartheta \vartheta_X(p')}
+$$
+\\[-5pt]
+$$
+(6)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\} \quad p \xrightarrow{t} p'}
+{\vartheta_X(p) \xrightarrow{t}_\vartheta \vartheta_X(p')}
+$$\\
+
+These rules are motivated by the intuitions developed in \cref{sec:LTSt,sec:reactive_bisimilarity}:
+
+\begin{enumerate}[nosep]
+    \item triggered environments can stabilise into arbitrary stable environments~$X$ for $X \subseteq A$,
+    \item $\tau$-transitions can be performed regardless of the environment,
+    \item if the underlying system is idle, the environment may time-out and turn into an indeterminate/triggered environment,
+    \item facilitated visible transitions can be performed and can trigger a change in the environment,
+    \item $\tau$-transitions cannot be observed by the environment and hence cannot trigger a change,
+    \item if the underlying system is idle and has a $t$-transition, the transition may be performed and is not observable by the environment.
+\end{enumerate}
+
+\example{%
+The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on the right. States that have no incoming or outgoing transitions other than $\varepsilon_X$ or $t_\varepsilon$ are omitted. Note how $\vartheta(T)$ is not reachable from $\vartheta(P)$.
+
+\phantomsection
+\label{fig:mapping_example}
+\lts{
+    \node[state]    (P)                             {$p$};
+    \node[state]    (Q) [below left of=P]           {$p_1$};
+    \node[state]    (R) [below right of=P]          {$p_2$};
+    \node[state]    (S) [below left of=R]           {$p_3$};
+    \node[state]    (T) [below right of=R]          {$p_4$};
+    
+    \path   (P) edge node[above left]               {$a$}               (Q)
+                edge node[above right]              {$t$}               (R)
+            (R) edge node[above left]               {$\tau$}            (S)
+                edge node[above right]              {$a$}               (T);
+
+
+    \node[state]    (Pt) [right of=P, xshift=4.5cm] {$\vartheta(p)$};
+    \node[state]    (Pa) [below left of=Pt]         {$\vartheta_{\{a\}}(p)$};
+    \node[state]    (Pe) [below right of=Pt]        {$\vartheta_\emptyset(p)$};
+    \node[state]    (Rt) [right of=Pe]              {$\vartheta(p_2)$};
+    \node[state]    (Qt) [below of=Pa]              {$\vartheta(p_1)$};
+    \node[state]    (Re) [below of=Pe]              {$\vartheta_\emptyset(p_2)$};
+    \node[state]    (Se) [below of=Re]              {$\vartheta_\emptyset(p_3)$};
+    \node[state]    (Ra) [below of=Rt,xshift=1.8cm] {$\vartheta_{\{a\}}(p_2)$};
+    \node[state]    (Tt) [right of=Ra,xshift=.7cm]  {$\vartheta(p_4)$};
+    \node[state]    (Sa) [below of=Ra]              {$\vartheta_{\{a\}}(p_3)$};
+    \node[state]    (St) [right of=Se,yshift=-2cm]  {$\vartheta(p_3)$};
+    
+    \path   (Pt)    edge node[above left]           {$\varepsilon_{\{a\}}$}     (Pa)
+            (Pt)    edge node[left]                 {$\varepsilon_\emptyset$}   (Pe)
+            (Pe)    edge[bend right] node[right]    {$t_\varepsilon$}           (Pt)
+            (Pa)    edge node[left]                 {$a$}                       (Qt)
+            (Pe)    edge node[left]                 {$t$}                       (Re)
+            (Re)    edge node[left]                 {$\tau$}                    (Se)
+            (Rt)    edge node[right]                {$\varepsilon_{\{a\}}$}     (Ra)
+            (Rt)    edge node[left]                 {$\varepsilon_\emptyset$}   (Re)
+            (Ra)    edge node[above]                {$a$}                       (Tt)
+            (Ra)    edge node[left]                 {$\tau$}                    (Sa)
+            (Se)    edge node[above]                {$t_\varepsilon$}           (St)
+            (St)    edge[bend left] node[left]      {$\varepsilon_\emptyset$}   (Se)
+            (Sa)    edge node[above]                {$t_\varepsilon$}           (St)
+            (St)    edge[bend right] node[right]    {$\varepsilon_{\{a\}}$}   (Sa)
+            (Rt)    edge node[right]                {$\tau$}                    (St);
+            
+    \coordinate [below of=Qt,yshift=10pt] (Qc);
+    \coordinate [below of=Tt,yshift=10pt] (Tc);
+            
+    \draw [dotted,->,shorten >= 7pt] (Qt) to[bend right] node[left] {$\varepsilon_{\dots}$} (Qc);
+    \draw [dotted,->,shorten <= 7pt] (Qc) to[bend right] node[right] {$t_\varepsilon$} (Qt);
+    \draw [dotted,->,shorten >= 7pt] (Tt) to[bend right] node[left] {$\varepsilon_{\dots}$} (Tc);
+    \draw [dotted,->,shorten <= 7pt] (Tc) to[bend right] node[right] {$t_\varepsilon$} (Tt);
+}}%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Isabelle%
+}
+\isamarkuptrue%
+%
+\isamarkupsubsubsection{Formalising \boldmath{$\Proc_\vartheta$} and \boldmath{$\Act_\vartheta$}%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+For the formalisation, we specify another type of LTS based on \isa{lts{\isacharunderscore}{\kern0pt}timeout}, where the aforementioned special actions and operators are considered; we call it \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}. 
+Since $\Proc \cap \Proc_\vartheta = \emptyset$, we introduce a new type variable \isa{{\isacharprime}{\kern0pt}ss} for $\Proc_\vartheta$, but use \isa{{\isacharprime}{\kern0pt}a} for both $\Act$ and $\Act_\vartheta$.
+We formalise the family of special actions $\varepsilon_X$ as a mapping \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a}, and the environment operators $\vartheta$/$\vartheta_X$ as a single mapping \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss}.
+
+As for \isa{lts{\isacharunderscore}{\kern0pt}timeout} in \cref{sec:LTSt}, we require that no two special actions are equal, formalised by the first set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions}.
+
+As an operator, the term $\vartheta_X(p)$ simply refers to the specific state $p$ in an environment~$X$; when understood as a mapping, we have to be more careful, since \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}} is now a state itself. Specifically, we have to assume that the mapping \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is injective (when restricted to domains where \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}). Otherwise, we might have that \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}} for \isa{p\ {\isasymnoteq}\ q}, which is obviously problematic. Hence, the (restricted) injectivity of \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is formalised as the set of assumptions \isa{injectivity{\isacharunderscore}{\kern0pt}theta}. (We do not require injectivity for subsets of the domain with \isa{{\isasymnot}\ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}, since $\vartheta_X$ is not defined for those $X$).
+
+The same is required for the mapping \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}}, as formalised in the last clause of the set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions} (the (restricted) injectivity of \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}} is part of the requirement that all special actions must be distinct). Again, we only require injectivity for the mapping restricted to the domain \isa{visible{\isacharunderscore}{\kern0pt}actions}. If we would require that \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a} were injective over its entire domain \isa{{\isacharprime}{\kern0pt}a\ set}, we would run into problems, since such a function cannot exist by Cantor's theorem.
+
+For now, we assume that such mappings exist, in order to proof the general case for any such mappings. In \cref{chap:example_instantiation}, I give examples for these mappings and show that, with these, any \isa{lts{\isacharunderscore}{\kern0pt}timeout} can be interpreted as an \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}.
+
+Lastly, we formalise our requirements $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$ as the last set of assumptions \isa{no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran}. Technically, these assumptions only state that the $\varepsilon$-actions do not label any transition of $\mathbb{T}$. However, we can assume that 
+$\Act = \{ \alpha \mid \exists p, p'.\; p \xrightarrow{\alpha} p' \}$, 
+since actions that do not label any transitions are not relevant to the behaviour of an LTS.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{locale}\isamarkupfalse%
+\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable\ {\isacharequal}{\kern0pt}\ lts{\isacharunderscore}{\kern0pt}timeout\ tran\ {\isasymtau}\ t\ \isanewline
+\ \ \isakeyword{for}\ tran\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{8}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ \isanewline
+\ \ \ \ \isakeyword{and}\ {\isasymtau}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ \isanewline
+\ \ \ \ \isakeyword{and}\ t\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ {\isacharplus}{\kern0pt}\isanewline
+\ \ \isakeyword{fixes}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ \isanewline
+\ \ \ \ \isakeyword{and}\ stabilise\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a{\isacartoucheclose}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacartoucheclose}{\isacharparenright}{\kern0pt}\ \isanewline
+\ \ \ \ \isakeyword{and}\ in{\isacharunderscore}{\kern0pt}env\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss{\isacartoucheclose}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharprime}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isacartoucheopen}{\isasymtau}\ {\isasymnoteq}\ t{\isacartoucheclose}\ {\isacartoucheopen}{\isasymtau}\ {\isasymnoteq}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}{\isacartoucheclose}\ {\isacartoucheopen}t\ {\isasymnoteq}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}{\isacartoucheclose}\isanewline
+\ \ \ \ {\isacartoucheopen}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymnoteq}\ {\isasymtau}{\isacartoucheclose}\ {\isacartoucheopen}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymnoteq}\ t{\isacartoucheclose}\ {\isacartoucheopen}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymnoteq}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}{\isacartoucheclose}\ \isanewline
+\ \ \ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}Y{\isacharbrackright}{\kern0pt}\ {\isasymLongrightarrow}\ X\ {\isacharequal}{\kern0pt}\ Y{\isacartoucheclose}\isanewline
+\ \ \ \ \isakeyword{and}\isanewline
+\ \ \ \ \isanewline
+\ \ \ \ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isacartoucheopen}{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymnoteq}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ p\ {\isacharequal}{\kern0pt}\ q{\isacartoucheclose}\isanewline
+\ \ \ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ Y{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ X\ {\isacharequal}{\kern0pt}\ Y\ {\isasymand}\ p\ {\isacharequal}{\kern0pt}\ q{\isacartoucheclose}\isanewline
+\ \ \ \ \isakeyword{and}\isanewline
+\isanewline
+\ \ \ \ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isacartoucheopen}{\isasymnot}\ p\ {\isasymlongmapsto}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ q{\isacartoucheclose}\isanewline
+\ \ \ \ {\isacartoucheopen}{\isasymnot}\ p\ {\isasymlongmapsto}t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ q{\isacartoucheclose}\isanewline
+\isakeyword{begin}%
+\begin{isamarkuptext}%
+We can now define abbreviations with notations that correspond more closely to our operators defined above.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{abbreviation}\isamarkupfalse%
+\ triggered{\isacharunderscore}{\kern0pt}env\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss{\isacartoucheclose}\ \isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isasymtheta}{\isacharprime}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymequiv}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\isacommand{abbreviation}\isamarkupfalse%
+\ stable{\isacharunderscore}{\kern0pt}env\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss{\isacartoucheclose}\ \isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharprime}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymequiv}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}%
+\begin{isamarkuptext}%
+With four special actions (three plus a family), the following abbreviation will be convenient later on.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{abbreviation}\isamarkupfalse%
+\ no{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}action\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}no{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}action\ {\isasymalpha}\ \isanewline
+\ \ \ \ {\isasymequiv}\ {\isasymalpha}\ {\isasymnoteq}\ {\isasymtau}\ {\isasymand}\ {\isasymalpha}\ {\isasymnoteq}\ t\ {\isasymand}\ {\isasymalpha}\ {\isasymnoteq}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}\ X{\isachardot}{\kern0pt}\ {\isasymalpha}\ {\isasymnoteq}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\isanewline
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isatagunimportant
+%
+\endisatagunimportant
+{\isafoldunimportant}%
+%
+\isadelimunimportant
+%
+\endisadelimunimportant
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Formalising \boldmath{$\rightarrow_\vartheta$}%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+We now formalise the transition relation of our mapping, given above by the structural operational rules. We use the notation \isa{{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}} instead of the more obvious \isa{{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsub {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}} simply because of better readability.
+
+It should be easy to see that the clauses below correspond directly to the rules above. Like in previous sections, we have to take extra care to handle the requirement \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}.
+
+We use the \isa{inductive} command, because this allows us to define separate individual (as opposed to the \isa{definition} command). Technically speaking, this inductive definition only has base cases, though, since no premise involves \isa{{\isasymlongmapsto}\isactrlsup {\isasymtheta}}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{inductive}\isamarkupfalse%
+\ tran{\isacharunderscore}{\kern0pt}theta\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}ss\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isacartoucheclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{where}\ \isanewline
+\ \ \ \ env{\isacharunderscore}{\kern0pt}stabilise{\isacharcolon}{\kern0pt}\ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ {\isacharbar}{\kern0pt}\ triggered{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\ \ \isanewline
+\ \ \ \ \ \ {\isacartoucheopen}p\ {\isasymlongmapsto}{\isasymtau}\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymtau}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ {\isacharbar}{\kern0pt}\ env{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ \ \ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ idle\ p\ X\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ {\isacharbar}{\kern0pt}\ tran{\isacharunderscore}{\kern0pt}visible{\isacharcolon}{\kern0pt}\ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ a\ {\isasymin}\ X\ {\isasymLongrightarrow}\ p\ {\isasymlongmapsto}a\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}a\ {\isasymtheta}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ {\isacharbar}{\kern0pt}\ stable{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\ \ \ \ \ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ p\ {\isasymlongmapsto}{\isasymtau}\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymtau}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ {\isacharbar}{\kern0pt}\ sys{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ idle\ p\ X\ {\isasymLongrightarrow}\ p\ {\isasymlongmapsto}t\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Generation Lemmas%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+For the remainder of this section, we will derive a set of generation lemmas, i.e.\@ lemmas that allow us to reason backwards: if we know \isa{P\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymalpha}\ P{\isacharprime}{\kern0pt}} and some other information about \isa{P} and/or \isa{{\isasymalpha}}, we can deduce some information about the other variables as well as the transitions of the original LTS.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}triggered{\isacharunderscore}{\kern0pt}transitions{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymalpha}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isasymexists}X{\isachardot}{\kern0pt}\ {\isasymalpha}\ {\isacharequal}{\kern0pt}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymand}\ P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymand}\ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacharparenright}{\kern0pt}\ \isanewline
+\ \ \ \ {\isasymor}\ {\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isacharequal}{\kern0pt}\ {\isasymtau}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymexists}p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ {\isacharparenleft}{\kern0pt}z{\isadigit{3}}{\isacharparenright}{\kern0pt}\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharcomma}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}stable{\isacharunderscore}{\kern0pt}transitions{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymalpha}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isasymalpha}\ {\isacharequal}{\kern0pt}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymor}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isasymin}\ X\ {\isasymor}\ {\isasymalpha}\ {\isacharequal}{\kern0pt}\ {\isasymtau}\ {\isasymor}\ {\isasymalpha}\ {\isacharequal}{\kern0pt}\ t{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable{\isacharunderscore}{\kern0pt}axioms{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\ \ \isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}env{\isacharunderscore}{\kern0pt}stabilise{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}P\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isasymexists}\ p{\isachardot}{\kern0pt}\ P\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymand}\ P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ \isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ {\isacharparenleft}{\kern0pt}z{\isadigit{3}}{\isacharparenright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions{\isacharparenleft}{\kern0pt}{\isadigit{6}}{\isacharparenright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions{\isacharparenleft}{\kern0pt}{\isadigit{7}}{\isacharparenright}{\kern0pt}\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}triggered{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymtau}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \isacommand{using}\isamarkupfalse%
+\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions{\isacharparenleft}{\kern0pt}{\isadigit{4}}{\isacharparenright}{\kern0pt}\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\ \ \isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}env{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymand}\ idle\ p\ X{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharbrackright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ insertCI\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharplus}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}tran{\isacharunderscore}{\kern0pt}visible{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}a\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\ {\isacartoucheopen}a\ {\isasymin}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}a\ {\isasymin}\ X\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ p\ {\isasymlongmapsto}a\ p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\isanewline
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{obtain}\isamarkupfalse%
+\ p{\isacharprime}{\kern0pt}\ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
+\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ visible{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{4}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{with}\isamarkupfalse%
+\ {\isadigit{4}}\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
+\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{5}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ visible{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{6}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ visible{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}stable{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymtau}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ p\ {\isasymlongmapsto}{\isasymtau}\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharbrackright}{\kern0pt}\isanewline
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{obtain}\isamarkupfalse%
+\ p{\isacharprime}{\kern0pt}\ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{4}}\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
+\ visible{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ fastforce\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{5}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{with}\isamarkupfalse%
+\ {\isadigit{5}}\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
+\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{6}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}axioms\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ force\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}sys{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ idle\ p\ X\ {\isasymand}\ p\ {\isasymlongmapsto}t\ p{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharbrackright}{\kern0pt}\isanewline
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{1}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{2}}\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{obtain}\isamarkupfalse%
+\ p{\isacharprime}{\kern0pt}\ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{3}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{4}}\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
+\ visible{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{5}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}axioms\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ force\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{6}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{with}\isamarkupfalse%
+\ {\isadigit{6}}\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
+\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{end}\isamarkupfalse%
+\ %
+\isamarkupcmt{of \isa{locale\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}%
+}%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/reactive-bisimilarity-reduction/Mapping_for_Transition_Systems.thy%:%
+%:%24=8%:%
+%:%36=9%:%
+%:%40=11%:%
+%:%41=12%:%
+%:%42=13%:%
+%:%43=14%:%
+%:%44=15%:%
+%:%45=16%:%
+%:%46=17%:%
+%:%47=18%:%
+%:%48=19%:%
+%:%49=20%:%
+%:%50=21%:%
+%:%51=22%:%
+%:%52=23%:%
+%:%53=24%:%
+%:%54=25%:%
+%:%55=26%:%
+%:%56=27%:%
+%:%57=28%:%
+%:%58=29%:%
+%:%59=30%:%
+%:%60=31%:%
+%:%61=32%:%
+%:%62=33%:%
+%:%63=34%:%
+%:%64=35%:%
+%:%65=36%:%
+%:%66=37%:%
+%:%67=38%:%
+%:%68=39%:%
+%:%69=40%:%
+%:%70=41%:%
+%:%71=42%:%
+%:%72=43%:%
+%:%73=44%:%
+%:%74=45%:%
+%:%75=46%:%
+%:%76=47%:%
+%:%77=48%:%
+%:%78=49%:%
+%:%79=50%:%
+%:%80=51%:%
+%:%81=52%:%
+%:%82=53%:%
+%:%83=54%:%
+%:%84=55%:%
+%:%85=56%:%
+%:%86=57%:%
+%:%87=58%:%
+%:%88=59%:%
+%:%89=60%:%
+%:%90=61%:%
+%:%91=62%:%
+%:%92=63%:%
+%:%93=64%:%
+%:%94=65%:%
+%:%95=66%:%
+%:%96=67%:%
+%:%97=68%:%
+%:%98=69%:%
+%:%99=70%:%
+%:%100=71%:%
+%:%101=72%:%
+%:%102=73%:%
+%:%103=74%:%
+%:%104=75%:%
+%:%105=76%:%
+%:%106=77%:%
+%:%107=78%:%
+%:%108=79%:%
+%:%109=80%:%
+%:%110=81%:%
+%:%111=82%:%
+%:%112=83%:%
+%:%113=84%:%
+%:%114=85%:%
+%:%115=86%:%
+%:%116=87%:%
+%:%117=88%:%
+%:%118=89%:%
+%:%119=90%:%
+%:%120=91%:%
+%:%121=92%:%
+%:%122=93%:%
+%:%123=94%:%
+%:%124=95%:%
+%:%125=96%:%
+%:%126=97%:%
+%:%127=98%:%
+%:%128=99%:%
+%:%129=100%:%
+%:%130=101%:%
+%:%131=102%:%
+%:%132=103%:%
+%:%133=104%:%
+%:%134=105%:%
+%:%135=106%:%
+%:%136=107%:%
+%:%137=108%:%
+%:%138=109%:%
+%:%139=110%:%
+%:%140=111%:%
+%:%141=112%:%
+%:%150=115%:%
+%:%154=117%:%
+%:%166=119%:%
+%:%167=120%:%
+%:%168=121%:%
+%:%169=122%:%
+%:%170=123%:%
+%:%171=124%:%
+%:%172=125%:%
+%:%173=126%:%
+%:%174=127%:%
+%:%175=128%:%
+%:%176=129%:%
+%:%177=130%:%
+%:%178=131%:%
+%:%179=132%:%
+%:%180=133%:%
+%:%182=135%:%
+%:%183=135%:%
+%:%184=136%:%
+%:%185=137%:%
+%:%186=138%:%
+%:%187=139%:%
+%:%188=140%:%
+%:%189=141%:%
+%:%190=142%:%
+%:%191=143%:%
+%:%192=144%:%
+%:%193=145%:%
+%:%194=146%:%
+%:%195=147%:%
+%:%196=148%:%
+%:%197=149%:%
+%:%198=150%:%
+%:%199=151%:%
+%:%200=152%:%
+%:%201=153%:%
+%:%202=154%:%
+%:%203=155%:%
+%:%204=156%:%
+%:%205=157%:%
+%:%206=158%:%
+%:%207=159%:%
+%:%208=160%:%
+%:%209=161%:%
+%:%210=162%:%
+%:%212=164%:%
+%:%214=166%:%
+%:%215=166%:%
+%:%216=167%:%
+%:%217=168%:%
+%:%218=169%:%
+%:%219=169%:%
+%:%220=170%:%
+%:%221=171%:%
+%:%223=173%:%
+%:%225=175%:%
+%:%226=175%:%
+%:%227=176%:%
+%:%228=177%:%
+%:%229=178%:%
+%:%250=187%:%
+%:%262=188%:%
+%:%263=189%:%
+%:%264=190%:%
+%:%265=191%:%
+%:%266=192%:%
+%:%268=195%:%
+%:%269=195%:%
+%:%270=196%:%
+%:%271=197%:%
+%:%272=198%:%
+%:%273=199%:%
+%:%274=200%:%
+%:%275=201%:%
+%:%276=202%:%
+%:%277=203%:%
+%:%278=204%:%
+%:%279=205%:%
+%:%280=206%:%
+%:%281=207%:%
+%:%282=208%:%
+%:%290=212%:%
+%:%302=214%:%
+%:%304=216%:%
+%:%305=216%:%
+%:%306=217%:%
+%:%307=218%:%
+%:%308=219%:%
+%:%311=220%:%
+%:%315=220%:%
+%:%316=220%:%
+%:%317=221%:%
+%:%318=221%:%
+%:%323=221%:%
+%:%326=222%:%
+%:%327=223%:%
+%:%328=223%:%
+%:%329=224%:%
+%:%330=225%:%
+%:%333=226%:%
+%:%337=226%:%
+%:%338=226%:%
+%:%339=227%:%
+%:%340=227%:%
+%:%345=227%:%
+%:%348=228%:%
+%:%349=229%:%
+%:%350=229%:%
+%:%351=230%:%
+%:%352=231%:%
+%:%355=232%:%
+%:%359=232%:%
+%:%360=232%:%
+%:%361=233%:%
+%:%362=233%:%
+%:%367=233%:%
+%:%370=234%:%
+%:%371=235%:%
+%:%372=235%:%
+%:%373=236%:%
+%:%374=237%:%
+%:%377=238%:%
+%:%381=238%:%
+%:%382=238%:%
+%:%383=239%:%
+%:%384=239%:%
+%:%385=239%:%
+%:%390=239%:%
+%:%393=240%:%
+%:%394=241%:%
+%:%395=241%:%
+%:%396=242%:%
+%:%397=243%:%
+%:%400=244%:%
+%:%404=244%:%
+%:%405=244%:%
+%:%406=245%:%
+%:%407=245%:%
+%:%412=245%:%
+%:%415=246%:%
+%:%416=247%:%
+%:%417=247%:%
+%:%418=248%:%
+%:%419=249%:%
+%:%422=250%:%
+%:%426=250%:%
+%:%427=250%:%
+%:%428=251%:%
+%:%429=251%:%
+%:%430=252%:%
+%:%431=252%:%
+%:%432=253%:%
+%:%433=253%:%
+%:%434=253%:%
+%:%435=253%:%
+%:%436=254%:%
+%:%437=254%:%
+%:%438=255%:%
+%:%439=255%:%
+%:%440=256%:%
+%:%441=256%:%
+%:%442=256%:%
+%:%443=256%:%
+%:%444=257%:%
+%:%445=257%:%
+%:%446=257%:%
+%:%447=257%:%
+%:%448=258%:%
+%:%449=258%:%
+%:%450=258%:%
+%:%451=259%:%
+%:%452=259%:%
+%:%453=260%:%
+%:%454=260%:%
+%:%455=261%:%
+%:%456=261%:%
+%:%457=261%:%
+%:%458=261%:%
+%:%459=261%:%
+%:%460=262%:%
+%:%461=262%:%
+%:%462=263%:%
+%:%463=263%:%
+%:%464=264%:%
+%:%465=264%:%
+%:%466=264%:%
+%:%467=265%:%
+%:%468=265%:%
+%:%469=265%:%
+%:%470=265%:%
+%:%471=265%:%
+%:%472=266%:%
+%:%473=266%:%
+%:%474=267%:%
+%:%475=267%:%
+%:%476=268%:%
+%:%477=268%:%
+%:%478=268%:%
+%:%479=268%:%
+%:%480=269%:%
+%:%481=269%:%
+%:%482=269%:%
+%:%483=270%:%
+%:%484=270%:%
+%:%485=271%:%
+%:%486=271%:%
+%:%487=272%:%
+%:%488=272%:%
+%:%489=272%:%
+%:%490=272%:%
+%:%491=273%:%
+%:%492=273%:%
+%:%493=273%:%
+%:%494=274%:%
+%:%500=274%:%
+%:%503=275%:%
+%:%504=276%:%
+%:%505=276%:%
+%:%506=277%:%
+%:%507=278%:%
+%:%510=279%:%
+%:%514=279%:%
+%:%515=279%:%
+%:%516=280%:%
+%:%517=280%:%
+%:%518=281%:%
+%:%519=281%:%
+%:%520=282%:%
+%:%521=282%:%
+%:%522=282%:%
+%:%523=282%:%
+%:%524=283%:%
+%:%525=283%:%
+%:%526=283%:%
+%:%527=284%:%
+%:%528=284%:%
+%:%529=285%:%
+%:%530=285%:%
+%:%531=286%:%
+%:%532=286%:%
+%:%533=286%:%
+%:%534=286%:%
+%:%535=287%:%
+%:%536=287%:%
+%:%537=287%:%
+%:%538=287%:%
+%:%539=288%:%
+%:%540=288%:%
+%:%541=288%:%
+%:%542=289%:%
+%:%543=289%:%
+%:%544=290%:%
+%:%545=290%:%
+%:%546=291%:%
+%:%547=291%:%
+%:%548=291%:%
+%:%549=291%:%
+%:%550=292%:%
+%:%551=292%:%
+%:%552=292%:%
+%:%553=293%:%
+%:%554=293%:%
+%:%555=294%:%
+%:%556=294%:%
+%:%557=295%:%
+%:%558=295%:%
+%:%559=295%:%
+%:%560=295%:%
+%:%561=295%:%
+%:%562=296%:%
+%:%563=296%:%
+%:%564=297%:%
+%:%565=297%:%
+%:%566=298%:%
+%:%567=298%:%
+%:%568=298%:%
+%:%569=299%:%
+%:%570=299%:%
+%:%571=299%:%
+%:%572=299%:%
+%:%573=299%:%
+%:%574=300%:%
+%:%575=300%:%
+%:%576=301%:%
+%:%577=301%:%
+%:%578=302%:%
+%:%579=302%:%
+%:%580=302%:%
+%:%581=302%:%
+%:%582=303%:%
+%:%583=303%:%
+%:%584=303%:%
+%:%585=304%:%
+%:%591=304%:%
+%:%594=305%:%
+%:%595=306%:%
+%:%596=306%:%
+%:%597=307%:%
+%:%598=308%:%
+%:%601=309%:%
+%:%605=309%:%
+%:%606=309%:%
+%:%607=310%:%
+%:%608=310%:%
+%:%609=311%:%
+%:%610=311%:%
+%:%611=312%:%
+%:%612=312%:%
+%:%613=312%:%
+%:%614=312%:%
+%:%615=313%:%
+%:%616=313%:%
+%:%617=313%:%
+%:%618=314%:%
+%:%619=314%:%
+%:%620=315%:%
+%:%621=315%:%
+%:%622=316%:%
+%:%623=316%:%
+%:%624=316%:%
+%:%625=316%:%
+%:%626=317%:%
+%:%627=317%:%
+%:%628=317%:%
+%:%629=317%:%
+%:%630=318%:%
+%:%631=318%:%
+%:%632=318%:%
+%:%633=319%:%
+%:%634=319%:%
+%:%635=320%:%
+%:%636=320%:%
+%:%637=321%:%
+%:%638=321%:%
+%:%639=321%:%
+%:%640=321%:%
+%:%641=322%:%
+%:%642=322%:%
+%:%643=322%:%
+%:%644=323%:%
+%:%645=323%:%
+%:%646=324%:%
+%:%647=324%:%
+%:%648=325%:%
+%:%649=325%:%
+%:%650=325%:%
+%:%651=325%:%
+%:%652=325%:%
+%:%653=326%:%
+%:%654=326%:%
+%:%655=327%:%
+%:%656=327%:%
+%:%657=328%:%
+%:%658=328%:%
+%:%659=328%:%
+%:%660=328%:%
+%:%661=329%:%
+%:%662=329%:%
+%:%663=329%:%
+%:%664=330%:%
+%:%665=330%:%
+%:%666=331%:%
+%:%667=331%:%
+%:%668=332%:%
+%:%669=332%:%
+%:%670=332%:%
+%:%671=333%:%
+%:%672=333%:%
+%:%673=333%:%
+%:%674=333%:%
+%:%675=333%:%
+%:%676=334%:%
+%:%682=334%:%
+%:%685=335%:%
+%:%686=336%:%
+%:%687=336%:%
+%:%688=336%:%

@@ -74,10 +74,10 @@ $$
 {\vartheta_X(p) \xrightarrow{t}_\vartheta \vartheta_X(p')}
 $$\\
 
-These rules are motivated by the intuitions developed in \cref{sec:LTSt,sec:reactive_bisimilarity}:
+These rules are motivated by the intuitions developed in \cref{sec:reactive_bisimilarity}:
 
 \begin{enumerate}[nosep]
-    \item triggered environments can stabilise into arbitrary stable environments~$X$ for $X \subseteq A$,
+    \item indeterminate environments can stabilise into arbitrary stable \linebreak environments~$X$ for $X \subseteq A$,
     \item $\tau$-transitions can be performed regardless of the environment,
     \item if the underlying system is idle, the environment may time-out and turn into an indeterminate/triggered environment,
     \item facilitated visible transitions can be performed and can trigger a change in the environment,
@@ -86,11 +86,11 @@ These rules are motivated by the intuitions developed in \cref{sec:LTSt,sec:reac
 \end{enumerate}
 
 \example{%
-The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on the right. States that have no incoming or outgoing transitions other than $\varepsilon_X$ or $t_\varepsilon$ are omitted. Note how $\vartheta(T)$ is not reachable from $\vartheta(P)$.
+The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on the right. States that have no incoming or outgoing transitions other than $\varepsilon_X$ or $t_\varepsilon$ are omitted. Note how $\vartheta(p_4)$ is not reachable from $\vartheta(p)$.
 
 \phantomsection
 \label{fig:mapping_example}
-\lts{
+\scalebox{.9}{\vbox{\lts{
     \node[state]    (P)                             {$p$};
     \node[state]    (Q) [below left of=P]           {$p_1$};
     \node[state]    (R) [below right of=P]          {$p_2$};
@@ -138,7 +138,8 @@ The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on t
     \draw [dotted,->,shorten <= 7pt] (Qc) to[bend right] node[right] {$t_\varepsilon$} (Qt);
     \draw [dotted,->,shorten >= 7pt] (Tt) to[bend right] node[left] {$\varepsilon_{\dots}$} (Tc);
     \draw [dotted,->,shorten <= 7pt] (Tc) to[bend right] node[right] {$t_\varepsilon$} (Tt);
-}}%
+}}}}
+\vspace{-1cm}%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimdocument
@@ -163,17 +164,18 @@ The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on t
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-For the formalisation, we specify another type of LTS based on \isa{lts{\isacharunderscore}{\kern0pt}timeout}, where the aforementioned special actions and operators are considered; we call it \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}. 
+We specify another locale based on \isa{lts{\isacharunderscore}{\kern0pt}timeout}, where the aforementioned special actions and operators are considered; we call it \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}. 
 Since $\Proc \cap \Proc_\vartheta = \emptyset$, we introduce a new type variable \isa{{\isacharprime}{\kern0pt}ss} for $\Proc_\vartheta$, but use \isa{{\isacharprime}{\kern0pt}a} for both $\Act$ and $\Act_\vartheta$.
 We formalise the family of special actions $\varepsilon_X$ as a mapping \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a}, and the environment operators $\vartheta$/$\vartheta_X$ as a single mapping \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss}.
 
-As for \isa{lts{\isacharunderscore}{\kern0pt}timeout} in \cref{sec:LTSt}, we require that no two special actions are equal, formalised by the first set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions}.
+As for \isa{lts{\isacharunderscore}{\kern0pt}timeout} in \cref{sec:LTSt}, we require that all special actions are distinct, formalised by the first set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions}.
 
-As an operator, the term $\vartheta_X(p)$ simply refers to the specific state $p$ in an environment~$X$; when understood as a mapping, we have to be more careful, since \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}} is now a state itself. Specifically, we have to assume that the mapping \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is injective (when restricted to domains where \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}). Otherwise, we might have that \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}} for \isa{p\ {\isasymnoteq}\ q}, which is obviously problematic. Hence, the (restricted) injectivity of \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is formalised as the set of assumptions \isa{injectivity{\isacharunderscore}{\kern0pt}theta}. (We do not require injectivity for subsets of the domain with \isa{{\isasymnot}\ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}, since $\vartheta_X$ is not defined for those $X$).
+As an operator, the term $\vartheta_X(p)$ simply refers to the state $p$ in an environment~$X$; when understood as a mapping, we have to be more careful, since \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}} is now itself a state. Specifically, we have to assume that \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is injective (when restricted to domains where \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}, because $\vartheta_X$ is only defined for those $X \subseteq A$). Otherwise, we might have \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}} for \isa{p\ {\isasymnoteq}\ q}, which is problematic if e.g.\@ \isa{p} has a \isa{{\isasymtau}}-transition, but \isa{q} does not.
+Hence, the (restricted) injectivity of \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is formalised as the set of assumptions \isa{injectivity{\isacharunderscore}{\kern0pt}theta}.
 
-The same is required for the mapping \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}}, as formalised in the last clause of the set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions} (the (restricted) injectivity of \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}} is part of the requirement that all special actions must be distinct). Again, we only require injectivity for the mapping restricted to the domain \isa{visible{\isacharunderscore}{\kern0pt}actions}. If we would require that \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a} were injective over its entire domain \isa{{\isacharprime}{\kern0pt}a\ set}, we would run into problems, since such a function cannot exist by Cantor's theorem.
+The same is required for the mapping \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}}, as formalised in the last clause of the set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions} (the (restricted) injectivity of \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}} is part of the requirement that all special actions must be distinct). Again, we only require injectivity for the mapping restricted to the domain \isa{visible{\isacharunderscore}{\kern0pt}actions}. If we required that \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a} were injective over its entire domain \isa{{\isacharprime}{\kern0pt}a\ set}, we would run into problems, since such a function cannot exist by Cantor's theorem.
 
-For now, we assume that such mappings exist, in order to proof the general case for any such mappings. In \cref{chap:example_instantiation}, I give examples for these mappings and show that, with these, any \isa{lts{\isacharunderscore}{\kern0pt}timeout} can be interpreted as an \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}.
+That such mappings exist is intuitively clear, whence there were no ambiguities when defining them as operators in the prosaic/mathematical section above. Formalising these mappings in HOL, however, is not so straight\-forward: as operators, we assume that they are only defined for certain parameters; in HOL, every mapping must be total. For now, we simply assume that such total functions that formalise these operators exist. Doing this significantly improves the readability of following sections, since we must only consider the relevant properties of the mappings given by the assumptions. In \cref{chap:example_instantiation}, I give examples for these mappings and show that, together with these, any \isa{lts{\isacharunderscore}{\kern0pt}timeout} can be interpreted as an \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}, i.e.\@ every \LTSt{} $\mathbb{T}$ can be mapped to an LTS $\mathbb{T}_\vartheta$.
 
 Lastly, we formalise our requirements $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$ as the last set of assumptions \isa{no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran}. Technically, these assumptions only state that the $\varepsilon$-actions do not label any transition of $\mathbb{T}$. However, we can assume that 
 $\Act = \{ \alpha \mid \exists p, p'.\; p \xrightarrow{\alpha} p' \}$, 
@@ -218,14 +220,7 @@ We can now define abbreviations with notations that correspond more closely to o
 \isacommand{abbreviation}\isamarkupfalse%
 \ stable{\isacharunderscore}{\kern0pt}env\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss{\isacartoucheclose}\ \isanewline
 \ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharprime}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}{\isacharparenright}{\kern0pt}\isanewline
-\ \ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymequiv}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}%
-\begin{isamarkuptext}%
-With four special actions (three plus a family), the following abbreviation will be convenient later on.%
-\end{isamarkuptext}\isamarkuptrue%
-\isacommand{abbreviation}\isamarkupfalse%
-\ no{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}action\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
-\ \ \isakeyword{where}\ {\isacartoucheopen}no{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}action\ {\isasymalpha}\ \isanewline
-\ \ \ \ {\isasymequiv}\ {\isasymalpha}\ {\isasymnoteq}\ {\isasymtau}\ {\isasymand}\ {\isasymalpha}\ {\isasymnoteq}\ t\ {\isasymand}\ {\isasymalpha}\ {\isasymnoteq}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}\ X{\isachardot}{\kern0pt}\ {\isasymalpha}\ {\isasymnoteq}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymequiv}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
 \isanewline
 %
 \isadelimunimportant
@@ -259,28 +254,33 @@ With four special actions (three plus a family), the following abbreviation will
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-We now formalise the transition relation of our mapping, given above by the structural operational rules. We use the notation \isa{{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}} instead of the more obvious \isa{{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsub {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}} simply because of better readability.
+We formalise the transition relation of our mapping, given above by the structural operational rules, as a function \isa{tran{\isacharunderscore}{\kern0pt}theta}.% 
+\footnote{We use the notation \isa{{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}} instead of the more obvious \isa{{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsub {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}} simply because of better readability.}
 
-It should be easy to see that the clauses below correspond directly to the rules above. Like in previous sections, we have to take extra care to handle the requirement \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}.
+We use the \isa{inductive} command, because this allows us to define separate clauses (as opposed to the \isa{definition} command). Technically speaking, however, this inductive definition only has base cases, since none of the premises involves \isa{{\isasymlongmapsto}\isactrlsup {\isasymtheta}}.
 
-We use the \isa{inductive} command, because this allows us to define separate individual (as opposed to the \isa{definition} command). Technically speaking, this inductive definition only has base cases, though, since no premise involves \isa{{\isasymlongmapsto}\isactrlsup {\isasymtheta}}.%
+It should be easy to see that the clauses below correspond directly to the rules above. Like in previous sections, we have to take extra care to handle the requirement \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{inductive}\isamarkupfalse%
 \ tran{\isacharunderscore}{\kern0pt}theta\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}ss\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isanewline
 \ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isacartoucheclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
 \ \ \isakeyword{where}\ \isanewline
-\ \ \ \ env{\isacharunderscore}{\kern0pt}stabilise{\isacharcolon}{\kern0pt}\ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ env{\isacharunderscore}{\kern0pt}stabilise{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ {\isacharbar}{\kern0pt}\ triggered{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\ \ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ triggered{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\isanewline
 \ \ \ \ \ \ {\isacartoucheopen}p\ {\isasymlongmapsto}{\isasymtau}\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymtau}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ {\isacharbar}{\kern0pt}\ env{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ \ \ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ env{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ idle\ p\ X\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ {\isacharbar}{\kern0pt}\ tran{\isacharunderscore}{\kern0pt}visible{\isacharcolon}{\kern0pt}\ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ tran{\isacharunderscore}{\kern0pt}visible{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ a\ {\isasymin}\ X\ {\isasymLongrightarrow}\ p\ {\isasymlongmapsto}a\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}a\ {\isasymtheta}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ {\isacharbar}{\kern0pt}\ stable{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\ \ \ \ \ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ stable{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ p\ {\isasymlongmapsto}{\isasymtau}\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymtau}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ {\isacharbar}{\kern0pt}\ sys{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ {\isacharbar}{\kern0pt}\ sys{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ idle\ p\ X\ {\isasymLongrightarrow}\ p\ {\isasymlongmapsto}t\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}%
+\begin{isamarkuptext}%
+\pagebreak%
+\end{isamarkuptext}\isamarkuptrue%
+%
 \isadelimdocument
 %
 \endisadelimdocument
@@ -299,7 +299,7 @@ We use the \isa{inductive} command, because this allows us to define separate in
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-For the remainder of this section, we will derive a set of generation lemmas, i.e.\@ lemmas that allow us to reason backwards: if we know \isa{P\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymalpha}\ P{\isacharprime}{\kern0pt}} and some other information about \isa{P} and/or \isa{{\isasymalpha}}, we can deduce some information about the other variables as well as the transitions of the original LTS.%
+Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to reason backwards: if we know \isa{P\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymalpha}\ P{\isacharprime}{\kern0pt}} and some other information about \isa{P} and/or \isa{{\isasymalpha}}, we can deduce some information about the other variables as well as the transitions of the original \LTSt{}.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{lemma}\isamarkupfalse%
 \ generation{\isacharunderscore}{\kern0pt}triggered{\isacharunderscore}{\kern0pt}transitions{\isacharcolon}{\kern0pt}\isanewline
@@ -702,7 +702,7 @@ For the remainder of this section, we will derive a set of generation lemmas, i.
 %
 \end{isabellebody}%
 \endinput
-%:%file=~/reactive-bisimilarity-reduction/Mapping_for_Transition_Systems.thy%:%
+%:%file=~/projects/Reducing-Reactive-to-Strong-Bisimilarity/isabelle/Mapping_for_Transition_Systems.thy%:%
 %:%24=8%:%
 %:%36=9%:%
 %:%40=11%:%
@@ -807,9 +807,9 @@ For the remainder of this section, we will derive a set of generation lemmas, i.
 %:%139=110%:%
 %:%140=111%:%
 %:%141=112%:%
-%:%150=115%:%
-%:%154=117%:%
-%:%166=119%:%
+%:%142=113%:%
+%:%151=116%:%
+%:%155=118%:%
 %:%167=120%:%
 %:%168=121%:%
 %:%169=122%:%
@@ -824,9 +824,9 @@ For the remainder of this section, we will derive a set of generation lemmas, i.
 %:%178=131%:%
 %:%179=132%:%
 %:%180=133%:%
+%:%181=134%:%
 %:%182=135%:%
-%:%183=135%:%
-%:%184=136%:%
+%:%184=137%:%
 %:%185=137%:%
 %:%186=138%:%
 %:%187=139%:%
@@ -853,42 +853,41 @@ For the remainder of this section, we will derive a set of generation lemmas, i.
 %:%208=160%:%
 %:%209=161%:%
 %:%210=162%:%
+%:%211=163%:%
 %:%212=164%:%
 %:%214=166%:%
-%:%215=166%:%
-%:%216=167%:%
+%:%216=168%:%
 %:%217=168%:%
 %:%218=169%:%
-%:%219=169%:%
-%:%220=170%:%
+%:%219=170%:%
+%:%220=171%:%
 %:%221=171%:%
+%:%222=172%:%
 %:%223=173%:%
-%:%225=175%:%
-%:%226=175%:%
-%:%227=176%:%
-%:%228=177%:%
-%:%229=178%:%
-%:%250=187%:%
-%:%262=188%:%
-%:%263=189%:%
-%:%264=190%:%
-%:%265=191%:%
-%:%266=192%:%
-%:%268=195%:%
-%:%269=195%:%
-%:%270=196%:%
-%:%271=197%:%
-%:%272=198%:%
-%:%273=199%:%
-%:%274=200%:%
-%:%275=201%:%
-%:%276=202%:%
-%:%277=203%:%
-%:%278=204%:%
-%:%279=205%:%
-%:%280=206%:%
-%:%281=207%:%
-%:%282=208%:%
+%:%224=174%:%
+%:%245=187%:%
+%:%257=188%:%
+%:%258=189%:%
+%:%259=190%:%
+%:%260=191%:%
+%:%261=192%:%
+%:%262=193%:%
+%:%264=195%:%
+%:%265=195%:%
+%:%266=196%:%
+%:%267=197%:%
+%:%268=198%:%
+%:%269=199%:%
+%:%270=200%:%
+%:%271=201%:%
+%:%272=202%:%
+%:%273=203%:%
+%:%274=204%:%
+%:%275=205%:%
+%:%276=206%:%
+%:%277=207%:%
+%:%278=208%:%
+%:%281=211%:%
 %:%290=212%:%
 %:%302=214%:%
 %:%304=216%:%

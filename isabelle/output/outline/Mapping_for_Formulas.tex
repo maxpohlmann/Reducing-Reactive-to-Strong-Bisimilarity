@@ -37,9 +37,9 @@
 \end{isamarkuptext}\isamarkuptrue%
 %
 \begin{isamarkuptext}%
-I will now introduce a mapping $\sigma(\cdot)$ that maps formulas of \HMLt{} to formulas of HML, in the context of the process mapping from \cref{sec:mapping_lts}.
+I will now introduce a mapping $\sigma(\cdot)$ that maps formulas of \HMLt{} to formulas of HML, in the context of the process mapping from \cref{sec:mapping_lts}, such that $\vartheta(p)$ satisfies $\sigma(\varphi)$ iff $p$ satisfies $\varphi$.
 
-Again, we have $\mathbb{T} = (\Proc, \Act, \rightarrow)$ and $\mathbb{T}_\vartheta = (\Proc_\vartheta, \Act_\vartheta, \rightarrow_\vartheta)$ as defined in \cref{sec:mapping_lts}, with with $A = \Act \!\setminus\! \{\tau, t\}$, and we assume that $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$.
+Again, we have $\mathbb{T} = (\Proc, \Act, \rightarrow)$ and $\mathbb{T}_\vartheta = (\Proc_\vartheta, \Act_\vartheta, \rightarrow_\vartheta)$ as defined in \cref{sec:mapping_lts}, with $A = \Act \!\setminus\! \{\tau, t\}$, and we assume that $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$.
 
 Let $\sigma : (\text{\HMLt{} formulas}) \longrightarrow (\text{HML formulas})$ be recursively defined by
 \begin{align*}
@@ -57,7 +57,8 @@ Let $\sigma : (\text{\HMLt{} formulas}) \longrightarrow (\text{HML formulas})$ b
     \sigma(\langle{}X\rangle\varphi) =\;& f\!\!f && \text{if $X \not\subseteq A$}
 \end{align*}
 
-This mapping simply expresses the time-out semantics given by the satisfaction relations of \HMLt{} in terms of ordinary HML evaluated on our mapped LTS $\mathbb{T}_\vartheta$. The disjunctive clauses compensate for the additional environment transitions ($\varepsilon$-actions) that are not present in $\mathbb{T}$.%
+This mapping simply expresses the time-out semantics given by the satisfaction relations of \HMLt{} (\cref{sec:HMLt}) in terms of ordinary HML evaluated on our mapped LTS $\mathbb{T}_\vartheta$. The disjunctive clauses compensate for the additional environment transitions ($\varepsilon$-actions) that are not present in $\mathbb{T}$.
+\pagebreak%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimdocument
@@ -82,7 +83,7 @@ The implementation of the mapping in Isabelle is rather straightforward, althoug
 
 \isa{cimage\ {\isacharparenleft}{\kern0pt}{\isasymlambda}\ {\isasymphi}{\isachardot}{\kern0pt}\ {\isasymsigma}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymPhi}} is the image of the countable set \isa{{\isasymPhi}} under the function \isa{{\isasymlambda}\ {\isasymphi}{\isachardot}{\kern0pt}\ {\isasymsigma}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}}, so it corresponds to $\{ \sigma(\varphi) \mid \varphi \in \Phi \}$ for countable $\Phi$.
 
-\isa{no{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}action\ {\isasymalpha}} corresponds to $\alpha \in A$ with our assumption about there being no $\varepsilon$-actions in $\Act$. Similarly, \isa{{\isasymalpha}\ {\isacharequal}{\kern0pt}\ t\ {\isasymor}\ {\isasymalpha}\ {\isacharequal}{\kern0pt}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymor}\ {\isasymalpha}\ {\isacharequal}{\kern0pt}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}} corresponds to $\alpha \notin A \cup \{\tau\}$.%
+\isa{{\isasymalpha}\ {\isasymnoteq}\ {\isasymtau}\ {\isasymand}\ {\isasymalpha}\ {\isasymnoteq}\ t\ {\isasymand}\ {\isasymalpha}\ {\isasymnoteq}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}\ X{\isachardot}{\kern0pt}\ {\isasymalpha}\ {\isasymnoteq}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}} corresponds to $\alpha \in A$ with our assumption about there being no $\varepsilon$-actions in $\Act$. Similarly, \linebreak \isa{{\isasymalpha}\ {\isacharequal}{\kern0pt}\ t\ {\isasymor}\ {\isasymalpha}\ {\isacharequal}{\kern0pt}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymor}\ {\isasymalpha}\ {\isacharequal}{\kern0pt}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}} corresponds to $\alpha \notin A \cup \{\tau\}$.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{context}\isamarkupfalse%
 \ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable\ \isakeyword{begin}\isanewline
@@ -95,7 +96,7 @@ The implementation of the mapping in Isabelle is rather straightforward, althoug
 \ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isasymsigma}{\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}neg\ {\isasymphi}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ HML{\isacharunderscore}{\kern0pt}neg\ {\isasymsigma}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
 \ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isasymalpha}\ {\isacharequal}{\kern0pt}\ {\isasymtau}\ {\isasymLongrightarrow}\isanewline
 \ \ \ \ \ \ {\isasymsigma}{\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ HML{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymsigma}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}no{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}action\ {\isasymalpha}\ {\isasymLongrightarrow}\isanewline
+\ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isasymalpha}\ {\isasymnoteq}\ {\isasymtau}\ {\isasymand}\ {\isasymalpha}\ {\isasymnoteq}\ t\ {\isasymand}\ {\isasymalpha}\ {\isasymnoteq}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}\ X{\isachardot}{\kern0pt}\ {\isasymalpha}\ {\isasymnoteq}\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymLongrightarrow}\isanewline
 \ \ \ \ \ \ {\isasymsigma}{\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ HML{\isacharunderscore}{\kern0pt}disj\ {\isacharparenleft}{\kern0pt}acset\ {\isacharbraceleft}{\kern0pt}\isanewline
 \ \ \ \ \ \ \ \ HML{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymsigma}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
 \ \ \ \ \ \ \ \ HML{\isacharunderscore}{\kern0pt}poss\ {\isasymepsilon}{\isacharbrackleft}{\kern0pt}visible{\isacharunderscore}{\kern0pt}actions{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HML{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymsigma}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
@@ -126,7 +127,7 @@ The implementation of the mapping in Isabelle is rather straightforward, althoug
 \endisadelimproof
 %
 \begin{isamarkuptext}%
-Once again, we show that our function terminates using a well-founded relation.%
+Again, we show that the function terminates using a well-founded relation.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{inductive{\isacharunderscore}{\kern0pt}set}\isamarkupfalse%
 \ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula{\isacharparenright}{\kern0pt}\ rel{\isacartoucheclose}\ \isanewline
@@ -135,46 +136,20 @@ Once again, we show that our function terminates using a well-founded relation.%
 \ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharcomma}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}neg\ {\isasymphi}{\isacharparenright}{\kern0pt}\ {\isasymin}\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isacartoucheclose}\ \isanewline
 \ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharcomma}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}\ {\isasymin}\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isacartoucheclose}\ \isanewline
 \ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharcomma}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}time\ X\ {\isasymphi}{\isacharparenright}{\kern0pt}\ {\isasymin}\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isacartoucheclose}\isanewline
-\isanewline
-\isacommand{lemma}\isamarkupfalse%
-\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}wf{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}wf\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isacartoucheclose}\ \isanewline
 %
-\isadelimproof
-\ \ %
-\endisadelimproof
+\isadelimunimportant
 %
-\isatagproof
-\isacommand{unfolding}\isamarkupfalse%
-\ wf{\isacharunderscore}{\kern0pt}def\isanewline
-\isacommand{proof}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}rule\ allI{\isacharcomma}{\kern0pt}\ rule\ impI{\isacharcomma}{\kern0pt}\ rule\ allI{\isacharparenright}{\kern0pt}\isanewline
-\ \ \isacommand{fix}\isamarkupfalse%
-\ P{\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}{\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isakeyword{and}\ t{\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}{\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}formula{\isacartoucheclose}\isanewline
-\ \ \isacommand{assume}\isamarkupfalse%
-\ {\isacartoucheopen}{\isasymforall}x{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymforall}y{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}y{\isacharcomma}{\kern0pt}\ x{\isacharparenright}{\kern0pt}\ {\isasymin}\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel\ {\isasymlongrightarrow}\ P\ y{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ P\ x{\isacartoucheclose}\isanewline
-\ \ \isacommand{thus}\isamarkupfalse%
-\ {\isacartoucheopen}P\ t{\isacartoucheclose}\isanewline
-\ \ \ \ \isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}induction\ t{\isacharparenright}{\kern0pt}\isanewline
-\ \ \ \ \isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}metis\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}distinct{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isacharcomma}{\kern0pt}{\isadigit{5}}{\isacharparenright}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}inject{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isachardot}{\kern0pt}cases\ cin{\isachardot}{\kern0pt}rep{\isacharunderscore}{\kern0pt}eq{\isacharparenright}{\kern0pt}\isanewline
-\ \ \ \ \isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}metis\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}distinct{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharcomma}{\kern0pt}{\isadigit{8}}{\isacharcomma}{\kern0pt}{\isadigit{1}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}inject{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isachardot}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
-\ \ \ \ \isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}metis\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}distinct{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharcomma}{\kern0pt}{\isadigit{7}}{\isacharcomma}{\kern0pt}{\isadigit{1}}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}inject{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isachardot}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
-\ \ \ \ \isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}metis\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}distinct{\isacharparenleft}{\kern0pt}{\isadigit{5}}{\isacharcomma}{\kern0pt}{\isadigit{9}}{\isacharcomma}{\kern0pt}{\isadigit{1}}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ HMLt{\isacharunderscore}{\kern0pt}formula{\isachardot}{\kern0pt}inject{\isacharparenleft}{\kern0pt}{\isadigit{4}}{\isacharparenright}{\kern0pt}\ sigma{\isacharunderscore}{\kern0pt}wf{\isacharunderscore}{\kern0pt}rel{\isachardot}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
-\ \ \ \ \isacommand{done}\isamarkupfalse%
-\isanewline
-\isacommand{qed}\isamarkupfalse%
+\endisadelimunimportant
 %
-\endisatagproof
-{\isafoldproof}%
+\isatagunimportant
 %
-\isadelimproof
+\endisatagunimportant
+{\isafoldunimportant}%
+%
+\isadelimunimportant
 \isanewline
 %
-\endisadelimproof
+\endisadelimunimportant
 \isanewline
 \isacommand{termination}\isamarkupfalse%
 \ HMt{\isacharunderscore}{\kern0pt}mapping%
@@ -213,7 +188,7 @@ Once again, we show that our function terminates using a well-founded relation.%
 %
 \end{isabellebody}%
 \endinput
-%:%file=~/reactive-bisimilarity-reduction/Mapping_for_Formulas.thy%:%
+%:%file=~/projects/Reducing-Reactive-to-Strong-Bisimilarity/isabelle/Mapping_for_Formulas.thy%:%
 %:%24=10%:%
 %:%36=11%:%
 %:%40=13%:%
@@ -237,17 +212,17 @@ Once again, we show that our function terminates using a well-founded relation.%
 %:%58=31%:%
 %:%59=32%:%
 %:%60=33%:%
-%:%69=36%:%
-%:%81=38%:%
+%:%61=34%:%
+%:%70=37%:%
 %:%82=39%:%
 %:%83=40%:%
 %:%84=41%:%
 %:%85=42%:%
-%:%87=44%:%
-%:%88=44%:%
+%:%86=43%:%
+%:%88=45%:%
 %:%89=45%:%
 %:%90=46%:%
-%:%91=46%:%
+%:%91=47%:%
 %:%92=47%:%
 %:%93=48%:%
 %:%94=49%:%
@@ -255,61 +230,35 @@ Once again, we show that our function terminates using a well-founded relation.%
 %:%96=51%:%
 %:%97=52%:%
 %:%98=53%:%
-%:%103=58%:%
+%:%99=54%:%
 %:%104=59%:%
 %:%105=60%:%
 %:%106=61%:%
-%:%110=65%:%
+%:%107=62%:%
 %:%111=66%:%
 %:%112=67%:%
-%:%115=68%:%
-%:%119=68%:%
-%:%120=68%:%
-%:%129=70%:%
-%:%131=72%:%
-%:%132=72%:%
+%:%113=68%:%
+%:%116=69%:%
+%:%120=69%:%
+%:%121=69%:%
+%:%130=71%:%
+%:%132=73%:%
 %:%133=73%:%
 %:%134=74%:%
 %:%135=75%:%
 %:%136=76%:%
 %:%137=77%:%
 %:%138=78%:%
-%:%139=79%:%
-%:%140=79%:%
-%:%143=80%:%
-%:%147=80%:%
-%:%148=80%:%
-%:%149=81%:%
-%:%150=81%:%
-%:%151=82%:%
-%:%152=82%:%
-%:%153=83%:%
-%:%154=83%:%
-%:%155=84%:%
-%:%156=84%:%
-%:%157=85%:%
-%:%158=85%:%
-%:%159=86%:%
-%:%160=86%:%
-%:%161=87%:%
-%:%162=87%:%
-%:%163=88%:%
-%:%164=88%:%
-%:%165=89%:%
-%:%166=89%:%
-%:%167=90%:%
-%:%168=90%:%
-%:%169=91%:%
-%:%175=91%:%
-%:%178=92%:%
-%:%179=93%:%
-%:%180=93%:%
-%:%182=93%:%
-%:%186=93%:%
-%:%187=93%:%
-%:%188=93%:%
-%:%195=93%:%
-%:%196=94%:%
-%:%197=95%:%
-%:%198=95%:%
-%:%199=95%:%
+%:%150=95%:%
+%:%153=96%:%
+%:%154=97%:%
+%:%155=97%:%
+%:%157=97%:%
+%:%161=97%:%
+%:%162=97%:%
+%:%163=97%:%
+%:%170=97%:%
+%:%171=98%:%
+%:%172=99%:%
+%:%173=99%:%
+%:%174=99%:%

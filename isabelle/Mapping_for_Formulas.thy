@@ -10,9 +10,9 @@ begin
 section \<open>A Mapping for Formulas\<close>
 text \<open>\label{sec:mapping_formulas}\<close>
 
-text \<open>I will now introduce a mapping $\sigma(\cdot)$ that maps formulas of \HMLt{} to formulas of HML, in the context of the process mapping from \cref{sec:mapping_lts}.
+text \<open>I will now introduce a mapping $\sigma(\cdot)$ that maps formulas of \HMLt{} to formulas of HML, in the context of the process mapping from \cref{sec:mapping_lts}, such that $\vartheta(p)$ satisfies $\sigma(\varphi)$ iff $p$ satisfies $\varphi$.
 
-Again, we have $\mathbb{T} = (\Proc, \Act, \rightarrow)$ and $\mathbb{T}_\vartheta = (\Proc_\vartheta, \Act_\vartheta, \rightarrow_\vartheta)$ as defined in \cref{sec:mapping_lts}, with with $A = \Act \!\setminus\! \{\tau, t\}$, and we assume that $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$.
+Again, we have $\mathbb{T} = (\Proc, \Act, \rightarrow)$ and $\mathbb{T}_\vartheta = (\Proc_\vartheta, \Act_\vartheta, \rightarrow_\vartheta)$ as defined in \cref{sec:mapping_lts}, with $A = \Act \!\setminus\! \{\tau, t\}$, and we assume that $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$.
 
 Let $\sigma : (\text{\HMLt{} formulas}) \longrightarrow (\text{HML formulas})$ be recursively defined by
 \begin{align*}
@@ -30,7 +30,8 @@ Let $\sigma : (\text{\HMLt{} formulas}) \longrightarrow (\text{HML formulas})$ b
     \sigma(\langle{}X\rangle\varphi) =\;& f\!\!f && \text{if $X \not\subseteq A$}
 \end{align*}
 
-This mapping simply expresses the time-out semantics given by the satisfaction relations of \HMLt{} in terms of ordinary HML evaluated on our mapped LTS $\mathbb{T}_\vartheta$. The disjunctive clauses compensate for the additional environment transitions ($\varepsilon$-actions) that are not present in $\mathbb{T}$.\<close>
+This mapping simply expresses the time-out semantics given by the satisfaction relations of \HMLt{} (\cref{sec:HMLt}) in terms of ordinary HML evaluated on our mapped LTS $\mathbb{T}_\vartheta$. The disjunctive clauses compensate for the additional environment transitions ($\varepsilon$-actions) that are not present in $\mathbb{T}$.
+\pagebreak\<close>
 
 
 subsection \<open>Isabelle\<close>
@@ -39,7 +40,7 @@ text \<open>The implementation of the mapping in Isabelle is rather straightforw
 
 \<open>cimage (\<lambda> \<phi>. \<sigma>(\<phi>)) \<Phi>\<close> is the image of the countable set \<open>\<Phi>\<close> under the function \<open>\<lambda> \<phi>. \<sigma>(\<phi>)\<close>, so it corresponds to $\{ \sigma(\varphi) \mid \varphi \in \Phi \}$ for countable $\Phi$.
 
-\<open>no_special_action \<alpha>\<close> corresponds to $\alpha \in A$ with our assumption about there being no $\varepsilon$-actions in $\Act$. Similarly, \<open>\<alpha> = t \<or> \<alpha> = t_\<epsilon> \<or> \<alpha> = \<epsilon>[X]\<close> corresponds to $\alpha \notin A \cup \{\tau\}$.\<close>
+\<open>\<alpha> \<noteq> \<tau> \<and> \<alpha> \<noteq> t \<and> \<alpha> \<noteq> t_\<epsilon> \<and> (\<forall> X. \<alpha> \<noteq> \<epsilon>[X])\<close> corresponds to $\alpha \in A$ with our assumption about there being no $\varepsilon$-actions in $\Act$. Similarly, \linebreak \<open>\<alpha> = t \<or> \<alpha> = t_\<epsilon> \<or> \<alpha> = \<epsilon>[X]\<close> corresponds to $\alpha \notin A \cup \{\tau\}$.\<close>
 
 context lts_timeout_mappable begin
 
@@ -50,7 +51,7 @@ function HMt_mapping :: \<open>('a)HMLt_formula \<Rightarrow> ('a)HML_formula\<c
   | \<open>\<sigma>(HMLt_neg \<phi>) = HML_neg \<sigma>(\<phi>)\<close>
   | \<open>\<alpha> = \<tau> \<Longrightarrow>
       \<sigma>(HMLt_poss \<alpha> \<phi>) = HML_poss \<alpha> \<sigma>(\<phi>)\<close>
-  | \<open>no_special_action \<alpha> \<Longrightarrow>
+  | \<open>\<alpha> \<noteq> \<tau> \<and> \<alpha> \<noteq> t \<and> \<alpha> \<noteq> t_\<epsilon> \<and> (\<forall> X. \<alpha> \<noteq> \<epsilon>[X]) \<Longrightarrow>
       \<sigma>(HMLt_poss \<alpha> \<phi>) = HML_disj (acset {
         HML_poss \<alpha> \<sigma>(\<phi>),
         HML_poss \<epsilon>[visible_actions] (HML_poss \<alpha> \<sigma>(\<phi>)),
@@ -67,7 +68,7 @@ function HMt_mapping :: \<open>('a)HMLt_formula \<Rightarrow> ('a)HML_formula\<c
       \<sigma>(HMLt_time X \<phi>) = HML_false\<close>  
   by (metis HMLt_formula.exhaust, auto+, (simp add: distinctness_special_actions(1,2))+, metis distinctness_special_actions(4))
 
-text \<open>Once again, we show that our function terminates using a well-founded relation.\<close>
+text \<open>Again, we show that the function terminates using a well-founded relation.\<close>
 
 inductive_set sigma_wf_rel :: \<open>(('a)HMLt_formula) rel\<close> 
   where
@@ -76,7 +77,8 @@ inductive_set sigma_wf_rel :: \<open>(('a)HMLt_formula) rel\<close>
   | \<open>(\<phi>, HMLt_poss \<alpha> \<phi>) \<in> sigma_wf_rel\<close> 
   | \<open>(\<phi>, HMLt_time X \<phi>) \<in> sigma_wf_rel\<close>
 
-lemma sigma_wf_rel_is_wf: \<open>wf sigma_wf_rel\<close> 
+(*<*)
+lemma\<^marker>\<open>tag (proof) unimportant\<close> sigma_wf_rel_is_wf: \<open>wf sigma_wf_rel\<close> 
   unfolding wf_def
 proof (rule allI, rule impI, rule allI)
   fix P::\<open>('a)HMLt_formula \<Rightarrow> bool\<close> and t::\<open>('a)HMLt_formula\<close>
@@ -89,6 +91,8 @@ proof (rule allI, rule impI, rule allI)
     apply (metis HMLt_formula.distinct(5,9,11) HMLt_formula.inject(4) sigma_wf_rel.cases)
     done
 qed
+(*>*)
+
 
 termination HMt_mapping using sigma_wf_rel_is_wf by (standard, (simp add: cin.rep_eq sigma_wf_rel.intros)+)
 

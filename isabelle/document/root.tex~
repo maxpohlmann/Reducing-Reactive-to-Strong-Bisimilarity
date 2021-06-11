@@ -19,8 +19,16 @@
 \urlstyle{rm}
 \isabellestyle{tt}
 
+
+
 \renewcommand{\isamarkupsubsection}[1]{\subsection*{#1}}
+\renewcommand{\isamarkupsubsubsection}[1]{\subsubsection*{#1}}
+\renewcommand{\isamarkupparagraph}[1]{\paragraph{#1}}
 \providecommand*{\code}[1]{\texttt{#1}}
+
+%\titleformat{\chapter}
+%  {\normalfont\huge\bfseries}{\Huge\thechapter}{20pt}{\Huge#1}
+%\titlespacing*{\chapter}{0pt}{0pt}{15pt}
 
 \def\headline#1{\hbox to \hsize{\hrulefill\quad\lower.3em\hbox{#1}\quad\hrulefill}}
 \titleformat{\section}
@@ -120,6 +128,7 @@
 \bibliography{root}
 
 \appendix
+\input{Isabelle}
 \input{HM_Logic_infinitary}
 \input{Example_Instantiation}
 

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Strong_Bisimilarity</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Strong_Bisimilarity</h1>
+</div>
+
+<pre class="source"><span class="comment1">(*&lt;*)</span>
+<span class="keyword1"><span class="command">theory</span></span> Strong_Bisimilarity
+  <span class="keyword2"><span class="keyword">imports</span></span> <a href="Labelled_Transition_Systems.html">Labelled_Transition_Systems</a>
+<span class="keyword2"><span class="keyword">begin</span></span>
+<span class="comment1">(*&gt;*)</span>
+
+<span class="keyword1"><span class="command">section</span></span> <span class="quoted"><span class="plain_text">‹Strong Bisimilarity›</span></span>
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\label{sec:strong_bisimilarity}›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹As discussed in the previous section, LTSs can describe the behaviour of reactive systems, and this behaviour is observable by the environment (in terms of the transitions performed by the system). This begets a notion of behavioural equivalence, where two processes are said to be behaviourally equivalent if they exhibit the same (observable) behaviour <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> resyst<span class="antiquote"><span class="antiquote">}</span></span></span></span>.
+
+Bisimilarity (or \emph{strong bisimilarity}, to be precise) is the \enquote{\emph{finest extensional behavioural equivalence} \textelp{} on processes} <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> introBC<span class="antiquote"><span class="antiquote">}</span></span></span></span>, an extensional property being one that treats the system in question as a black box, i.e.\@ the specific state space of the system remains hidden and performed transitions are only observable in terms of their action-label. This distinguishes bisimilarity from stronger graph equivalences like \emph{graph isomorphism}, where the (intensional) identity of processes (graph nodes) is relevant <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> advBC_origins<span class="antiquote"><span class="antiquote">}</span></span></span></span>.
+
+\example{%
+The processes $p$ and $q$ are strongly bisimilar (written $p \leftrightarrow q$, following <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> rbs<span class="antiquote"><span class="antiquote">}</span></span></span></span>), as both can always perform exactly two a-transitions and no further transitions afterwards. There is no isomorphism between the left and right subgraphs, as they have a different number of nodes.
+
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below of=p1]              {$p_2$};
+    \node[state]    (p3) [below right of=p0]        {$p_3$};
+    \node[state]    (p4) [below of=p3]              {$p_4$};
+    \node[state]    (q0) [right of=p0,xshift=2cm]   {$q$};
+    \node[state]    (q1) [below of=q0]              {$q_1$};
+    \node[state]    (q2) [below of=q1]              {$q_2$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$a$}   (p3)
+            (p1) edge node[left]        {$a$}   (p2)
+            (p3) edge node[left]        {$a$}   (p4)
+            (q0) edge node              {$a$}   (q1)
+            (q1) edge node              {$a$}   (q2);
+}}
+
+\pagebreak
+It is important to note that not only transitions that are performable, but also those that are not, are relevant.
+
+\example{%
+The processes $p$ and $q$ are not strongly bisimilar, as $p$ can perform an $a$-transition into a subsequent state, where it can perform no further transitions, whereas $q$ can always perform two $a$-transitions in sequence.
+
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below of=p1]              {$p_2$};
+    \node[state]    (p3) [below right of=p0]        {$p_3$};
+    \node[state]    (q0) [right of=p0,xshift=2cm]   {$q$};
+    \node[state]    (q1) [below of=q0]              {$q_1$};
+    \node[state]    (q2) [below of=q1]              {$q_2$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$a$}   (p3)
+            (p1) edge node[left]        {$a$}   (p2)
+            (q0) edge node              {$a$}   (q1)
+            (q1) edge node              {$a$}   (q2);
+}}
+
+Strong bisimilarity is the \emph{finest} extensional behavioural equivalence, because all actions are thought of as observable. An example of a coarser equivalence is \emph{weak bisimilarity}, which treats the aforementioned hidden action $\tau$ as unobservable. However, weak bisimilarity is of no further relevance for this thesis and the interested reader is referred to <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> ‹Chapter 3.4› resyst<span class="antiquote"><span class="antiquote">}</span></span></span></span>.
+
+The notion of strong bisimilarity can be formalised through \emph{strong bisimulation} (SB) relations, introduced originally by David Park in <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> park81<span class="antiquote"><span class="antiquote">}</span></span></span></span>. A binary relation $\mathcal{R}$ over the set of processes $\Proc$ is an SB iff for all $(p,q) \in \mathcal{R}$:
+\begin{align*}
+&amp;\forall p' \in \Proc,\; \alpha \in \Act .\; p \xrightarrow{\alpha} p' \longrightarrow
+\exists q' \in \Proc .\; q \xrightarrow{\alpha} q' \wedge (p',q') \in \mathcal{R}, \text{ and}\\
+&amp;\forall q' \in \Proc,\; \alpha \in \Act .\; q \xrightarrow{\alpha} q' \longrightarrow
+\exists p' \in \Proc .\; p \xrightarrow{\alpha} p' \wedge (p',q') \in \mathcal{R}.
+\end{align*}›</span></span>
+
+
+<span class="keyword1"><span class="command">subsection</span></span> <span class="quoted"><span class="plain_text">‹Isabelle›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹Strong bisimulations are straightforward to formalise in Isabelle, using the curried function definition approach discussed in \cref{chap:isabelle}.›</span></span>
+
+<span class="keyword1"><span class="command">context</span></span> lts <span class="keyword2"><span class="keyword">begin</span></span>
+
+<span class="comment1">― ‹strong bisimulation›</span>
+<span class="keyword1"><span class="command">definition</span></span> <span class="entity">SB</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'s</span> <span class="main">⇒</span> bool<span class="main">)</span> <span class="main">⇒</span> bool›</span></span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">SB</span> <span class="free"><span class="bound"><span class="entity">R</span></span></span> <span class="main">≡</span> <span class="main">∀</span> <span class="bound">p</span> <span class="bound">q</span><span class="main">.</span> <span class="free"><span class="bound"><span class="entity">R</span></span></span> <span class="bound">p</span> <span class="bound">q</span> <span class="main">⟶</span> 
+    <span class="main">(</span><span class="main">∀</span> <span class="bound">p'</span> <span class="bound">α</span><span class="main">.</span> <span class="bound">p</span> <span class="main"><span class="free">⟼</span></span><span class="bound">α</span> <span class="bound">p'</span> <span class="main">⟶</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">q'</span><span class="main">.</span> <span class="main">(</span><span class="bound">q</span> <span class="main"><span class="free">⟼</span></span><span class="bound">α</span> <span class="bound">q'</span><span class="main">)</span> <span class="main">∧</span> <span class="free"><span class="bound"><span class="entity">R</span></span></span> <span class="bound">p'</span> <span class="bound">q'</span><span class="main">)</span><span class="main">)</span> <span class="main">∧</span>
+    <span class="main">(</span><span class="main">∀</span> <span class="bound">q'</span> <span class="bound">α</span><span class="main">.</span> <span class="bound">q</span> <span class="main"><span class="free">⟼</span></span><span class="bound">α</span> <span class="bound">q'</span> <span class="main">⟶</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">p'</span><span class="main">.</span> <span class="main">(</span><span class="bound">p</span> <span class="main"><span class="free">⟼</span></span><span class="bound">α</span> <span class="bound">p'</span><span class="main">)</span> <span class="main">∧</span> <span class="free"><span class="bound"><span class="entity">R</span></span></span> <span class="bound">p'</span> <span class="bound">q'</span><span class="main">)</span><span class="main">)</span>›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\pagebreak
+Two processes $p$ and $q$ are then strongly bisimilar iff there is an SB that contains the pair $(p, q)$.›</span></span>
+
+<span class="keyword1"><span class="command">definition</span></span> <span class="entity">strongly_bisimilar</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'s</span> <span class="main">⇒</span> bool›</span></span> 
+  <span class="main">(</span><span class="quoted">‹_ <span class="keyword1">↔</span> _›</span> <span class="main">[</span>70<span class="main">,</span> 70<span class="main">]</span> 70<span class="main">)</span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="main"><span class="free">↔</span></span> <span class="free"><span class="bound"><span class="entity">q</span></span></span> <span class="main">≡</span> <span class="main">∃</span> <span class="bound">R</span><span class="main">.</span> SB <span class="bound">R</span> <span class="main">∧</span> <span class="bound">R</span> <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="free"><span class="bound"><span class="entity">q</span></span></span>›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The following corollaries are immediate consequences of these definitions.›</span></span>
+
+<span class="keyword1"><span class="command">corollary</span></span> strongly_bisimilar_step<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> 
+    <span class="quoted"><span class="quoted">‹strongly_bisimilar <span class="free">p</span> <span class="free">q</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span>
+    <span class="quoted"><span class="quoted">‹<span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">a</span> <span class="free">p'</span> <span class="main">⟹</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">q'</span><span class="main">.</span> <span class="main">(</span><span class="free">q</span> <span class="main"><span class="free">⟼</span></span><span class="free">a</span> <span class="bound">q'</span><span class="main">)</span> <span class="main">∧</span> <span class="free">p'</span> <span class="main">↔</span> <span class="bound">q'</span><span class="main">)</span>›</span></span>
+    <span class="quoted"><span class="quoted">‹<span class="free">q</span> <span class="main"><span class="free">⟼</span></span><span class="free">a</span> <span class="free">q'</span> <span class="main">⟹</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">p'</span><span class="main">.</span> <span class="main">(</span><span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">a</span> <span class="bound">p'</span><span class="main">)</span> <span class="main">∧</span> <span class="bound">p'</span> <span class="main">↔</span> <span class="free">q'</span><span class="main">)</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> assms SB_def strongly_bisimilar_def <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">smt</span> <span class="main"><span class="main">(</span></span>verit<span class="main"><span class="main">)</span></span><span class="main">)</span><span class="main"><span class="keyword3">+</span></span>
+  
+<span class="keyword1"><span class="command">corollary</span></span> strongly_bisimilar_symm<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="free">p</span> <span class="main">↔</span> <span class="free">q</span>›</span></span> 
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="free">q</span> <span class="main">↔</span> <span class="free">p</span>›</span></span> 
+  <span class="keyword1"><span class="command">using</span></span> assms <span class="keyword1"><span class="command">unfolding</span></span> strongly_bisimilar_def
+<span class="keyword1"><span class="command">proof</span></span>
+  <span class="keyword3"><span class="command">fix</span></span> <span class="skolem">R</span>
+  <span class="keyword3"><span class="command">assume</span></span> <span class="quoted"><span class="quoted">‹SB <span class="skolem">R</span> <span class="main">∧</span> <span class="skolem">R</span> <span class="free">p</span> <span class="free">q</span>›</span></span>
+  <span class="keyword1"><span class="command">let</span></span> <span class="var"><span class="quoted"><span class="var">?R'</span></span></span> <span class="main">=</span> <span class="quoted"><span class="quoted">‹<span class="main">λ</span> <span class="bound">a</span> <span class="bound">b</span><span class="main">.</span> <span class="skolem">R</span> <span class="bound">b</span> <span class="bound">a</span>›</span></span>
+  <span class="keyword1"><span class="command">have</span></span> <span class="quoted"><span class="quoted">‹SB <span class="var">?R'</span> <span class="main">∧</span> <span class="var">?R'</span> <span class="free">q</span> <span class="free">p</span>›</span></span> <span class="keyword1"><span class="command">using</span></span> SB_def <span class="quoted"><span class="quoted">‹SB <span class="skolem">R</span> <span class="main">∧</span> <span class="skolem">R</span> <span class="free">p</span> <span class="free">q</span>›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">presburger</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="quoted"><span class="quoted">‹<span class="main">∃</span><span class="bound">R</span><span class="main">.</span> SB <span class="bound">R</span> <span class="main">∧</span> <span class="bound">R</span> <span class="free">q</span> <span class="free">p</span>›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
+<span class="keyword1"><span class="command">qed</span></span>
+
+<span class="keyword2"><span class="keyword">end</span></span> <span class="comment1">― ‹context lts›</span>
+<span class="comment1">(*&lt;*)</span>
+<span class="keyword2"><span class="keyword">end</span></span> <span class="comment1">― ‹of theory›</span>
+<span class="comment1">(*?&gt;*)</span></pre>
+</body>
+
+</html>

@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Mapping_for_Transition_Systems</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Mapping_for_Transition_Systems</h1>
+</div>
+
+<pre class="source"><span class="comment1">(*&lt;*)</span>
+<span class="keyword1"><span class="command">theory</span></span> Mapping_for_Transition_Systems
+  <span class="keyword2"><span class="keyword">imports</span></span>
+    <a href="Labelled_Transition_Systems_with_TimeOuts.html">Labelled_Transition_Systems_with_TimeOuts</a>
+<span class="keyword2"><span class="keyword">begin</span></span>
+<span class="comment1">(*&gt;*)</span>
+
+<span class="keyword1"><span class="command">section</span></span> <span class="quoted"><span class="plain_text">‹A Mapping for Transition Systems›</span></span>
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\label{sec:mapping_lts}›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹Let $\mathbb{T} = (\Proc, \Act, \rightarrow)$ be an \LTSt{}. Let $A = \Act \!\setminus\! \{\tau, t\}$.
+
+In reference to van~Glabbeek's $\theta_X$-operators, I introduce a family of operators $\vartheta_X$ with similar but not identical semantics. Additionally, I introduce the operator $\vartheta$ that places a process in an indeterminate environment.
+
+Furthermore, I introduce a family of special actions $\varepsilon_X$ for $X \subseteq A$ that represent a triggered environment stabilising into an environment~$X$, as well as a special action $t_\varepsilon$ that represents a time-out of the environment.
+
+We assume that $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$. 
+
+Then we define $\mathbb{T}_\vartheta = (\Proc_\vartheta, \Act_\vartheta, \rightarrow_\vartheta)$ with
+\begin{align*}
+    \Proc_\vartheta &amp;= \{ \vartheta(p) \mid p \in \Proc \} \cup \{ \vartheta_X(p) \mid p \in \Proc \wedge X \subseteq A \}, \\
+    \Act_\vartheta &amp;= \Act \cup \{t_\varepsilon\} \cup \{ \varepsilon_X \mid X \subseteq A \},
+\end{align*}
+and $\rightarrow_\vartheta$ defined by the following rules:
+
+$$
+(1)\,\frac{}{\vartheta(p) \xrightarrow{\varepsilon_X}_\vartheta \vartheta_X(p)} \; X \subseteq A
+\qquad
+(2)\,\frac{p \xrightarrow{\tau} p'}{\vartheta(p) \xrightarrow{\tau}_\vartheta \vartheta(p')}
+$$
+\\[-5pt]
+$$
+(3)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\}}
+{\vartheta_X(p) \xrightarrow{t_\varepsilon}_\vartheta \vartheta(p)}
+$$
+\\[-5pt]
+$$
+(4)\,\frac{p \xrightarrow{a} p'}{\vartheta_X(p) \xrightarrow{a}_\vartheta \vartheta(p')} \; a \in X
+\qquad
+(5)\,\frac{p \xrightarrow{\tau} p'}{\vartheta_X(p) \xrightarrow{\tau}_\vartheta \vartheta_X(p')}
+$$
+\\[-5pt]
+$$
+(6)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\} \quad p \xrightarrow{t} p'}
+{\vartheta_X(p) \xrightarrow{t}_\vartheta \vartheta_X(p')}
+$$\\
+
+These rules are motivated by the intuitions developed in \cref{sec:reactive_bisimilarity}:
+
+\begin{enumerate}[nosep]
+    \item indeterminate environments can stabilise into arbitrary stable \linebreak environments~$X$ for $X \subseteq A$,
+    \item $\tau$-transitions can be performed regardless of the environment,
+    \item if the underlying system is idle, the environment may time-out and turn into an indeterminate/triggered environment,
+    \item facilitated visible transitions can be performed and can trigger a change in the environment,
+    \item $\tau$-transitions cannot be observed by the environment and hence cannot trigger a change,
+    \item if the underlying system is idle and has a $t$-transition, the transition may be performed and is not observable by the environment.
+\end{enumerate}
+
+\example{%
+The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on the right. States that have no incoming or outgoing transitions other than $\varepsilon_X$ or $t_\varepsilon$ are omitted. Note how $\vartheta(p_4)$ is not reachable from $\vartheta(p)$.
+
+\phantomsection
+\label{fig:mapping_example}
+\scalebox{.9}{\vbox{\lts{
+    \node[state]    (P)                             {$p$};
+    \node[state]    (Q) [below left of=P]           {$p_1$};
+    \node[state]    (R) [below right of=P]          {$p_2$};
+    \node[state]    (S) [below left of=R]           {$p_3$};
+    \node[state]    (T) [below right of=R]          {$p_4$};
+    
+    \path   (P) edge node[above left]               {$a$}               (Q)
+                edge node[above right]              {$t$}               (R)
+            (R) edge node[above left]               {$\tau$}            (S)
+                edge node[above right]              {$a$}               (T);
+
+
+    \node[state]    (Pt) [right of=P, xshift=4.5cm] {$\vartheta(p)$};
+    \node[state]    (Pa) [below left of=Pt]         {$\vartheta_{\{a\}}(p)$};
+    \node[state]    (Pe) [below right of=Pt]        {$\vartheta_\emptyset(p)$};
+    \node[state]    (Rt) [right of=Pe]              {$\vartheta(p_2)$};
+    \node[state]    (Qt) [below of=Pa]              {$\vartheta(p_1)$};
+    \node[state]    (Re) [below of=Pe]              {$\vartheta_\emptyset(p_2)$};
+    \node[state]    (Se) [below of=Re]              {$\vartheta_\emptyset(p_3)$};
+    \node[state]    (Ra) [below of=Rt,xshift=1.8cm] {$\vartheta_{\{a\}}(p_2)$};
+    \node[state]    (Tt) [right of=Ra,xshift=.7cm]  {$\vartheta(p_4)$};
+    \node[state]    (Sa) [below of=Ra]              {$\vartheta_{\{a\}}(p_3)$};
+    \node[state]    (St) [right of=Se,yshift=-2cm]  {$\vartheta(p_3)$};
+    
+    \path   (Pt)    edge node[above left]           {$\varepsilon_{\{a\}}$}     (Pa)
+            (Pt)    edge node[left]                 {$\varepsilon_\emptyset$}   (Pe)
+            (Pe)    edge[bend right] node[right]    {$t_\varepsilon$}           (Pt)
+            (Pa)    edge node[left]                 {$a$}                       (Qt)
+            (Pe)    edge node[left]                 {$t$}                       (Re)
+            (Re)    edge node[left]                 {$\tau$}                    (Se)
+            (Rt)    edge node[right]                {$\varepsilon_{\{a\}}$}     (Ra)
+            (Rt)    edge node[left]                 {$\varepsilon_\emptyset$}   (Re)
+            (Ra)    edge node[above]                {$a$}                       (Tt)
+            (Ra)    edge node[left]                 {$\tau$}                    (Sa)
+            (Se)    edge node[above]                {$t_\varepsilon$}           (St)
+            (St)    edge[bend left] node[left]      {$\varepsilon_\emptyset$}   (Se)
+            (Sa)    edge node[above]                {$t_\varepsilon$}           (St)
+            (St)    edge[bend right] node[right]    {$\varepsilon_{\{a\}}$}   (Sa)
+            (Rt)    edge node[right]                {$\tau$}                    (St);
+            
+    \coordinate [below of=Qt,yshift=10pt] (Qc);
+    \coordinate [below of=Tt,yshift=10pt] (Tc);
+            
+    \draw [dotted,-&gt;,shorten &gt;= 7pt] (Qt) to[bend right] node[left] {$\varepsilon_{\dots}$} (Qc);
+    \draw [dotted,-&gt;,shorten &lt;= 7pt] (Qc) to[bend right] node[right] {$t_\varepsilon$} (Qt);
+    \draw [dotted,-&gt;,shorten &gt;= 7pt] (Tt) to[bend right] node[left] {$\varepsilon_{\dots}$} (Tc);
+    \draw [dotted,-&gt;,shorten &lt;= 7pt] (Tc) to[bend right] node[right] {$t_\varepsilon$} (Tt);
+}}}}
+\vspace{-1cm}›</span></span>
+
+
+<span class="keyword1"><span class="command">subsection</span></span> <span class="quoted"><span class="plain_text">‹Isabelle›</span></span>
+
+<span class="keyword1"><span class="command">subsubsection</span></span> <span class="quoted"><span class="plain_text">‹Formalising \boldmath{$\Proc_\vartheta$} and \boldmath{$\Act_\vartheta$}›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹We specify another locale based on <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>lts_timeout›</span></span></span></span>, where the aforementioned special actions and operators are considered; we call it <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>lts_timeout_mappable›</span></span></span></span>. 
+Since $\Proc \cap \Proc_\vartheta = \emptyset$, we introduce a new type variable <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>'ss›</span></span></span></span> for $\Proc_\vartheta$, but use <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>'a›</span></span></span></span> for both $\Act$ and $\Act_\vartheta$.
+We formalise the family of special actions $\varepsilon_X$ as a mapping <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>ε[_] :: 'a set ⇒ 'a›</span></span></span></span>, and the environment operators $\vartheta$/$\vartheta_X$ as a single mapping <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>θ?[_](_) :: 'a set option ⇒ 's ⇒ 'ss›</span></span></span></span>.
+
+As for <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>lts_timeout›</span></span></span></span> in \cref{sec:LTSt}, we require that all special actions are distinct, formalised by the first set of assumptions <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>distinctness_special_actions›</span></span></span></span>.
+
+As an operator, the term $\vartheta_X(p)$ simply refers to the state $p$ in an environment~$X$; when understood as a mapping, we have to be more careful, since <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>θ?[Some X](p)›</span></span></span></span> is now itself a state. Specifically, we have to assume that <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>θ?[_](_)›</span></span></span></span> is injective (when restricted to domains where <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>X ⊆ visible_actions›</span></span></span></span>, because $\vartheta_X$ is only defined for those $X \subseteq A$). Otherwise, we might have <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>θ?[None](p) = θ?[None](q)›</span></span></span></span> for <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>p ≠ q›</span></span></span></span>, which is problematic if e.g.\@ <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>p›</span></span></span></span> has a <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>τ›</span></span></span></span>-transition, but <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>q›</span></span></span></span> does not.
+Hence, the (restricted) injectivity of <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>θ?[_](_)›</span></span></span></span> is formalised as the set of assumptions <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>injectivity_theta›</span></span></span></span>.
+
+The same is required for the mapping <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>ε[_]›</span></span></span></span>, as formalised in the last clause of the set of assumptions <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>distinctness_special_actions›</span></span></span></span> (the (restricted) injectivity of <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>ε[_]›</span></span></span></span> is part of the requirement that all special actions must be distinct). Again, we only require injectivity for the mapping restricted to the domain <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>visible_actions›</span></span></span></span>. If we required that <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>ε[_] :: 'a set ⇒ 'a›</span></span></span></span> were injective over its entire domain <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>'a set›</span></span></span></span>, we would run into problems, since such a function cannot exist by Cantor's theorem.
+
+That such mappings exist is intuitively clear, whence there were no ambiguities when defining them as operators in the prosaic/mathematical section above. Formalising these mappings in HOL, however, is not so straight\-forward: as operators, we assume that they are only defined for certain parameters; in HOL, every mapping must be total. For now, we simply assume that such total functions that formalise these operators exist. Doing this significantly improves the readability of following sections, since we must only consider the relevant properties of the mappings given by the assumptions. In \cref{chap:example_instantiation}, I give examples for these mappings and show that, together with these, any <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>lts_timeout›</span></span></span></span> can be interpreted as an <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>lts_timeout_mappable›</span></span></span></span>, i.e.\@ every \LTSt{} $\mathbb{T}$ can be mapped to an LTS $\mathbb{T}_\vartheta$.
+
+Lastly, we formalise our requirements $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$ as the last set of assumptions <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>no_epsilon_in_tran›</span></span></span></span>. Technically, these assumptions only state that the $\varepsilon$-actions do not label any transition of $\mathbb{T}$. However, we can assume that 
+$\Act = \{ \alpha \mid \exists p, p'.\; p \xrightarrow{\alpha} p' \}$, 
+since actions that do not label any transitions are not relevant to the behaviour of an LTS.›</span></span>
+
+<span class="keyword1"><span class="command">locale</span></span> lts_timeout_mappable <span class="main">=</span> lts_timeout <span class="quoted"><span class="free">tran</span></span> <span class="quoted"><span class="free">τ</span></span> <span class="quoted"><span class="free">t</span></span> 
+  <span class="keyword2"><span class="keyword">for</span></span> <span class="free">tran</span> <span class="main">::</span> <span class="quoted"><span class="quoted">"<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'a</span> <span class="main">⇒</span> <span class="tfree">'s</span> <span class="main">⇒</span> bool"</span></span> 
+      <span class="main">(</span><span class="quoted">"_ <span class="keyword1">⟼</span>_ _"</span> <span class="main">[</span>70<span class="main">,</span> 70<span class="main">,</span> 70<span class="main">]</span> 80<span class="main">)</span> 
+    <span class="keyword2"><span class="keyword">and</span></span> <span class="free">τ</span> <span class="main">::</span> <span class="tfree"><span class="quoted"><span class="tfree">'a</span></span></span> 
+    <span class="keyword2"><span class="keyword">and</span></span> <span class="free">t</span> <span class="main">::</span> <span class="tfree"><span class="quoted"><span class="tfree">'a</span></span></span> <span class="main">+</span>
+  <span class="keyword2"><span class="keyword">fixes</span></span> <span class="free">t_ε</span> <span class="main">::</span> <span class="tfree"><span class="quoted"><span class="tfree">'a</span></span></span> 
+    <span class="keyword2"><span class="keyword">and</span></span> <span class="free">stabilise</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'a</span> set <span class="main">⇒</span> <span class="tfree">'a</span>›</span></span> 
+      <span class="main">(</span><span class="quoted">‹<span class="keyword1">ε[</span>_<span class="keyword1">]</span>›</span><span class="main">)</span> 
+    <span class="keyword2"><span class="keyword">and</span></span> <span class="free">in_env</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'a</span> set option <span class="main">⇒</span> <span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'ss</span>›</span></span> 
+      <span class="main">(</span><span class="quoted">‹<span class="keyword1">θ?[</span>_<span class="keyword1">]'(</span>_<span class="keyword1">')</span>›</span><span class="main">)</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span>
+    distinctness_special_actions<span class="main">:</span>
+    <span class="quoted"><span class="quoted">‹<span class="free">τ</span> <span class="main">≠</span> <span class="free">t</span>›</span></span> <span class="quoted"><span class="quoted">‹<span class="free">τ</span> <span class="main">≠</span> <span class="free">t_ε</span>›</span></span> <span class="quoted"><span class="quoted">‹<span class="free">t</span> <span class="main">≠</span> <span class="free">t_ε</span>›</span></span>
+    <span class="quoted"><span class="quoted">‹<span class="keyword1"><span class="free">ε[</span></span><span class="free">X</span><span class="main"><span class="free">]</span></span> <span class="main">≠</span> <span class="free">τ</span>›</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1"><span class="free">ε[</span></span><span class="free">X</span><span class="main"><span class="free">]</span></span> <span class="main">≠</span> <span class="free">t</span>›</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1"><span class="free">ε[</span></span><span class="free">X</span><span class="main"><span class="free">]</span></span> <span class="main">≠</span> <span class="free">t_ε</span>›</span></span> 
+    <span class="quoted"><span class="quoted">‹<span class="free">X</span> <span class="main">⊆</span> visible_actions <span class="main">⟹</span> <span class="keyword1"><span class="free">ε[</span></span><span class="free">X</span><span class="main"><span class="free">]</span></span> <span class="main">=</span> <span class="keyword1"><span class="free">ε[</span></span><span class="free">Y</span><span class="main"><span class="free">]</span></span> <span class="main">⟹</span> <span class="free">X</span> <span class="main">=</span> <span class="free">Y</span>›</span></span>
+    <span class="keyword2"><span class="keyword">and</span></span>
+    
+    injectivity_theta<span class="main">:</span>
+    <span class="quoted"><span class="quoted">‹<span class="keyword1"><span class="free">θ?[</span></span>None<span class="main"><span class="free">](</span></span><span class="free">p</span><span class="main"><span class="free">)</span></span> <span class="main">≠</span> <span class="keyword1"><span class="free">θ?[</span></span>Some <span class="free">X</span><span class="main"><span class="free">](</span></span><span class="free">q</span><span class="main"><span class="free">)</span></span>›</span></span>
+    <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="keyword1"><span class="free">θ?[</span></span>None<span class="main"><span class="free">](</span></span><span class="free">p</span><span class="main"><span class="free">)</span></span> <span class="main">=</span> <span class="keyword1"><span class="free">θ?[</span></span>None<span class="main"><span class="free">](</span></span><span class="free">q</span><span class="main"><span class="free">)</span></span><span class="main">)</span> <span class="main">⟶</span> <span class="free">p</span> <span class="main">=</span> <span class="free">q</span>›</span></span>
+    <span class="quoted"><span class="quoted">‹<span class="free">X</span> <span class="main">⊆</span> visible_actions <span class="main">⟹</span> 
+      <span class="main">(</span><span class="keyword1"><span class="free">θ?[</span></span>Some <span class="free">X</span><span class="main"><span class="free">](</span></span><span class="free">p</span><span class="main"><span class="free">)</span></span> <span class="main">=</span> <span class="keyword1"><span class="free">θ?[</span></span>Some <span class="free">Y</span><span class="main"><span class="free">](</span></span><span class="free">q</span><span class="main"><span class="free">)</span></span><span class="main">)</span> <span class="main">⟶</span> <span class="free">X</span> <span class="main">=</span> <span class="free">Y</span> <span class="main">∧</span> <span class="free">p</span> <span class="main">=</span> <span class="free">q</span>›</span></span>
+    <span class="keyword2"><span class="keyword">and</span></span>
+
+    no_epsilon_in_tran<span class="main">:</span>
+    <span class="quoted"><span class="quoted">‹<span class="main">¬</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="keyword1"><span class="free">ε[</span></span><span class="free">X</span><span class="main"><span class="free">]</span></span> <span class="free">q</span>›</span></span>
+    <span class="quoted"><span class="quoted">‹<span class="main">¬</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">t_ε</span> <span class="free">q</span>›</span></span>
+<span class="keyword2"><span class="keyword">begin</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹We can now define abbreviations with notations that correspond more closely to our operators defined above.›</span></span>
+
+<span class="keyword1"><span class="command">abbreviation</span></span> <span class="entity">triggered_env</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'ss</span>›</span></span> 
+  <span class="main">(</span><span class="quoted">‹<span class="keyword1">θ'(</span>_<span class="keyword1">')</span>›</span><span class="main">)</span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1"><span class="free">θ(</span></span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main"><span class="free">)</span></span> <span class="main">≡</span> <span class="keyword1"><span class="free">θ?[</span></span>None<span class="main"><span class="free">](</span></span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main"><span class="free">)</span></span>›</span></span>
+<span class="keyword1"><span class="command">abbreviation</span></span> <span class="entity">stable_env</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'a</span> set <span class="main">⇒</span> <span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'ss</span>›</span></span> 
+  <span class="main">(</span><span class="quoted">‹<span class="keyword1">θ[</span>_<span class="keyword1">]'(</span>_<span class="keyword1">')</span>›</span><span class="main">)</span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1"><span class="free">θ[</span></span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main"><span class="free">](</span></span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main"><span class="free">)</span></span> <span class="main">≡</span> <span class="keyword1"><span class="free">θ?[</span></span>Some <span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main"><span class="free">](</span></span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main"><span class="free">)</span></span>›</span></span>
+
+<span class="comment1">(* This abbreviation and this lemma are not important for the thesis document. *)</span>
+<span class="comment1">(*&lt;*)</span>
+<span class="keyword1"><span class="command">abbreviation</span></span><span class="comment1">✐<span class="quoted">‹tag unimportant›</span></span> <span class="entity">no_special_action</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'a</span> <span class="main">⇒</span> bool›</span></span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">no_special_action</span> <span class="free"><span class="bound"><span class="entity">α</span></span></span> 
+    <span class="main">≡</span> <span class="free"><span class="bound"><span class="entity">α</span></span></span> <span class="main">≠</span> <span class="free">τ</span> <span class="main">∧</span> <span class="free"><span class="bound"><span class="entity">α</span></span></span> <span class="main">≠</span> <span class="free">t</span> <span class="main">∧</span> <span class="free"><span class="bound"><span class="entity">α</span></span></span> <span class="main">≠</span> <span class="free">t_ε</span> <span class="main">∧</span> <span class="main">(</span><span class="main">∀</span> <span class="bound">X</span><span class="main">.</span> <span class="free"><span class="bound"><span class="entity">α</span></span></span> <span class="main">≠</span> <span class="keyword1"><span class="free">ε[</span></span><span class="bound">X</span><span class="main"><span class="free">]</span></span><span class="main">)</span>›</span></span>
+
+<span class="keyword1"><span class="command">lemma</span></span><span class="comment1">✐<span class="quoted"><span class="quoted">‹tag <span class="main"><span class="main">(</span></span>proof<span class="main"><span class="main">)</span></span> unimportant›</span></span></span> special_actions_invisible<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="free">X</span> <span class="main">⊆</span> visible_actions›</span></span> <span class="quoted"><span class="quoted">‹<span class="free">α</span> <span class="main">∈</span> <span class="free">X</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹no_special_action <span class="free">α</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> assms<span class="main">(</span>1<span class="main">)</span> assms<span class="main">(</span>2<span class="main">)</span> no_epsilon_in_tran<span class="main">(</span>1<span class="main">)</span> no_epsilon_in_tran<span class="main">(</span>2<span class="main">)</span> visible_actions_def <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
+<span class="comment1">(*&gt;*)</span>
+
+<span class="keyword1"><span class="command">subsubsection</span></span> <span class="quoted"><span class="plain_text">‹Formalising \boldmath{$\rightarrow_\vartheta$}›</span></span>
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹We formalise the transition relation of our mapping, given above by the structural operational rules, as a function <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>tran_theta›</span></span></span></span>.% 
+\footnote{We use the notation <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>_ ⟼<span class="hidden">⇧</span><sup>θ</sup>_ _›</span></span></span></span> instead of the more obvious <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>_ ⟼<span class="hidden">⇩</span><sub>θ</sub>_ _›</span></span></span></span> simply because of better readability.}
+
+We use the <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>inductive›</span></span></span></span> command, because this allows us to define separate clauses (as opposed to the <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>definition›</span></span></span></span> command). Technically speaking, however, this inductive definition only has base cases, since none of the premises involves <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>⟼<span class="hidden">⇧</span><sup>θ</sup>›</span></span></span></span>.
+
+It should be easy to see that the clauses below correspond directly to the rules above. Like in previous sections, we have to take extra care to handle the requirement <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>X ⊆ visible_actions›</span></span></span></span>.›</span></span>
+
+<span class="keyword1"><span class="command">inductive</span></span> <span class="entity">tran_theta</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'ss</span> <span class="main">⇒</span> <span class="tfree">'a</span> <span class="main">⇒</span> <span class="tfree">'ss</span> <span class="main">⇒</span> bool›</span></span> 
+  <span class="main">(</span><span class="quoted">‹_ <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span>_ _›</span> <span class="main">[</span>70<span class="main">,</span> 70<span class="main">,</span> 70<span class="main">]</span> 70<span class="main">)</span>
+  <span class="keyword2"><span class="keyword">where</span></span> 
+    env_stabilise<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">⊆</span> visible_actions <span class="main">⟹</span> 
+      <span class="keyword1">θ(</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span> <span class="keyword1"><span class="free">⟼<span class="hidden">⇧</span><sup>θ</sup></span></span><span class="keyword1"><span class="free">ε[</span></span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main"><span class="free">]</span></span> <span class="keyword1">θ[</span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main">](</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span>›</span></span>
+  <span class="main">|</span> triggered_tau<span class="main">:</span>
+      <span class="quoted"><span class="quoted">‹<span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="main"><span class="free">⟼</span></span><span class="free">τ</span> <span class="free"><span class="bound"><span class="entity">q</span></span></span> <span class="main">⟹</span> <span class="keyword1">θ(</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span> <span class="keyword1"><span class="free">⟼<span class="hidden">⇧</span><sup>θ</sup></span></span><span class="free">τ</span> <span class="keyword1">θ(</span><span class="free"><span class="bound"><span class="entity">q</span></span></span><span class="main">)</span>›</span></span>
+  <span class="main">|</span> env_timeout<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">⊆</span> visible_actions <span class="main">⟹</span> 
+      idle <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">⟹</span> <span class="keyword1">θ[</span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main">](</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span> <span class="keyword1"><span class="free">⟼<span class="hidden">⇧</span><sup>θ</sup></span></span><span class="free">t_ε</span> <span class="keyword1">θ(</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span>›</span></span>
+  <span class="main">|</span> tran_visible<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">⊆</span> visible_actions <span class="main">⟹</span> 
+      <span class="free"><span class="bound"><span class="entity">a</span></span></span> <span class="main">∈</span> <span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">⟹</span> <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="main"><span class="free">⟼</span></span><span class="free"><span class="bound"><span class="entity">a</span></span></span> <span class="free"><span class="bound"><span class="entity">q</span></span></span> <span class="main">⟹</span> <span class="keyword1">θ[</span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main">](</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span> <span class="keyword1"><span class="free">⟼<span class="hidden">⇧</span><sup>θ</sup></span></span><span class="free"><span class="bound"><span class="entity">a</span></span></span> <span class="keyword1">θ(</span><span class="free"><span class="bound"><span class="entity">q</span></span></span><span class="main">)</span>›</span></span>
+  <span class="main">|</span> stable_tau<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">⊆</span> visible_actions <span class="main">⟹</span> 
+      <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="main"><span class="free">⟼</span></span><span class="free">τ</span> <span class="free"><span class="bound"><span class="entity">q</span></span></span> <span class="main">⟹</span> <span class="keyword1">θ[</span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main">](</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span> <span class="keyword1"><span class="free">⟼<span class="hidden">⇧</span><sup>θ</sup></span></span><span class="free">τ</span> <span class="keyword1">θ[</span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main">](</span><span class="free"><span class="bound"><span class="entity">q</span></span></span><span class="main">)</span>›</span></span>
+  <span class="main">|</span> sys_timeout<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">⊆</span> visible_actions <span class="main">⟹</span> 
+      idle <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">⟹</span> <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="main"><span class="free">⟼</span></span><span class="free">t</span> <span class="free"><span class="bound"><span class="entity">q</span></span></span> <span class="main">⟹</span> <span class="keyword1">θ[</span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main">](</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span> <span class="keyword1"><span class="free">⟼<span class="hidden">⇧</span><sup>θ</sup></span></span><span class="free">t</span> <span class="keyword1">θ[</span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main">](</span><span class="free"><span class="bound"><span class="entity">q</span></span></span><span class="main">)</span>›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\pagebreak›</span></span>
+<span class="keyword1"><span class="command">subsubsection</span></span> <span class="quoted"><span class="plain_text">‹Generation Lemmas›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to reason backwards: if we know <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>P ⟼<span class="hidden">⇧</span><sup>θ</sup>α P'›</span></span></span></span> and some other information about <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>P›</span></span></span></span> and/or <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>α›</span></span></span></span>, we can deduce some information about the other variables as well as the transitions of the original \LTSt{}.›</span></span>
+
+<span class="keyword1"><span class="command">lemma</span></span> generation_triggered_transitions<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ(</span><span class="free">p</span><span class="main">)</span> <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span><span class="free">α</span> <span class="free">P'</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="main">∃</span><span class="bound">X</span><span class="main">.</span> <span class="free">α</span> <span class="main">=</span> <span class="keyword1"><span class="free">ε[</span></span><span class="bound">X</span><span class="main"><span class="free">]</span></span> <span class="main">∧</span> <span class="free">P'</span> <span class="main">=</span> <span class="keyword1">θ[</span><span class="bound">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="main">∧</span> <span class="bound">X</span> <span class="main">⊆</span> visible_actions<span class="main">)</span> 
+    <span class="main">∨</span> <span class="main">(</span><span class="free">α</span> <span class="main">=</span> <span class="free">τ</span> <span class="main">∧</span> <span class="main">(</span><span class="main">∃</span><span class="bound">p'</span><span class="main">.</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">τ</span> <span class="bound">p'</span><span class="main">)</span><span class="main">)</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> iffD1<span class="main">[</span><span class="operator">OF</span> tran_theta.simps assms<span class="main">]</span>
+  <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">smt</span> <span class="main"><span class="main">(</span></span>z3<span class="main"><span class="main">)</span></span> injectivity_theta<span class="main"><span class="main">(</span></span>1<span class="main"><span class="main">,</span></span>2<span class="main"><span class="main">)</span></span><span class="main">)</span>
+
+<span class="keyword1"><span class="command">lemma</span></span> generation_stable_transitions<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span><span class="free">α</span> <span class="free">P'</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="free">α</span> <span class="main">=</span> <span class="free">t_ε</span> <span class="main">∨</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">p'</span><span class="main">.</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">α</span> <span class="bound">p'</span> <span class="main">∧</span> <span class="main">(</span><span class="free">α</span> <span class="main">∈</span> <span class="free">X</span> <span class="main">∨</span> <span class="free">α</span> <span class="main">=</span> <span class="free">τ</span> <span class="main">∨</span> <span class="free">α</span> <span class="main">=</span> <span class="free">t</span><span class="main">)</span><span class="main">)</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> iffD1<span class="main">[</span><span class="operator">OF</span> tran_theta.simps assms<span class="main">]</span>
+  <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">smt</span> injectivity_theta<span class="main"><span class="main">(</span></span>1<span class="main"><span class="main">,</span></span>3<span class="main"><span class="main">)</span></span> lts_timeout_mappable_axioms<span class="main">)</span>
+  
+<span class="keyword1"><span class="command">lemma</span></span> generation_env_stabilise<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="free">P</span> <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span><span class="keyword1"><span class="free">ε[</span></span><span class="free">X</span><span class="main"><span class="free">]</span></span> <span class="free">P'</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="main">∃</span> <span class="bound">p</span><span class="main">.</span> <span class="free">P</span> <span class="main">=</span> <span class="keyword1">θ(</span><span class="bound">p</span><span class="main">)</span> <span class="main">∧</span> <span class="free">P'</span> <span class="main">=</span> <span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="bound">p</span><span class="main">)</span>›</span></span> 
+  <span class="keyword1"><span class="command">using</span></span> iffD1<span class="main">[</span><span class="operator">OF</span> tran_theta.simps assms<span class="main"><span class="main">(</span></span>1<span class="main"><span class="main">)</span></span><span class="main">]</span> 
+  <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">smt</span> <span class="main"><span class="main">(</span></span>z3<span class="main"><span class="main">)</span></span> distinctness_special_actions<span class="main"><span class="main">(</span></span>6<span class="main"><span class="main">)</span></span> distinctness_special_actions<span class="main"><span class="main">(</span></span>7<span class="main"><span class="main">)</span></span> no_epsilon_in_tran<span class="main"><span class="main">(</span></span>1<span class="main"><span class="main">)</span></span><span class="main">)</span>
+
+<span class="keyword1"><span class="command">lemma</span></span> generation_triggered_tau<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ(</span><span class="free">p</span><span class="main">)</span> <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span><span class="free">τ</span> <span class="free">P'</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="main">∃</span> <span class="bound">p'</span><span class="main">.</span> <span class="free">P'</span> <span class="main">=</span> <span class="keyword1">θ(</span><span class="bound">p'</span><span class="main">)</span> <span class="main">∧</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">τ</span> <span class="bound">p'</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> iffD1<span class="main">[</span><span class="operator">OF</span> tran_theta.simps assms<span class="main">]</span>
+  <span class="keyword1"><span class="command">using</span></span> distinctness_special_actions<span class="main">(</span>4<span class="main">)</span> injectivity_theta<span class="main">(</span>1<span class="main">)</span> injectivity_theta<span class="main">(</span>2<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+  
+<span class="keyword1"><span class="command">lemma</span></span> generation_env_timeout<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span><span class="free">t_ε</span> <span class="free">P'</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="free">P'</span> <span class="main">=</span> <span class="keyword1">θ(</span><span class="free">p</span><span class="main">)</span> <span class="main">∧</span> idle <span class="free">p</span> <span class="free">X</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> iffD1<span class="main">[</span><span class="operator">OF</span> tran_theta.simps assms<span class="main">]</span> distinctness_special_actions
+  <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">smt</span> injectivity_theta<span class="main"><span class="main">(</span></span>3<span class="main"><span class="main">)</span></span> insertCI no_epsilon_in_tran<span class="main"><span class="main">(</span></span>2<span class="main"><span class="main">)</span></span><span class="main">)</span><span class="main"><span class="keyword3">+</span></span>
+
+<span class="keyword1"><span class="command">lemma</span></span> generation_tran_visible<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span><span class="free">a</span> <span class="free">P'</span>›</span></span> <span class="quoted"><span class="quoted">‹<span class="free">a</span> <span class="main">∈</span> visible_actions›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="free">a</span> <span class="main">∈</span> <span class="free">X</span> <span class="main">∧</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">p'</span><span class="main">.</span> <span class="free">P'</span> <span class="main">=</span> <span class="keyword1">θ(</span><span class="bound">p'</span><span class="main">)</span> <span class="main">∧</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">a</span> <span class="bound">p'</span><span class="main">)</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> iffD1<span class="main">[</span><span class="operator">OF</span> tran_theta.simps assms<span class="main"><span class="main">(</span></span>1<span class="main"><span class="main">)</span></span><span class="main">]</span>
+<span class="keyword1"><span class="command">proof</span></span> <span class="main">(</span><span class="operator">elim</span> disjE<span class="main"><span class="keyword3">,</span></span> <span class="operator">goal_cases</span><span class="main">)</span>
+  <span class="keyword3"><span class="command">case</span></span> 1
+  <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">metis</span> injectivity_theta<span class="main"><span class="main">(</span></span>1<span class="main"><span class="main">)</span></span><span class="main">)</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 2
+  <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">obtain</span></span> <span class="skolem"><span class="skolem">p'</span></span> <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="main">=</span> <span class="keyword1">θ(</span><span class="skolem">p'</span><span class="main">)</span>›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> injectivity_theta<span class="main">(</span>1<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">metis</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 3
+  <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">using</span></span> assms<span class="main">(</span>2<span class="main">)</span> no_epsilon_in_tran<span class="main">(</span>2<span class="main">)</span> visible_actions_def <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 4
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted"><span class="quoted">‹<span class="free">X</span> <span class="main">⊆</span> visible_actions›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">metis</span> injectivity_theta<span class="main"><span class="main">(</span></span>3<span class="main"><span class="main">)</span></span><span class="main">)</span>
+  <span class="keyword1"><span class="command">with</span></span> 4 <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">using</span></span> injectivity_theta<span class="main">(</span>3<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 5
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> visible_actions_def assms<span class="main">(</span>2<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 6
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> visible_actions_def assms<span class="main">(</span>2<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+<span class="keyword1"><span class="command">qed</span></span>
+
+<span class="keyword1"><span class="command">lemma</span></span> generation_stable_tau<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span><span class="free">τ</span> <span class="free">P'</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="main">∃</span> <span class="bound">p'</span><span class="main">.</span> <span class="free">P'</span> <span class="main">=</span> <span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="bound">p'</span><span class="main">)</span> <span class="main">∧</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">τ</span> <span class="bound">p'</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> iffD1<span class="main">[</span><span class="operator">OF</span> tran_theta.simps assms<span class="main">]</span>
+<span class="keyword1"><span class="command">proof</span></span> <span class="main">(</span><span class="operator">elim</span> disjE<span class="main"><span class="keyword3">,</span></span> <span class="operator">goal_cases</span><span class="main">)</span>
+  <span class="keyword3"><span class="command">case</span></span> 1
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> distinctness_special_actions <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 2
+  <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">obtain</span></span> <span class="skolem"><span class="skolem">p'</span></span> <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="main">=</span> <span class="keyword1">θ(</span><span class="skolem">p'</span><span class="main">)</span>›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> injectivity_theta<span class="main">(</span>1<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">metis</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 3
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> distinctness_special_actions <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 4
+  <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">using</span></span> visible_actions_def <span class="keyword1"><span class="command">by</span></span> <span class="operator">fastforce</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 5
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted"><span class="quoted">‹<span class="free">X</span> <span class="main">⊆</span> visible_actions›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">metis</span> injectivity_theta<span class="main"><span class="main">(</span></span>3<span class="main"><span class="main">)</span></span><span class="main">)</span>
+  <span class="keyword1"><span class="command">with</span></span> 5 <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">using</span></span> injectivity_theta<span class="main">(</span>3<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 6
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> lts_timeout_axioms lts_timeout_def <span class="keyword1"><span class="command">by</span></span> <span class="operator">force</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+<span class="keyword1"><span class="command">qed</span></span>
+
+<span class="keyword1"><span class="command">lemma</span></span> generation_sys_timeout<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="keyword1">⟼<span class="hidden">⇧</span><sup>θ</sup></span><span class="free">t</span> <span class="free">P'</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="main">∃</span> <span class="bound">p'</span><span class="main">.</span> <span class="free">P'</span> <span class="main">=</span> <span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="bound">p'</span><span class="main">)</span> <span class="main">∧</span> idle <span class="free">p</span> <span class="free">X</span> <span class="main">∧</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">t</span> <span class="bound">p'</span>›</span></span>
+  <span class="keyword1"><span class="command">using</span></span> iffD1<span class="main">[</span><span class="operator">OF</span> tran_theta.simps assms<span class="main">]</span>
+<span class="keyword1"><span class="command">proof</span></span> <span class="main">(</span><span class="operator">elim</span> disjE<span class="main"><span class="keyword3">,</span></span> <span class="operator">goal_cases</span><span class="main">)</span>
+  <span class="keyword3"><span class="command">case</span></span> 1
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> distinctness_special_actions <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">..</span></span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 2
+  <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">obtain</span></span> <span class="skolem"><span class="skolem">p'</span></span> <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1">θ[</span><span class="free">X</span><span class="main">](</span><span class="free">p</span><span class="main">)</span> <span class="main">=</span> <span class="keyword1">θ(</span><span class="skolem">p'</span><span class="main">)</span>›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> injectivity_theta<span class="main">(</span>1<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">metis</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">..</span></span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 3
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> distinctness_special_actions <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">..</span></span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 4
+  <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">using</span></span> visible_actions_def <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 5
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">using</span></span> lts_timeout_axioms lts_timeout_def <span class="keyword1"><span class="command">by</span></span> <span class="operator">force</span>
+  <span class="keyword3"><span class="command">thus</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">..</span></span>
+<span class="keyword1"><span class="command">next</span></span>
+  <span class="keyword3"><span class="command">case</span></span> 6
+  <span class="keyword1"><span class="command">hence</span></span> <span class="quoted"><span class="quoted">‹<span class="free">X</span> <span class="main">⊆</span> visible_actions›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">metis</span> injectivity_theta<span class="main"><span class="main">(</span></span>3<span class="main"><span class="main">)</span></span><span class="main">)</span>
+  <span class="keyword1"><span class="command">with</span></span> 6 <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> <span class="keyword1"><span class="command">using</span></span> injectivity_theta<span class="main">(</span>3<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span>
+<span class="keyword1"><span class="command">qed</span></span>
+
+<span class="keyword2"><span class="keyword">end</span></span> <span class="comment1">― ‹of <span class="antiquoted"><span class="raw_text"><span class="operator">‹</span>locale lts_timeout_mappable›</span></span>›</span>
+<span class="comment1">(*&lt;*)</span>
+<span class="keyword2"><span class="keyword">end</span></span> <span class="comment1">― ‹of ‹theory››</span>
+<span class="comment1">(*&gt;*)</span></pre>
+</body>
+
+</html>

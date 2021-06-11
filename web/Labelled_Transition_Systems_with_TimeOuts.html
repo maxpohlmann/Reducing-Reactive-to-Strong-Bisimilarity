@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Labelled_Transition_Systems_with_TimeOuts</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Labelled_Transition_Systems_with_TimeOuts</h1>
+</div>
+
+<pre class="source"><span class="comment1">(*&lt;*)</span>
+<span class="keyword1"><span class="command">theory</span></span> Labelled_Transition_Systems_with_TimeOuts
+  <span class="keyword2"><span class="keyword">imports</span></span> <a href="Labelled_Transition_Systems.html">Labelled_Transition_Systems</a>
+<span class="keyword2"><span class="keyword">begin</span></span>
+<span class="comment1">(*&gt;*)</span>
+
+<span class="keyword1"><span class="command">section</span></span> <span class="quoted"><span class="plain_text">‹Labelled Transition Systems with Time-Outs›</span></span>
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\label{sec:LTSt}›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹In addition to the hidden action $\tau$, labelled transition systems with time-outs (\LTSt{}) <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> vanglabbeek2021failure<span class="antiquote"><span class="antiquote">}</span></span></span></span> include the \emph{time-out action} $t$ as another special action; $t$-transitions can only be performed when no other (non--time-out) transition is allowed in a given environment. The rationale is that, in this model, all transitions that are facilitated by or independent of the environment happen instantaneously, and only when no such transition is possible, time elapses and the system is idle.
+However, since the passage of time is not quantified here, the system does not \emph{have} to take a time-out transition in such a case; instead, the environment can spontaneously change its set of allowed actions (corresponding to a time-out on the part of the environment). Thus, the resolution of an idling period is non-deterministic.
+
+In most works on LTSs, the actions which the environment allows in any given moment are usually not modelled explicitly; an (often implicit) requirement for any property of the system is that it should hold for arbitrary (and arbitrarily changing) environments. The introduction of time-outs necessitates an explicit consideration of the environment, as the possibility of a transition not only depends on whether its labelling action is currently allowed, but potentially on the set of all actions currently allowed by the environment. This is why, in previous sections, I have put unusual emphasis on the actions that are allowed or blocked by the system's environment in a given moment. Henceforth, I will refer to \enquote{environments allowing \emph{exactly} the actions in $X$} simply as \enquote{environments~$X$}.
+\pagebreak
+\example{%
+The process $p$ can perform an $a$-transition in environments allowing the action $a$ and a $t$-transition in environments blocking $a$. On the other hand, the process $q$ cannot perform a $t$-transition in any environment, since the $\tau$-transition will always be performed immediately.
+
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (q0) [right of=p0,xshift=3cm]   {$q$};
+    \node[state]    (q1) [below left of=q0]         {$q_1$};
+    \node[state]    (q2) [below right of=q0]        {$q_2$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$t$}   (p2)
+            (q0) edge node[above left]  {$\tau$}(q1)
+                 edge node              {$t$}   (q2);
+}}
+
+Furthermore, since $t$-transitions (as well as $\tau$-transitions) are hidden, they cannot trigger a change of the environment, so some states may only ever be entered in certain environments.
+
+\example{%
+The process $p$ can perform a $t$-transition only in environments blocking $a$. Therefore, the subsequent state $p_2$ must be entered in such an environment. The $\tau$-transition is now the only possible transition and will always be performed immediately.
+
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (p3) [below left of=p2]         {$p_3$};
+    \node[state]    (p4) [below right of=p2]        {$p_4$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$t$}   (p2)
+            (p2) edge node[above left]  {$\tau$}   (p3)
+                 edge node              {$a$}(p4);
+}}
+
+On the other hand, transitions with labels other than $\tau$ and $t$ require an interaction with the environment, and therefore \emph{are} detectable and can trigger a change in the allowed actions of the environment.
+
+\example{%
+Only in environments blocking $a$, $p$ can make a $t$-transition to $p_2$. However (if $b$ is allowed), the performance of the $b$-transition into $p_3$ may trigger a change of the environment, so it is possible that $p_3$ could perform its $a$-transition.
+
+\lts{
+    \node[state]    (p0)                            {$p$};
+    \node[state]    (p1) [below left of=p0]         {$p_1$};
+    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (p3) [right of=p2,xshift=1cm]              {$p_3$};
+    \node[state]    (p4) [below left of=p3]         {$p_4$};
+    \node[state]    (p5) [below right of=p3]        {$p_5$};
+    
+    \path   (p0) edge node[above left]  {$a$}   (p1)
+                 edge node              {$t$}   (p2)
+            (p2) edge node              {$b$}   (p3)
+            (p3) edge node[above left]  {$\tau$}   (p4)
+                 edge node              {$a$}(p5);
+}}
+
+These semantics of \LTSt{}s induce a novel notion of behavioural equivalence, which will be discussed in the next section.›</span></span>
+
+<span class="keyword1"><span class="command">subsubsection</span></span> <span class="quoted"><span class="plain_text">‹Note on Metavariable usage›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹If not referenced directly by $\vartheta(p)$ or $\vartheta_X(p)$, arbitrary states of an \LTSt{} range over $P, Q, P', Q', \dots$, where $P$ and $P'$ are used for states connected by some transition (i.e.\@ $P \xrightarrow{\alpha}_\vartheta P'$), whereas $P$ and $Q$ are used for states possibly related by an equivalence, as will be discussed in the next section.›</span></span>
+
+<span class="keyword1"><span class="command">subsubsection</span></span> <span class="quoted"><span class="plain_text">‹Practical Example›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹As in \cref{sec:LTS}, we shall consider a real-world machine that may be modelled as an \LTSt{}. Continuing with our example, let us imagine that our simple vending machine ejects the coin if no snack has been selected after a certain amount of time. We can attempt to model the machine with this extended behaviour as an LTS, where the coin ejection requires no interaction and is therefore also modelled as a $\tau$-transition.
+
+\lts{
+    \node[state]    (p0) {$p$};
+    \node[state]    (p1) [below of=p0] {$p_1$};
+    \node[state]    (p2) [below left of=p1,xshift=-10pt] {$p_2$};
+    \node[state]    (p3) [below of=p1] {$p_3$};
+    \node[state]    (p4) [below right of=p1,xshift=10pt] {$p_4$};
+    
+    \path   (p0) edge node[right] {coin} (p1)
+            (p1) edge node[above left] {choc} (p2)
+                 edge node[right] {nuts} (p3)
+                 edge node[above right] {crisps} (p4);
+                 
+    \draw (p2) to[out=150, in=180, looseness=1, edge node={node [left] {$\tau$}}] (p0);
+    \draw (p4) to[out=30, in=-30, looseness=1, edge node={node [right] {$\tau$}}] (p0);
+    \draw (p3) to[out=-20, in=0, looseness=2.5, edge node={node [right] {$\tau$}}] (p0);
+    \draw (p1) to[out=150, in=230, looseness=.8, edge node={node [left] {$\tau$}}] (p0);
+}
+
+However, this LTS also models a machine that randomly ejects coins right after insertion.
+In order to distinguish these behaviours, we need a $t$-transition along with \LTSt{} semantics.
+
+\lts{
+    \node[state]    (p0) {$p$};
+    \node[state]    (p1) [below of=p0] {$p_1$};
+    \node[state]    (p11) [below left of=p0,xshift=-10pt] {$p_1'$};
+    \node[state]    (p2) [below left of=p1,xshift=-10pt] {$p_2$};
+    \node[state]    (p3) [below of=p1] {$p_3$};
+    \node[state]    (p4) [below right of=p1,xshift=10pt] {$p_4$};
+    
+    \path   (p0) edge node[right] {coin} (p1)
+            (p1) edge node[above left] {choc} (p2)
+                 edge node[right] {nuts} (p3)
+                 edge node[above right] {crisps} (p4)
+            (p1) edge node[above] {$t$} (p11)
+            (p11) edge node[left] {$\tau$} (p0);
+                 
+    \draw (p2) to[out=150, in=180, looseness=2, edge node={node [left] {$\tau$}}] (p0);
+    \draw (p4) to[out=30, in=-30, looseness=1, edge node={node [right] {$\tau$}}] (p0);
+    \draw (p3) to[out=-20, in=0, looseness=2.5, edge node={node [right] {$\tau$}}] (p0);
+}›</span></span>
+
+
+<span class="keyword1"><span class="command">subsection</span></span> <span class="quoted"><span class="plain_text">‹Isabelle›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹We extend LTSs with hidden actions (<span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>lts_tau›</span></span></span></span>) by the special action <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>t›</span></span></span></span>. We have to explicitly require (/assume) that <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>τ ≠ t›</span></span></span></span>; when instantiating the locale <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>lts_timeout›</span></span></span></span> and specifying a concrete type for the type variable <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>'a›</span></span></span></span>, this assumption must be (proved to be) satisfied.›</span></span>
+
+<span class="keyword1"><span class="command">locale</span></span> lts_timeout <span class="main">=</span> lts_tau <span class="quoted"><span class="free">tran</span></span> <span class="quoted"><span class="free">τ</span></span> 
+  <span class="keyword2"><span class="keyword">for</span></span> <span class="free">tran</span> <span class="main">::</span> <span class="quoted"><span class="quoted">"<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'a</span> <span class="main">⇒</span> <span class="tfree">'s</span> <span class="main">⇒</span> bool"</span></span> 
+    <span class="main">(</span><span class="quoted">"_ <span class="keyword1">⟼</span>_ _"</span> <span class="main">[</span>70<span class="main">,</span> 70<span class="main">,</span> 70<span class="main">]</span> 80<span class="main">)</span>
+    <span class="keyword2"><span class="keyword">and</span></span> <span class="free">τ</span> <span class="main">::</span> <span class="quoted"><span class="quoted">"<span class="tfree">'a</span>"</span></span> <span class="main">+</span>
+  <span class="keyword2"><span class="keyword">fixes</span></span> <span class="free">t</span> <span class="main">::</span> <span class="quoted"><span class="quoted">"<span class="tfree">'a</span>"</span></span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> tau_not_t<span class="main">:</span> <span class="quoted"><span class="quoted">‹<span class="free">τ</span> <span class="main">≠</span> <span class="free">t</span>›</span></span>
+<span class="keyword2"><span class="keyword">begin</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹We define the set of (relevant) visible actions (usually denoted by $A \subseteq \Act$) as the set of all actions that are not hidden and that are labels of some transition in the given LTS.›</span></span>
+
+<span class="keyword1"><span class="command">definition</span></span> <span class="entity">visible_actions</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'a</span> set›</span></span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">visible_actions</span> 
+    <span class="main">≡</span> <span class="main">{</span><span class="bound">a</span><span class="main">.</span> <span class="main">(</span><span class="bound">a</span> <span class="main">≠</span> <span class="free">τ</span><span class="main">)</span> <span class="main">∧</span> <span class="main">(</span><span class="bound">a</span> <span class="main">≠</span> <span class="free">t</span><span class="main">)</span> <span class="main">∧</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">p</span> <span class="bound">p'</span><span class="main">.</span> <span class="bound">p</span> <span class="main"><span class="free">⟼</span></span><span class="bound">a</span> <span class="bound">p'</span><span class="main">)</span><span class="main">}</span>›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The formalisations in upcoming sections will often involve the type <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>'a set option›</span></span></span></span>, which has values of the form <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>None›</span></span></span></span> and <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>Some X›</span></span></span></span> for some <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>X :: 'a set›</span></span></span></span>. We will usually use the metavariable <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>XoN›</span></span></span></span> (for \enquote{<span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>X›</span></span></span></span> or <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>None›</span></span></span></span>}). The following abbreviation will be useful in these situations.›</span></span>
+
+<span class="keyword1"><span class="command">abbreviation</span></span> <span class="entity">some_visible_subset</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'a</span> set option <span class="main">⇒</span> bool›</span></span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">some_visible_subset</span> <span class="free"><span class="bound"><span class="entity">XoN</span></span></span> 
+    <span class="main">≡</span> <span class="main">∃</span> <span class="bound">X</span><span class="main">.</span> <span class="free"><span class="bound"><span class="entity">XoN</span></span></span> <span class="main">=</span> Some <span class="bound">X</span> <span class="main">∧</span> <span class="bound">X</span> <span class="main">⊆</span> visible_actions›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The initial actions of a process ($\mathcal{I}(p)$ in <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> rbs<span class="antiquote"><span class="antiquote">}</span></span></span></span>) are the actions for which the process has a transition it can perform immediately (if facilitated by the environment), i.e.\@ it is not a $t$-transition.›</span></span>
+
+<span class="keyword1"><span class="command">definition</span></span> <span class="entity">initial_actions</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'a</span> set›</span></span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">initial_actions</span><span class="main">(</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span> 
+    <span class="main">≡</span> <span class="main">{</span><span class="bound">α</span><span class="main">.</span> <span class="main">(</span><span class="bound">α</span> <span class="main">∈</span> visible_actions <span class="main">∨</span> <span class="bound">α</span> <span class="main">=</span> <span class="free">τ</span><span class="main">)</span> <span class="main">∧</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">p'</span><span class="main">.</span> <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="main"><span class="free">⟼</span></span><span class="bound">α</span> <span class="bound">p'</span><span class="main">)</span><span class="main">}</span>›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹In <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> rbs<span class="antiquote"><span class="antiquote">}</span></span></span></span>, the term $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$ is used a lot, which expresses that there are no immediate transitions the process $p$ can perform (i.e.\@ it is idle) in environments~$X$.›</span></span>
+
+<span class="keyword1"><span class="command">abbreviation</span></span> <span class="entity">idle</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'a</span> set <span class="main">⇒</span> bool›</span></span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">idle</span> <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="free"><span class="bound"><span class="entity">X</span></span></span> <span class="main">≡</span> initial_actions<span class="main">(</span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main">)</span> <span class="main">∩</span> <span class="main">(</span><span class="free"><span class="bound"><span class="entity">X</span></span></span><span class="main">∪</span><span class="main">{</span><span class="free">τ</span><span class="main">}</span><span class="main">)</span> <span class="main">=</span> <span class="main">∅</span>›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\pagebreak
+The following corollary is an immediate consequence of this definition.›</span></span>
+
+<span class="keyword1"><span class="command">corollary</span></span> idle_no_derivatives<span class="main">:</span>
+  <span class="keyword2"><span class="keyword">assumes</span></span> 
+    <span class="quoted"><span class="quoted">‹idle <span class="free">p</span> <span class="free">X</span>›</span></span> 
+    <span class="quoted"><span class="quoted">‹<span class="free">X</span> <span class="main">⊆</span> visible_actions›</span></span>
+    <span class="quoted"><span class="quoted">‹<span class="free">α</span> <span class="main">∈</span> <span class="free">X</span><span class="main">∪</span><span class="main">{</span><span class="free">τ</span><span class="main">}</span>›</span></span>
+  <span class="keyword2"><span class="keyword">shows</span></span>
+    <span class="quoted"><span class="quoted">‹<span class="main">∄</span> <span class="bound">p'</span><span class="main">.</span> <span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">α</span> <span class="bound">p'</span>›</span></span>
+<span class="keyword1"><span class="command">proof</span></span> <span class="main">(</span><span class="operator">rule</span> ccontr<span class="main"><span class="keyword3">,</span></span> <span class="operator">auto</span><span class="main">)</span>
+  <span class="keyword3"><span class="command">fix</span></span> <span class="skolem">p'</span>
+  <span class="keyword3"><span class="command">assume</span></span> <span class="quoted"><span class="quoted">‹<span class="free">p</span> <span class="main"><span class="free">⟼</span></span><span class="free">α</span> <span class="skolem">p'</span>›</span></span>
+  <span class="keyword1"><span class="command">with</span></span> assms<span class="main">(</span>2<span class="main">,</span>3<span class="main">)</span> <span class="keyword1"><span class="command">have</span></span> <span class="quoted"><span class="quoted">‹<span class="free">α</span> <span class="main">∈</span> initial_actions<span class="main">(</span><span class="free">p</span><span class="main">)</span>›</span></span>
+    <span class="keyword1"><span class="command">unfolding</span></span> initial_actions_def <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
+  <span class="keyword1"><span class="command">with</span></span> assms<span class="main">(</span>3<span class="main">)</span> <span class="keyword1"><span class="command">have</span></span> <span class="quoted"><span class="quoted">‹<span class="main">¬</span> idle <span class="free">p</span> <span class="free">X</span>›</span></span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">blast</span> 
+  <span class="keyword1"><span class="command">with</span></span> assms<span class="main">(</span>1<span class="main">)</span> <span class="keyword3"><span class="command">show</span></span> <span class="quoted">False</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">simp</span>
+<span class="keyword1"><span class="command">qed</span></span>
+
+<span class="keyword2"><span class="keyword">end</span></span> <span class="comment1">― ‹of <span class="antiquoted"><span class="raw_text"><span class="operator">‹</span>locale lts_timeout›</span></span>›</span>
+<span class="comment1">(*&lt;*)</span>
+<span class="keyword2"><span class="keyword">end</span></span> <span class="comment1">― ‹of ‹theory››</span>
+<span class="comment1">(*&gt;*)</span></pre>
+</body>
+
+</html>

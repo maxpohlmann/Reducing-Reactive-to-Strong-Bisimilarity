@@ -41,9 +41,9 @@ A Labelled Transition System (LTS) consists of a set of processes (or states) $\
 
 LTSs can model reactive systems, as discussed in \cref{chap:introduction}. A process of an LTS, then, corresponds to a momentary state of a reactive system. The outgoing transitions of each process correspond to the actions the reactive system could perform in that state (yielding a subsequent process/state), if facilitated by the environment. The choice between the facilitated transitions of a process is non-deterministic.
 
-This facilitation by the environment can be thought of as a set of actions that the environment allows in a given moment, or, more intuitively, as a set of simultaneous inputs from the environment to which the system may react. We call the actions not allowed by the environment in a given moment \emph{blocked}.
+This facilitation can be thought of as a set of actions that the environment allows in a given moment, or, more intuitively, as a set of simultaneous inputs from the environment to which the system may react. We call the actions not allowed by the environment in a given moment \emph{blocked}.
 
-The environment can also observe which transitions a system performs and change the set of allowed actions in response.
+The environment can also observe which transitions a system performs and react by changing the set of allowed actions in response.
 
 In classical treatments of LTSs, the actions that the environment allows, blocks, or reacts to, are often considered only implicitly. The reason we put this emphasis on the environment here will become apparent in \cref{sec:LTSt}.
 
@@ -61,7 +61,7 @@ The process $p$ can perform any of the $a$-transitions in environments allowing 
                  edge node[above right]         {$b$}   (p3);
 }}
 
-A \emph{hidden action}, denoted by $\tau$, allows for additional semantics: a $\tau$-transition can be performed by a process regardless of the set of actions allowed by the current environment. Depending on the specific semantic context, the performance of a hidden action may also be unobservable (hence the name).%
+A \emph{hidden action}, denoted by $\tau$, allows for additional semantics: a $\tau$-transition can be performed by a process without any interaction from the environment. Depending on the specific semantic context, the performance of a hidden action may also be unobservable (hence the name).%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimdocument
@@ -112,7 +112,7 @@ $$\forall p \in \Proc, \alpha \in \Act .\; \mathit{Der}(p, \alpha) \text{ is cou
 \begin{isamarkuptext}%
 States of an LTS range over $p, q, p', q', \dots$, where $p$ and $p'$ are used for states connected by some transition (i.e.\@ $p \xrightarrow{\alpha} p'$), whereas $p$ and $q$ are used for states possibly related by some equivalence (e.g.\@ $p \leftrightarrow q$), as will be discussed in the next section.
 
-An arbitrary action of an LTS will be referenced by $\alpha$, whereas an arbitrary \emph{visible} action will be referenced by $a$.%
+An arbitrary action of an LTS will be referenced by $\alpha$, whereas an arbitrary \emph{visible} (i.e.\@ non-hidden) action will be referenced by $a$.%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimdocument
@@ -133,7 +133,7 @@ An arbitrary action of an LTS will be referenced by $\alpha$, whereas an arbitra
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-Before we look at the Isabelle formalisation of LTSs, let us take a detour away from purely theoretical deliberations and consider a real-world machine that may be modelled by an LTS. We can imagine a very simple snack-selling vending machine that accepts only one type of coin and has individual buttons for each of the snacks. When a coin is inserted and a button pressed, the machine dispenses the desired snack and is then ready to accept coins once again. Because the dispensing of the snack itself requires no interaction from the user, we model it as a $\tau$-transition.
+Let us take a detour away from purely theoretical deliberations and consider a real-world machine that may be modelled as an LTS. We can imagine a very simple snack-selling vending machine that accepts only one type of coin and has individual buttons for each of the snacks. When a coin is inserted and a button pressed, the machine dispenses the desired snack and is then ready to accept coins once again. Because the dispensing of the snack itself requires no interaction from the user, we model it as a $\tau$-transition.
 
 \lts{
     \node[state]    (p0) {$p$};
@@ -150,7 +150,8 @@ Before we look at the Isabelle formalisation of LTSs, let us take a detour away 
     \draw (p2) to[out=150, in=210, looseness=1, edge node={node [left] {$\tau$}}] (p0);
     \draw (p4) to[out=30, in=-30, looseness=1, edge node={node [right] {$\tau$}}] (p0);
     \draw (p3) to[out=-20, in=0, looseness=2.5, edge node={node [right] {$\tau$}}] (p0);
-}%
+}
+\vspace{-1.5cm}%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimdocument
@@ -171,7 +172,7 @@ Before we look at the Isabelle formalisation of LTSs, let us take a detour away 
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-In the following Isabelle formalisation of LTSs, the sets of states and actions are denoted by type variables \isa{{\isacharprime}{\kern0pt}s} and \isa{{\isacharprime}{\kern0pt}a}, respectively. A specific LTS on these sets is then determined entirely by its set of transitions, denoted by the predicate \isa{tran}. We can also associate it with a more readable notation (\isa{p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}} for $p \xrightarrow{\alpha} p'$).%
+The sets of states and actions are formalised by type variables \isa{{\isacharprime}{\kern0pt}s} and \isa{{\isacharprime}{\kern0pt}a}, respectively. A specific LTS on these sets is then determined entirely by its set of transitions, denoted by the predicate \isa{tran}. We associate it with a more readable notation (\isa{p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}} for $p \xrightarrow{\alpha} p'$).%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{locale}\isamarkupfalse%
 \ lts\ {\isacharequal}{\kern0pt}\ \isanewline
@@ -179,23 +180,22 @@ In the following Isabelle formalisation of LTSs, the sets of states and actions 
 \ \ \ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{8}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
 \isakeyword{begin}%
 \begin{isamarkuptext}%
-The other concepts above can be formalised in a straight-forward manner:%
+The other definitions can be formalised in a straightforward manner.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{abbreviation}\isamarkupfalse%
 \ derivatives\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ set{\isacartoucheclose}\ \isanewline
 \ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}Der{\isacharprime}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{5}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
-\ \ \isakeyword{where}\ {\isacartoucheopen}Der{\isacharparenleft}{\kern0pt}p{\isacharcomma}{\kern0pt}\ {\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymequiv}\ {\isacharbraceleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacartoucheclose}%
-\begin{isamarkuptext}%
-The following properties concern the entire LTS at hand (given by the locale context) and will be useful when we want to state lemmas that only hold for LTSs that satisfy these properties.%
-\end{isamarkuptext}\isamarkuptrue%
+\ \ \isakeyword{where}\ {\isacartoucheopen}Der{\isacharparenleft}{\kern0pt}p{\isacharcomma}{\kern0pt}\ {\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymequiv}\ {\isacharbraceleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacartoucheclose}\isanewline
+\isanewline
 \isacommand{definition}\isamarkupfalse%
 \ image{\isacharunderscore}{\kern0pt}finite\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}bool{\isacartoucheclose}\isanewline
 \ \ \isakeyword{where}\ {\isacartoucheopen}image{\isacharunderscore}{\kern0pt}finite\ {\isasymequiv}\ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ {\isasymalpha}{\isachardot}{\kern0pt}\ finite\ Der{\isacharparenleft}{\kern0pt}p{\isacharcomma}{\kern0pt}\ {\isasymalpha}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\isanewline
 \isacommand{definition}\isamarkupfalse%
 \ image{\isacharunderscore}{\kern0pt}countable\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}bool{\isacartoucheclose}\isanewline
-\ \ \isakeyword{where}\ {\isacartoucheopen}image{\isacharunderscore}{\kern0pt}countable\ {\isasymequiv}\ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ {\isasymalpha}{\isachardot}{\kern0pt}\ countable\ Der{\isacharparenleft}{\kern0pt}p{\isacharcomma}{\kern0pt}\ {\isasymalpha}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\isanewline
+\ \ \isakeyword{where}\ {\isacartoucheopen}image{\isacharunderscore}{\kern0pt}countable\ {\isasymequiv}\ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p\ {\isasymalpha}{\isachardot}{\kern0pt}\ countable\ Der{\isacharparenleft}{\kern0pt}p{\isacharcomma}{\kern0pt}\ {\isasymalpha}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}%
+\begin{isamarkuptext}%
+These two properties concern the entire LTS at hand (given by the locale context) and will be useful when we want to state propositions that only hold for LTSs that satisfy these properties.%
+\end{isamarkuptext}\isamarkuptrue%
 \isacommand{end}\isamarkupfalse%
 \ %
 \isamarkupcmt{of \isa{locale\ lts}%
@@ -223,7 +223,7 @@ We formalise LTSs with hidden actions as an extension of ordinary LTSs with a fi
 %
 \end{isabellebody}%
 \endinput
-%:%file=~/reactive-bisimilarity-reduction/Labelled_Transition_Systems.thy%:%
+%:%file=~/projects/Reducing-Reactive-to-Strong-Bisimilarity/isabelle/Labelled_Transition_Systems.thy%:%
 %:%24=14%:%
 %:%36=15%:%
 %:%40=17%:%
@@ -283,27 +283,27 @@ We formalise LTSs with hidden actions as an extension of ordinary LTSs with a fi
 %:%151=77%:%
 %:%152=78%:%
 %:%153=79%:%
-%:%162=82%:%
-%:%174=84%:%
-%:%176=86%:%
-%:%177=86%:%
+%:%154=80%:%
+%:%163=83%:%
+%:%175=85%:%
+%:%177=87%:%
 %:%178=87%:%
 %:%179=88%:%
 %:%180=89%:%
-%:%182=91%:%
-%:%184=93%:%
-%:%185=93%:%
+%:%181=90%:%
+%:%183=92%:%
+%:%185=94%:%
 %:%186=94%:%
 %:%187=95%:%
+%:%188=96%:%
 %:%189=97%:%
-%:%191=99%:%
+%:%190=98%:%
+%:%191=98%:%
 %:%192=99%:%
 %:%193=100%:%
-%:%194=101%:%
-%:%195=102%:%
-%:%196=102%:%
+%:%194=100%:%
+%:%195=101%:%
 %:%197=103%:%
-%:%198=104%:%
 %:%199=105%:%
 %:%200=105%:%
 %:%201=105%:%

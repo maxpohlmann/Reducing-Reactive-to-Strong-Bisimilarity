@@ -42,20 +42,27 @@ As discussed in the previous section, LTSs can describe the behaviour of reactiv
 Bisimilarity (or \emph{strong bisimilarity}, to be precise) is the \enquote{\emph{finest extensional behavioural equivalence} \textelp{} on processes} \cite{introBC}, an extensional property being one that treats the system in question as a black box, i.e.\@ the specific state space of the system remains hidden and performed transitions are only observable in terms of their action-label. This distinguishes bisimilarity from stronger graph equivalences like \emph{graph isomorphism}, where the (intensional) identity of processes (graph nodes) is relevant \cite{advBC_origins}.
 
 \example{%
-The processes $p$ and $q$ are strongly bisimilar, as both can always perform an a-transition and no transitions afterwards. There is no isomorphism between the left and right subgraphs, as they have a different number of nodes.
+The processes $p$ and $q$ are strongly bisimilar (written $p \leftrightarrow q$, following \cite{rbs}), as both can always perform exactly two a-transitions and no further transitions afterwards. There is no isomorphism between the left and right subgraphs, as they have a different number of nodes.
 
 \lts{
     \node[state]    (p0)                            {$p$};
     \node[state]    (p1) [below left of=p0]         {$p_1$};
-    \node[state]    (p2) [below right of=p0]        {$p_2$};
+    \node[state]    (p2) [below of=p1]              {$p_2$};
+    \node[state]    (p3) [below right of=p0]        {$p_3$};
+    \node[state]    (p4) [below of=p3]              {$p_4$};
     \node[state]    (q0) [right of=p0,xshift=2cm]   {$q$};
     \node[state]    (q1) [below of=q0]              {$q_1$};
+    \node[state]    (q2) [below of=q1]              {$q_2$};
     
     \path   (p0) edge node[above left]  {$a$}   (p1)
-                 edge node              {$a$}   (p2)
-            (q0) edge node              {$a$}   (q1);
+                 edge node              {$a$}   (p3)
+            (p1) edge node[left]        {$a$}   (p2)
+            (p3) edge node[left]        {$a$}   (p4)
+            (q0) edge node              {$a$}   (q1)
+            (q1) edge node              {$a$}   (q2);
 }}
 
+\pagebreak
 It is important to note that not only transitions that are performable, but also those that are not, are relevant.
 
 \example{%
@@ -77,10 +84,9 @@ The processes $p$ and $q$ are not strongly bisimilar, as $p$ can perform an $a$-
             (q1) edge node              {$a$}   (q2);
 }}
 
-Strong bisimilarity is the \emph{finest} extensional behavioural equivalence, because all actions of an LTS are thought of as observable and blockable. An example of a coarser equivalence is \emph{weak bisimilarity}, which treats the aforementioned hidden action $\tau$ as unobservable and unblockable. However, weak bisimilarity is of no further relevance for this thesis and the interested reader is referred to \cite[Chapter 3.4]{resyst}.
+Strong bisimilarity is the \emph{finest} extensional behavioural equivalence, because all actions are thought of as observable. An example of a coarser equivalence is \emph{weak bisimilarity}, which treats the aforementioned hidden action $\tau$ as unobservable. However, weak bisimilarity is of no further relevance for this thesis and the interested reader is referred to \cite[Chapter 3.4]{resyst}.
 
-This notion of strong bisimilarity can be formalised through \emph{strong bisimulation} (SB) relations, introduced originally by David Park in \cite{park81}. A binary relation $\mathcal{R}$ over the set of processes $\Proc$ is an SB iff for all $(p,q) \in \mathcal{R}$:
-
+The notion of strong bisimilarity can be formalised through \emph{strong bisimulation} (SB) relations, introduced originally by David Park in \cite{park81}. A binary relation $\mathcal{R}$ over the set of processes $\Proc$ is an SB iff for all $(p,q) \in \mathcal{R}$:
 \begin{align*}
 &\forall p' \in \Proc,\; \alpha \in \Act .\; p \xrightarrow{\alpha} p' \longrightarrow
 \exists q' \in \Proc .\; q \xrightarrow{\alpha} q' \wedge (p',q') \in \mathcal{R}, \text{ and}\\
@@ -121,7 +127,8 @@ Strong bisimulations are straightforward to formalise in Isabelle, using the cur
 \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ p{\isacharprime}{\kern0pt}\ {\isasymalpha}{\isachardot}{\kern0pt}\ p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ q{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}q\ {\isasymlongmapsto}{\isasymalpha}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
 \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ q{\isacharprime}{\kern0pt}\ {\isasymalpha}{\isachardot}{\kern0pt}\ q\ {\isasymlongmapsto}{\isasymalpha}\ q{\isacharprime}{\kern0pt}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ p{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}p\ {\isasymlongmapsto}{\isasymalpha}\ p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\ R\ p{\isacharprime}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}%
 \begin{isamarkuptext}%
-Two processes $p$ and $q$ are then strongly bisimilar (written $p \leftrightarrow q$, following \cite{rbs}) iff there is an SB that contains the pair $(p, q)$.%
+\pagebreak
+Two processes $p$ and $q$ are then strongly bisimilar iff there is an SB that contains the pair $(p, q)$.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{definition}\isamarkupfalse%
 \ strongly{\isacharunderscore}{\kern0pt}bisimilar\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isanewline
@@ -211,7 +218,7 @@ The following corollaries are immediate consequences of these definitions.%
 %
 \end{isabellebody}%
 \endinput
-%:%file=~/reactive-bisimilarity-reduction/Strong_Bisimilarity.thy%:%
+%:%file=~/projects/Reducing-Reactive-to-Strong-Bisimilarity/isabelle/Strong_Bisimilarity.thy%:%
 %:%24=7%:%
 %:%36=8%:%
 %:%40=10%:%
@@ -264,61 +271,68 @@ The following corollaries are immediate consequences of these definitions.%
 %:%87=57%:%
 %:%88=58%:%
 %:%89=59%:%
-%:%98=62%:%
-%:%110=64%:%
-%:%112=66%:%
-%:%113=66%:%
-%:%114=67%:%
-%:%116=68%:%
-%:%117=68%:%
-%:%118=69%:%
-%:%119=69%:%
-%:%120=70%:%
-%:%124=74%:%
+%:%90=60%:%
+%:%91=61%:%
+%:%92=62%:%
+%:%93=63%:%
+%:%94=64%:%
+%:%95=65%:%
+%:%104=68%:%
+%:%116=70%:%
+%:%118=72%:%
+%:%119=72%:%
+%:%120=73%:%
+%:%122=74%:%
+%:%123=74%:%
+%:%124=75%:%
+%:%125=75%:%
 %:%126=76%:%
-%:%127=76%:%
-%:%128=77%:%
-%:%129=78%:%
-%:%131=80%:%
-%:%133=82%:%
-%:%134=82%:%
-%:%135=83%:%
-%:%136=84%:%
-%:%137=85%:%
-%:%138=86%:%
-%:%139=87%:%
-%:%142=88%:%
-%:%146=88%:%
-%:%147=88%:%
-%:%148=88%:%
-%:%153=88%:%
-%:%156=89%:%
-%:%157=90%:%
-%:%158=90%:%
-%:%159=91%:%
-%:%160=92%:%
-%:%163=93%:%
-%:%167=93%:%
-%:%168=93%:%
-%:%169=93%:%
-%:%170=94%:%
-%:%171=94%:%
-%:%172=95%:%
-%:%173=95%:%
-%:%174=96%:%
-%:%175=96%:%
-%:%176=97%:%
-%:%177=97%:%
-%:%178=98%:%
-%:%179=98%:%
-%:%180=98%:%
-%:%181=98%:%
-%:%182=99%:%
-%:%183=99%:%
-%:%184=99%:%
-%:%185=100%:%
-%:%191=100%:%
-%:%194=101%:%
-%:%195=102%:%
-%:%196=102%:%
-%:%197=102%:%
+%:%130=80%:%
+%:%131=81%:%
+%:%133=83%:%
+%:%134=83%:%
+%:%135=84%:%
+%:%136=85%:%
+%:%138=87%:%
+%:%140=89%:%
+%:%141=89%:%
+%:%142=90%:%
+%:%143=91%:%
+%:%144=92%:%
+%:%145=93%:%
+%:%146=94%:%
+%:%149=95%:%
+%:%153=95%:%
+%:%154=95%:%
+%:%155=95%:%
+%:%160=95%:%
+%:%163=96%:%
+%:%164=97%:%
+%:%165=97%:%
+%:%166=98%:%
+%:%167=99%:%
+%:%170=100%:%
+%:%174=100%:%
+%:%175=100%:%
+%:%176=100%:%
+%:%177=101%:%
+%:%178=101%:%
+%:%179=102%:%
+%:%180=102%:%
+%:%181=103%:%
+%:%182=103%:%
+%:%183=104%:%
+%:%184=104%:%
+%:%185=105%:%
+%:%186=105%:%
+%:%187=105%:%
+%:%188=105%:%
+%:%189=106%:%
+%:%190=106%:%
+%:%191=106%:%
+%:%192=107%:%
+%:%198=107%:%
+%:%201=108%:%
+%:%202=109%:%
+%:%203=109%:%
+%:%204=109%:%

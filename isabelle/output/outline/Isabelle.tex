@@ -40,8 +40,7 @@
 Isabelle is an interactive proof assistant and Isabelle/HOL is an implementation of \emph{higher-order logic} in Isabelle. With it, one can interactively prove propositions about theories that are formalised in terms of higher-order logic. Many theories have been formalised (and many theorems proven) in Isabelle/HOL and are publicly available.\footnote{see Isabelle's Archive of Formal Proofs at \code{\href{https://www.isa-afp.org}{isa-afp.org}}}
 
 In this appendix, I will give a short introduction into the most important concepts of Isabelle. For an extensive tutorial, see \cite{prog_prove}. A complete documentation can be found in \cite{isar_ref}.
-
-All formalisations are based on Isabelle/HOL, allowing us to use e.g.\@ quantifiers \isa{{\isasymforall}} and \isa{{\isasymexists}}.%
+\vspace{-.3cm}%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimdocument
@@ -70,7 +69,7 @@ Definitions are annotated by their type. As an example, we define the predicate 
 \ even\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}int\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
 \ \ \isakeyword{where}\ {\isacartoucheopen}even\ n\ {\isasymequiv}\ {\isasymexists}\ m{\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}int\ {\isachardot}{\kern0pt}\ n\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ m{\isacartoucheclose}%
 \begin{isamarkuptext}%
-Functions can be defined in uncurried form (e.g.\@ \isa{{\isacharparenleft}{\kern0pt}int\ {\isasymtimes}\ int{\isacharparenright}{\kern0pt}\ {\isasymRightarrow}\ bool}) or in curried form (e.g.\@ \isa{int\ {\isasymRightarrow}\ int\ {\isasymRightarrow}\ bool}). As a very trivial example, we can define equality predicates for integers. Compared to the curried version, the uncurried version does not allow for easy pattern matching. This is why, in this thesis, I will usually specify functions in curried form.%
+Functions can be defined in uncurried form (e.g.\@ \isa{{\isacharparenleft}{\kern0pt}int\ {\isasymtimes}\ int{\isacharparenright}{\kern0pt}\ {\isasymRightarrow}\ bool}) or in curried form (e.g.\@ \isa{int\ {\isasymRightarrow}\ int\ {\isasymRightarrow}\ bool}). As a very trivial example, we can define equality predicates for integers. Compared to the curried version, the uncurried version does not allow for easy pattern matching. This is why, in this thesis, I usually specify functions in curried form.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{definition}\isamarkupfalse%
 \ equal{\isacharunderscore}{\kern0pt}uncurried\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}int\ {\isasymtimes}\ int{\isacharparenright}{\kern0pt}\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
@@ -99,7 +98,7 @@ We can also assign notation to a term during the definition, where \isa{{\isacha
 \ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isacharunderscore}{\kern0pt}\ {\isasymapprox}\ {\isacharunderscore}{\kern0pt}{\isacartoucheclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{5}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
 \ \ \isakeyword{where}\ {\isacartoucheopen}n\ {\isasymapprox}\ m\ {\isasymequiv}\ n{\isacharequal}{\kern0pt}m{\isacharminus}{\kern0pt}{\isadigit{1}}\ {\isasymor}\ n{\isacharequal}{\kern0pt}m\ {\isasymor}\ n{\isacharequal}{\kern0pt}m{\isacharplus}{\kern0pt}{\isadigit{1}}{\isacartoucheclose}%
 \begin{isamarkuptext}%
-Abbreviations are used the same way as definitions, except that, in order to use the equality established by definitions in proofs, we need to explicitly refer to the definition, whereas abbreviations are always expanded by the proof system. An example a little further down below should clarify the distinction.%
+Abbreviations are used the same way as definitions, except that, in order to use the equality established by definitions in proofs, we need to explicitly refer to the definition, whereas abbreviations are always expanded internally by the proof system. An example a little further down below should clarify the distinction.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{abbreviation}\isamarkupfalse%
 \ reflexive\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ bool{\isacharparenright}{\kern0pt}\ {\isasymRightarrow}\ bool{\isacartoucheclose}\isanewline
@@ -122,7 +121,7 @@ Abbreviations are used the same way as definitions, except that, in order to use
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-Propositions are terms of Boolean type. Propositions can be given using any of the commands \isa{proposition}, \isa{lemma}, \isa{theorem}, \isa{corollary}, and require a proof.
+Propositions can be given using any of the commands \isa{proposition}, \isa{lemma}, \isa{theorem}, \isa{corollary}, and require a proof.
 
 Since Isabelle is an \emph{interactive} proof assistant, proofs are usually meant to be spelled out in code so as to be readable by humans, and the validity of individual steps is verified by certain automated proof methods (e.g.\@ \isa{simp}, \isa{arith}, \isa{auto}, \isa{fast}, \isa{blast}, \dots). 
 
@@ -130,7 +129,8 @@ As an example, we will show that the relation \isa{approx} is \isa{symmetric}.
 
 Since \isa{symmetric} was defined using the command \isa{definition}, we need to explicitly unfold it, where \isa{symmetric{\isacharunderscore}{\kern0pt}def} is the fact (about the equality) introduced by the definition.
 
-The method specified after the command \isa{proof} adjusts the proof goal in some way. Ideally, the proof steps should be clear to the reader even without seeing what exactly the automated methods are doing. I have explained each of the steps using comments below.%
+The method specified after the command \isa{proof} adjusts the proof goal in some way. Ideally, the proof steps should be clear to the reader even without seeing what exactly the automated methods are doing. I have explained each of the steps using comments below.
+\pagebreak%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimvisible
@@ -152,7 +152,7 @@ The method specified after the command \isa{proof} adjusts the proof goal in som
 \ \ \isacommand{assume}\isamarkupfalse%
 \ {\isacartoucheopen}n\ {\isasymapprox}\ m{\isacartoucheclose}\isanewline
 \ \ %
-\isamarkupcmt{Using the definition of \isa{approx}, we now this about \isa{n} and \isa{m}.%
+\isamarkupcmt{Using the definition of \isa{approx}, we know this about \isa{n} and \isa{m}.%
 }\isanewline
 \ \ \isacommand{hence}\isamarkupfalse%
 \ {\isacartoucheopen}n{\isacharequal}{\kern0pt}m{\isacharminus}{\kern0pt}{\isadigit{1}}\ {\isasymor}\ n{\isacharequal}{\kern0pt}m\ {\isasymor}\ n{\isacharequal}{\kern0pt}m{\isacharplus}{\kern0pt}{\isadigit{1}}{\isacartoucheclose}\ \isacommand{unfolding}\isamarkupfalse%
@@ -293,9 +293,11 @@ Inductively defined predicates can be given using premise-conclusion pairs and m
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-The command \isa{function} also establishes equalities, but usually in more complex ways, so that, sometimes, it is not obvious whether a function is well-defined. Hence, the command \isa{function} introduces proof obligations to show that the function is, in fact, well-defined. (These proofs are usually easily solved by the automated proof methods.)
+The command \isa{function} also establishes equalities, but usually in more complex ways, so that it may not obvious whether a function is well-defined. Hence, the well-definedness needs to be proved explicitly. (These proofs are usually solved by the automated proof methods.)
 
-The function is then assumed to be partial. The command \isa{termination} introduces proof obligations to show that the function always terminates (and is thus total). For the example below, this proof, again, is trivial.%
+The function is then assumed to be partial. The command \isa{termination} introduces proof obligations to show that the function always terminates (and is thus total). For the example below, this is again proved automatically.
+
+After proving well-definedness and totality, we have access to facts about the function that can be used in proofs, e.g.\@ induction principles. More details can be found in \cref{sec:HML}, where we define a non-trivial \isa{function}.%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimvisible
@@ -321,10 +323,6 @@ The function is then assumed to be partial. The command \isa{termination} introd
 \isadelimvisible
 %
 \endisadelimvisible
-%
-\begin{isamarkuptext}%
-After proving well-definedness and totality, we have access to facts about the function that can be used in proofs, e.g.\@ induction principles. More details can be found in \cref{sec:HML}, when we define our first non-trivial \isa{function}.%
-\end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimdocument
 %
@@ -360,10 +358,7 @@ We can define type constructors, i.e.\@ types depending on other types (to be di
 \isacommand{datatype}\isamarkupfalse%
 \ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}list\ {\isacharequal}{\kern0pt}\isanewline
 \ \ Empty\isanewline
-{\isacharbar}{\kern0pt}\ Cons\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a{\isacartoucheclose}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}list{\isacartoucheclose}\isanewline
-%
-\isamarkupcmt{binary constructor taking an element of type \isa{{\isacharprime}{\kern0pt}a} and another \isa{{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}list}%
-}%
+{\isacharbar}{\kern0pt}\ Cons\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a{\isacartoucheclose}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}list{\isacartoucheclose}%
 \isadelimdocument
 %
 \endisadelimdocument
@@ -402,47 +397,47 @@ Locales define a context consisting of type variables, object variables, and ass
 %
 \end{isabellebody}%
 \endinput
-%:%file=~/reactive-bisimilarity-reduction/Isabelle.thy%:%
+%:%file=~/projects/Reducing-Reactive-to-Strong-Bisimilarity/isabelle/Isabelle.thy%:%
 %:%24=10%:%
 %:%36=11%:%
 %:%40=13%:%
 %:%41=14%:%
 %:%42=15%:%
 %:%43=16%:%
-%:%44=17%:%
-%:%53=19%:%
+%:%52=18%:%
+%:%64=20%:%
 %:%65=21%:%
 %:%66=22%:%
-%:%67=23%:%
-%:%69=25%:%
+%:%68=24%:%
+%:%69=24%:%
 %:%70=25%:%
-%:%71=26%:%
-%:%73=28%:%
-%:%75=30%:%
+%:%72=27%:%
+%:%74=29%:%
+%:%75=29%:%
 %:%76=30%:%
 %:%77=31%:%
 %:%78=32%:%
-%:%79=33%:%
+%:%79=32%:%
 %:%80=33%:%
-%:%81=34%:%
-%:%83=36%:%
-%:%85=38%:%
+%:%82=35%:%
+%:%84=37%:%
+%:%85=37%:%
 %:%86=38%:%
-%:%87=39%:%
-%:%89=41%:%
-%:%91=43%:%
+%:%88=40%:%
+%:%90=42%:%
+%:%91=42%:%
 %:%92=43%:%
-%:%93=44%:%
-%:%95=46%:%
-%:%97=48%:%
+%:%94=45%:%
+%:%96=47%:%
+%:%97=47%:%
 %:%98=48%:%
 %:%99=49%:%
-%:%100=50%:%
-%:%102=52%:%
-%:%104=54%:%
+%:%101=51%:%
+%:%103=53%:%
+%:%104=53%:%
 %:%105=54%:%
-%:%106=55%:%
-%:%113=57%:%
+%:%112=56%:%
+%:%124=58%:%
 %:%125=59%:%
 %:%126=60%:%
 %:%127=61%:%
@@ -534,35 +529,35 @@ Locales define a context consisting of type variables, object variables, and ass
 %:%296=116%:%
 %:%297=117%:%
 %:%298=118%:%
-%:%306=120%:%
-%:%307=120%:%
-%:%308=121%:%
+%:%299=119%:%
+%:%300=120%:%
+%:%308=122%:%
 %:%309=122%:%
 %:%310=123%:%
 %:%311=124%:%
-%:%312=124%:%
-%:%313=125%:%
+%:%312=125%:%
+%:%313=126%:%
 %:%314=126%:%
-%:%315=126%:%
-%:%316=126%:%
-%:%317=126%:%
-%:%326=128%:%
-%:%335=130%:%
-%:%347=132%:%
-%:%349=134%:%
-%:%350=134%:%
+%:%315=127%:%
+%:%316=128%:%
+%:%317=128%:%
+%:%318=128%:%
+%:%319=128%:%
+%:%333=130%:%
+%:%345=132%:%
+%:%347=134%:%
+%:%348=134%:%
+%:%349=135%:%
+%:%350=135%:%
 %:%351=135%:%
-%:%352=135%:%
-%:%353=135%:%
-%:%354=136%:%
-%:%355=136%:%
-%:%358=138%:%
-%:%360=140%:%
-%:%361=140%:%
-%:%362=141%:%
-%:%363=142%:%
-%:%365=143%:%
-%:%373=145%:%
-%:%385=147%:%
-%:%386=148%:%
-%:%387=149%:%
+%:%352=136%:%
+%:%353=136%:%
+%:%356=138%:%
+%:%358=140%:%
+%:%359=140%:%
+%:%360=141%:%
+%:%361=142%:%
+%:%368=144%:%
+%:%380=146%:%
+%:%381=147%:%
+%:%382=148%:%

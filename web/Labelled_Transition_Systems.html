@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Labelled_Transition_Systems</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Labelled_Transition_Systems</h1>
+</div>
+
+<pre class="source"><span class="comment1">(*&lt;*)</span>
+<span class="keyword1"><span class="command">theory</span></span> Labelled_Transition_Systems
+  <span class="keyword2"><span class="keyword">imports</span></span>
+    <span class="quoted">"<a href="../../HOL/HOL-Library/Countable_Set.html">HOL-Library.Countable_Set</a>"</span>
+<span class="keyword2"><span class="keyword">begin</span></span>
+
+<span class="comment1">(* All other theories import this one, so I will introduce some notation here. *)</span>
+<span class="keyword1"><span class="command">notation</span></span> Set.empty <span class="main">(</span><span class="quoted">‹<span class="keyword1">∅</span>›</span><span class="main">)</span>
+<span class="keyword1"><span class="command">notation</span></span> <span class="main">(</span>input<span class="main">)</span>
+  HOL.eq  <span class="main">(</span><span class="keyword2"><span class="keyword">infixr</span></span> <span class="quoted">"<span class="keyword1">⟺</span>"</span> 25<span class="main">)</span>
+<span class="comment1">(*&gt;*)</span>
+
+
+<span class="keyword1"><span class="command">section</span></span> <span class="quoted"><span class="plain_text">‹Labelled Transition Systems›</span></span>
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\label{sec:LTS}›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹A Labelled Transition System (LTS) consists of a set of processes (or states) $\Proc$, a set of actions $\Act$, and a relation of transitions $\cdot\xrightarrow{\cdot}\cdot \subseteq \Proc\times\Act\times\Proc$ which directedly connect two processes by an action (the action being the label of the transition) <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> resyst<span class="antiquote"><span class="antiquote">}</span></span></span></span>. We call a transition labelled by an action $\alpha$ an \emph{$\alpha$-transition}.
+
+LTSs can model reactive systems, as discussed in \cref{chap:introduction}. A process of an LTS, then, corresponds to a momentary state of a reactive system. The outgoing transitions of each process correspond to the actions the reactive system could perform in that state (yielding a subsequent process/state), if facilitated by the environment. The choice between the facilitated transitions of a process is non-deterministic.
+
+This facilitation can be thought of as a set of actions that the environment allows in a given moment, or, more intuitively, as a set of simultaneous inputs from the environment to which the system may react. We call the actions not allowed by the environment in a given moment \emph{blocked}.
+
+The environment can also observe which transitions a system performs and react by changing the set of allowed actions in response.
+
+In classical treatments of LTSs, the actions that the environment allows, blocks, or reacts to, are often considered only implicitly. The reason we put this emphasis on the environment here will become apparent in \cref{sec:LTSt}.
+
+\example{%
+The process $p$ can perform any of the $a$-transitions in environments allowing $a$ and the $b$-transition in environments allowing $b$. All derivative (subsequent) states cannot perform any transition.
+
+\lts{
+    \node[state]    (p0)                        {$p$};
+    \node[state]    (p1) [below left of=p0]     {$p_1$};
+    \node[state]    (p2) [below of=p0]          {$p_2$};
+    \node[state]    (p3) [below right of=p0]    {$p_3$};
+    
+    \path   (p0) edge node[above left]          {$a$}   (p1)
+                 edge node[above right]         {$a$}   (p2)
+                 edge node[above right]         {$b$}   (p3);
+}}
+
+A \emph{hidden action}, denoted by $\tau$, allows for additional semantics: a $\tau$-transition can be performed by a process without any interaction from the environment. Depending on the specific semantic context, the performance of a hidden action may also be unobservable (hence the name).›</span></span>
+
+<span class="keyword1"><span class="command">subsubsection</span></span> <span class="quoted"><span class="plain_text">‹Some Definitions›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The $\alpha$-derivatives of a state are those states that can be reached with one $\alpha$-transition:
+$$\mathit{Der}(p, \alpha) = \{ p' \mid p \xrightarrow{\alpha} p' \}.$$
+
+An LTS is image-finite iff all derivative sets are finite:
+$$\forall p \in \Proc, \alpha \in \Act .\; \mathit{Der}(p, \alpha) \text{ is finite}.$$
+
+Similarly, we can say an LTS is image-countable iff all derivative sets are countable:
+$$\forall p \in \Proc, \alpha \in \Act .\; \mathit{Der}(p, \alpha) \text{ is countable}.$$›</span></span>
+
+<span class="keyword1"><span class="command">subsubsection</span></span> <span class="quoted"><span class="plain_text">‹Note on Metavariable usage›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹States of an LTS range over $p, q, p', q', \dots$, where $p$ and $p'$ are used for states connected by some transition (i.e.\@ $p \xrightarrow{\alpha} p'$), whereas $p$ and $q$ are used for states possibly related by some equivalence (e.g.\@ $p \leftrightarrow q$), as will be discussed in the next section.
+
+An arbitrary action of an LTS will be referenced by $\alpha$, whereas an arbitrary \emph{visible} (i.e.\@ non-hidden) action will be referenced by $a$.›</span></span>
+
+<span class="keyword1"><span class="command">subsubsection</span></span> <span class="quoted"><span class="plain_text">‹Practical Example›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹Let us take a detour away from purely theoretical deliberations and consider a real-world machine that may be modelled as an LTS. We can imagine a very simple snack-selling vending machine that accepts only one type of coin and has individual buttons for each of the snacks. When a coin is inserted and a button pressed, the machine dispenses the desired snack and is then ready to accept coins once again. Because the dispensing of the snack itself requires no interaction from the user, we model it as a $\tau$-transition.
+
+\lts{
+    \node[state]    (p0) {$p$};
+    \node[state]    (p1) [below of=p0] {$p_1$};
+    \node[state]    (p2) [below left of=p1,xshift=-10pt] {$p_2$};
+    \node[state]    (p3) [below of=p1] {$p_3$};
+    \node[state]    (p4) [below right of=p1,xshift=10pt] {$p_4$};
+    
+    \path   (p0) edge node[right] {coin} (p1)
+            (p1) edge node[above left] {choc} (p2)
+                 edge node[right] {nuts} (p3)
+                 edge node[above right] {crisps} (p4);
+                 
+    \draw (p2) to[out=150, in=210, looseness=1, edge node={node [left] {$\tau$}}] (p0);
+    \draw (p4) to[out=30, in=-30, looseness=1, edge node={node [right] {$\tau$}}] (p0);
+    \draw (p3) to[out=-20, in=0, looseness=2.5, edge node={node [right] {$\tau$}}] (p0);
+}
+\vspace{-1.5cm}›</span></span>
+
+
+<span class="keyword1"><span class="command">subsection</span></span> <span class="quoted"><span class="plain_text">‹Isabelle›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The sets of states and actions are formalised by type variables <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>'s›</span></span></span></span> and <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>'a›</span></span></span></span>, respectively. A specific LTS on these sets is then determined entirely by its set of transitions, denoted by the predicate <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>tran›</span></span></span></span>. We associate it with a more readable notation (<span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>p ⟼α p'›</span></span></span></span> for $p \xrightarrow{\alpha} p'$).›</span></span>
+
+<span class="keyword1"><span class="command">locale</span></span> lts <span class="main">=</span> 
+  <span class="keyword2"><span class="keyword">fixes</span></span> <span class="free">tran</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'a</span> <span class="main">⇒</span> <span class="tfree">'s</span> <span class="main">⇒</span> bool›</span></span> 
+    <span class="main">(</span><span class="quoted">"_ <span class="keyword1">⟼</span>_ _"</span> <span class="main">[</span>70<span class="main">,</span> 70<span class="main">,</span> 70<span class="main">]</span> 80<span class="main">)</span>
+<span class="keyword2"><span class="keyword">begin</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The other definitions can be formalised in a straightforward manner.›</span></span>
+
+<span class="keyword1"><span class="command">abbreviation</span></span> <span class="entity">derivatives</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'a</span> <span class="main">⇒</span> <span class="tfree">'s</span> set›</span></span> 
+  <span class="main">(</span><span class="quoted">‹<span class="keyword1">Der'(</span>_<span class="keyword1">,</span> _<span class="keyword1">')</span>›</span> <span class="main">[</span>50<span class="main">,</span> 50<span class="main">]</span> 1000<span class="main">)</span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="keyword1"><span class="free">Der(</span></span><span class="free"><span class="bound"><span class="entity">p</span></span></span><span class="main"><span class="free">,</span></span> <span class="free"><span class="bound"><span class="entity">α</span></span></span><span class="main"><span class="free">)</span></span> <span class="main">≡</span> <span class="main">{</span><span class="bound">p'</span><span class="main">.</span> <span class="free"><span class="bound"><span class="entity">p</span></span></span> <span class="main"><span class="free">⟼</span></span><span class="free"><span class="bound"><span class="entity">α</span></span></span> <span class="bound">p'</span><span class="main">}</span>›</span></span>
+
+<span class="keyword1"><span class="command">definition</span></span> <span class="entity">image_finite</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹bool›</span></span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">image_finite</span> <span class="main">≡</span> <span class="main">(</span><span class="main">∀</span> <span class="bound">p</span> <span class="bound">α</span><span class="main">.</span> finite <span class="keyword1">Der(</span><span class="bound">p</span><span class="main">,</span> <span class="bound">α</span><span class="main">)</span><span class="main">)</span>›</span></span>
+<span class="keyword1"><span class="command">definition</span></span> <span class="entity">image_countable</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹bool›</span></span>
+  <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">image_countable</span> <span class="main">≡</span> <span class="main">(</span><span class="main">∀</span> <span class="bound">p</span> <span class="bound">α</span><span class="main">.</span> countable <span class="keyword1">Der(</span><span class="bound">p</span><span class="main">,</span> <span class="bound">α</span><span class="main">)</span><span class="main">)</span>›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹These two properties concern the entire LTS at hand (given by the locale context) and will be useful when we want to state propositions that only hold for LTSs that satisfy these properties.›</span></span>
+
+<span class="keyword2"><span class="keyword">end</span></span> <span class="comment1">― ‹of <span class="antiquoted"><span class="raw_text"><span class="operator">‹</span>locale lts›</span></span>›</span>
+
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹We formalise LTSs with hidden actions as an extension of ordinary LTSs with a fixed action <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>τ›</span></span></span></span>.›</span></span>
+
+<span class="keyword1"><span class="command">locale</span></span> lts_tau <span class="main">=</span> lts <span class="quoted"><span class="free">tran</span></span> 
+  <span class="keyword2"><span class="keyword">for</span></span> <span class="free">tran</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'s</span> <span class="main">⇒</span> <span class="tfree">'a</span> <span class="main">⇒</span> <span class="tfree">'s</span> <span class="main">⇒</span> bool›</span></span> <span class="main">+</span> 
+  <span class="keyword2"><span class="keyword">fixes</span></span> <span class="free">τ</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="tfree">'a</span>›</span></span>
+
+<span class="comment1">(*&lt;*)</span>
+<span class="keyword2"><span class="keyword">end</span></span> <span class="comment1">― ‹of theory›</span>
+<span class="comment1">(*&gt;*)</span></pre>
+</body>
+
+</html>

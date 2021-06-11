@@ -8,21 +8,21 @@ begin
 chapter \<open>Example Instantiation\<close>
 text \<open>\label{chap:example_instantiation}\<close>
 
-text \<open>To complete the proofs from \cref{chap:reductions}, I will show that mappings \<open>stabilise\<close> (\<open>\<epsilon>(_)\<close>) and \<open>in_env\<close> (\<open>\<theta>?[_](_)\<close>), which existence we assumed up to now, do, in fact, exist. I will define example mappings and show that, together with these, arbitrary \<open>lts_timeout\<close> can be interpreted as \<open>lts_timeout_mappable\<close>, thereby showing that my reductions are valid for arbitrary \LTSt{}s.
+text \<open>To complete the proofs from \cref{chap:reductions}, I will show that mappings \<open>stabilise\<close> (\<open>\<epsilon>(_)\<close>) and \<open>in_env\<close> (\<open>\<theta>?[_](_)\<close>), which existence we assumed up to now, do, in fact, exist. I will define example mappings and show that, together with these, arbitrary \<open>lts_timeout\<close> can be interpreted as \<open>lts_timeout_mappable\<close>, thereby showing that the reductions are valid for arbitrary \LTSt{}s.
 
-First, we define the data types for $\Proc_\vartheta$ and $\Act_\vartheta$ in dependence to arbitrary types \<open>'s\<close> and \<open>'a\<close> for $\Proc$ and $\Act$, respectively:\<close>
+First, we define the types for $\Proc_\vartheta$ and $\Act_\vartheta$ in dependence to arbitrary types \<open>'s\<close> and \<open>'a\<close> for $\Proc$ and $\Act$, respectively:\<close>
 
 datatype ('s, 'a)Proc_\<theta> = triggered 's | stable \<open>'a set\<close> 's | DumpState
 datatype ('a)Act_\<theta> = act 'a | t_\<epsilon> | \<epsilon> \<open>'a set\<close> | DumpAction
 
-text \<open>Since $\Act \neq \Act_\vartheta$, we have to define a new predicate \<open>tran_mappable\<close>.\<close>
+text \<open>Since $\Act \neq \Act_\vartheta$, we define a new predicate \<open>tran_mappable\<close>.\<close>
 context lts_timeout begin
 
 inductive tran_mappable
   :: \<open>'s \<Rightarrow> ('a)Act_\<theta> \<Rightarrow> 's \<Rightarrow> bool\<close> 
   where \<open>tran p \<alpha> p' \<Longrightarrow> tran_mappable p (act \<alpha>) p'\<close>
 
-text \<open>We can now specify mappings \<open>stabilise\<close> and \<open>in_env\<close>.\<close>
+text \<open>We can now specify mappings \<open>stabilise\<close> and \<open>in_env\<close>, mapping those \<open>X\<close> for which $\varepsilon_X$ and $\vartheta_X$ are undefined to the \<open>DumpAction\<close>/\<open>DumpState\<close>.\<close>
 
 function stabilise :: \<open>('a)Act_\<theta> set \<Rightarrow> ('a)Act_\<theta>\<close>
   where 
@@ -31,6 +31,7 @@ function stabilise :: \<open>('a)Act_\<theta> set \<Rightarrow> ('a)Act_\<theta>
   by metis+
 termination using "termination" by blast
 
+text \<open>\pagebreak\<close>
 function in_env :: \<open>('a)Act_\<theta> set option \<Rightarrow> 's \<Rightarrow> ('s, 'a)Proc_\<theta>\<close>
   where 
     \<open>in_env None p = triggered p\<close>
@@ -41,7 +42,7 @@ function in_env :: \<open>('a)Act_\<theta> set option \<Rightarrow> 's \<Rightar
   by (auto, meson Proc_\<theta>.exhaust option.exhaust_sel)
 termination using "termination" by blast
 
-text \<open>We show that together with these mappings, any \<open>lts_timeout\<close> (since that is the context we are in) is an \<open>lts_timeout_mappable\<close>.\<close>
+text \<open>We show that, with these mappings, any \<open>lts_timeout\<close> (the context we are in) is an \<open>lts_timeout_mappable\<close>: when the variables that were fixed in the locale definition are instantiated by the terms and mappings from the current context, we prove that the assumptions of the locale definition hold. Thus, the reduction works for all \LTSt{}s.\<close>
 
 (* For the following proofs, I gave up on writing readable proofs and simply used what sledgehammer gave me. This is the only part of the the thesis where I do this; sorry... *)
 (*<*)
@@ -195,7 +196,7 @@ abbreviation idle
   where \<open>idle \<equiv> tiny_lts_mappable.idle\<close>
 (*>*)
 
-text \<open>We can now prove a few lemmas about our example \LTSt{} that we would need for any bisimilarity proofs. I abstained from actually including a proof, but the lemmas should suffice to convince you that it would be possible.\<close>
+text \<open>We can now prove a few lemmas about our example \LTSt{} that we would need for any bisimilarity proofs. I abstained from actually including a proof, but the second lemma should suffice to convince you that it would be possible.\<close>
 
 lemma\<^marker>\<open>tag (proof) visible\<close> \<open>tiny_lts_mappable.visible_actions = \<emptyset>\<close> 
 proof -

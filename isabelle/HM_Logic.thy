@@ -20,12 +20,12 @@ Let the \emph{cardinality of conjunction} be the maximally allowed cardinality o
 
 In this section, however, conjunction is constrained to be of countable cardinality, as this turned out to be significantly easier to deal with in the upcoming proofs. The modal characterisation of strong bisimilarity, then, works for LTSs that are image-countable, as we shall see below.
 
-Formulas $\varphi$ are given by the following grammar, where $I$ ranges over all subsets of the natural numbers $\mathbb{N}$:
+Formulas $\varphi$ are given by the following grammar, where $I$ ranges over all subsets of the natural numbers:
 $$\varphi ::= \textstyle\bigwedge_{i \in I} \varphi_i \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
 
 The semantics of HML formulas on LTSs are as above, with the alteration that a process satisfies $\bigwedge_{i \in I} \varphi_i$ iff it satisfies $\varphi_i$ for all $i \in I$.
 
-Additional operators can be added as \enquote{syntactic sugar} as follows:
+Additional logical constants can be added as \enquote{syntactic sugar}:
 \begin{align*}
     t\!t &\equiv \textstyle\bigwedge_{i \in \emptyset} \varphi_i \\
     f\!\!f &\equiv \neg t\!t \\
@@ -37,16 +37,17 @@ subsection \<open>Isabelle\<close>
 
 subsubsection \<open>Syntax\<close>
 
-text \<open>By definition of countability, all countable sets of formulas can be given by $\{\varphi_i\}_{i \in I} =: \Phi$ for some $I \subseteq \mathbb{N}$ (then $\bigwedge_{i \in I} \varphi_i$ corresponds to $\bigwedge \Phi$). Therefore, the following data type (parameterised by the type of actions \<open>'a\<close>) formalises the definition of HML formulas above (\<open>cset\<close> is the type constructor for countable sets; \<open>acset\<close> and \<open>rcset\<close> are the type morphisms between the types \<open>set\<close> and \<open>cset\<close>; more details below).
+text \<open>By definition of countability, all countable sets of formulas can be given by $\{\varphi_i\}_{i \in I} =: \Phi$ for some $I \subseteq \mathbb{N}$ (then $\bigwedge_{i \in I} \varphi_i$ shall correspond to $\bigwedge \Phi$). Therefore, the following data type (parameterised by the type of actions \<open>'a\<close>) formalises the definition of HML formulas above (\<open>cset\<close> is the type constructor for countable sets; \<open>acset\<close> and \<open>rcset\<close> are the type morphisms between the types \<open>set\<close> and \<open>cset\<close>; more details below).
 
-I abstained from assigning the constructors a more readable symbolic notation because of the ambiguities and name clashes that would ensue in upcoming sections. The symbolic notations after the constructors below are just code comments.\<close>
+I abstained from assigning the constructors a more readable symbolic notation because of the ambiguities and name clashes that would ensue in upcoming sections. The symbolic notations after the constructors below are just code comments.
+\pagebreak\<close>
 
 datatype ('a)HML_formula =
   HML_conj  \<open>('a)HML_formula cset\<close> \<comment> \<open>$\bigwedge \Phi$\<close> 
 | HML_neg   \<open>('a)HML_formula\<close> \<comment> \<open>$\neg\varphi$\<close> 
 | HML_poss  \<open>'a\<close> \<open>('a)HML_formula\<close> \<comment> \<open>$\langle\alpha\rangle\varphi$\<close>
 
-text \<open>The following abbreviations introduce useful constants as syntactic sugar.\<close>
+text \<open>The following abbreviations introduce useful constants as syntactic sugar, where \<open>cimage HML_neg \<Phi>\<close> corresponds to $\{ \neg\varphi \mid \varphi\in\Phi \}$.\<close>
 
 abbreviation HML_true :: \<open>('a)HML_formula\<close> \<comment> \<open>$t\!t$\<close>
   where \<open>HML_true \<equiv> HML_conj (acset \<emptyset>)\<close>
@@ -77,11 +78,12 @@ proposition
 
 subsubsection \<open>Semantics\<close>
 
-text \<open>The semantic satisfaction relation is formalised by the following function. Since the relation is not monotonic (due to negation terms), it cannot be directly defined in Isabelle as an inductive predicate, so we use the \<open>function\<close> command instead. This, then, requires us to prove that the function is well-defined (i.e.\@ the function definition completely and compatibly covers all constructors of our data type) and total (i.e.\@ it terminates). It is easy to see that the former is the case for the function below.\<close>
+text \<open>The semantic satisfaction relation is formalised by the following function. Since the relation is not monotonic (due to negation terms), it cannot be directly defined in Isabelle as an inductive predicate, so we use the \<open>function\<close> command instead. This, then, requires us to prove that the function is well-defined (i.e.\@ the function definition completely and compatibly covers all constructors of our data type) and total (i.e.\@ it always terminates). It is easy to see that the former is the case for the function below.
+\pagebreak\<close>
 
 context lts begin
 
-function HML_sat :: \<open>'s \<Rightarrow> ('a)HML_formula \<Rightarrow> bool\<close> 
+function HML_sat :: \<open>'s \<Rightarrow> ('a)HML_formula \<Rightarrow> bool\<close>
   (\<open>_ \<Turnstile> _\<close> [50, 50] 50)
   where
     HML_sat_conj: \<open>(p \<Turnstile> HML_conj \<Phi>) = (\<forall> \<phi>. \<phi> \<in>\<^sub>c \<Phi> \<longrightarrow> p \<Turnstile> \<phi>)\<close> 
@@ -95,7 +97,9 @@ $\forall\varphi.\; \varphi \in \emptyset \longrightarrow p \vDash \varphi$
 is a tautology.}
 after finitely many steps. We do this by proving that the relation between process-formula pairs given by the recursive definition of the function is (contained within) a well-founded relation.
 A relation $R \subseteq X \times X$ is called well-founded if each non-empty subset $X' \subseteq X$ has a minimal element $m$ that is not \enquote{$R$-greater} than any element of $X'$, i.e.\@ $\forall x \in X'.\; (x,m) \notin R$.
-A property of well-founded relations is that all descending chains $(x_0, x_1, x_2, \dots)$ (with $(x_i, x_{i+1}) \in R$) starting at any element $x_0 \in X$ are finite. This, then, implies that each sequence of recursive invocations terminates after finitely many steps.\<close>
+A property of well-founded relations is that all descending chains $(x_0, x_1, x_2, \dots)$ (with $(x_i, x_{i+1}) \in R$) starting at any element $x_0 \in X$ are finite. This, then, implies that each sequence of recursive invocations terminates after finitely many steps.
+
+These proofs were inspired by the Isabelle formalisations done in @{cite weber2021modal}.\<close>
 
 inductive_set HML_wf_rel :: \<open>('s \<times> ('a)HML_formula) rel\<close> 
   where
@@ -125,10 +129,10 @@ termination\<^marker>\<open>tag (proof) visible\<close> HML_sat using HML_wf_rel
 text \<open>The semantic clauses for our additional constants are now easily derivable.\<close>
 
 lemma HML_sat_top:
-  shows \<open>p \<Turnstile> HML_true\<close>
+  shows \<open>(p \<Turnstile> HML_true) = True\<close>
   using bot_cset.abs_eq by auto
 lemma HML_sat_bot:
-  shows \<open>\<not> p \<Turnstile> HML_false\<close>
+  shows \<open>(p \<Turnstile> HML_false) = False\<close>
   using HML_sat_top by auto
 lemma HML_sat_disj:
   shows \<open>(p \<Turnstile> HML_disj \<Phi>) = (\<exists> \<phi>. \<phi> \<in>\<^sub>c \<Phi> \<and> p \<Turnstile> \<phi>)\<close>
@@ -218,14 +222,14 @@ text \<open>We can now show, assuming image-countability of the given LTS, that 
 if HML-equivalence were no strong bisimulation, there would be some processes $p$ and $q$ that are HML-equivalent, with $p \xrightarrow{\alpha} p'$ for some $p'$ (i.e.\@ $p' \in \text{Der}(p, \alpha)$), but for all $q' \in \text{Der}(q, \alpha)$, $p'$ and $q'$ are not HML-equivalent. 
 Then, for each $q' \in \text{Der}(q, \alpha)$, there would be a distinguishing formula $\varphi_{q'}$ which $p'$ satisfies but $q'$ does not. 
 Using our \<open>obtaining_set\<close> lemma, we can obtain the set 
-$\Phi = \{ \varphi_{q'} \}_{q' \in \text{Der}(q, \alpha)}$
-(which is countable, since $\text{Der}(q, \alpha)$ is countable, by the image-countability assumption).
+$\Phi = \{ \varphi_{q'} \}_{q' \in \text{Der}(q, \alpha)}$, which is countable, since $\text{Der}(q, \alpha)$ is countable, by the image-countability assumption.
 Since we allow for conjunction of countable cardinality, $\bigwedge \Phi$ is a valid formula. 
 By construction, $p$ can make an $\alpha$-transition into a state that satisfies $\bigwedge \Phi$ 
 (i.e.\@ $p \vDash \langle\alpha\rangle \bigwedge \Phi$), whereas q cannot 
 (i.e.\@ $q \not\vDash \langle\alpha\rangle \bigwedge \Phi$).
 This is a contradiction, since, by assumption, $p$ and $q$ are HML-equivalent. 
-Therefore, HML-equivalence must be a strong bisimulation.\<close>
+Therefore, HML-equivalence must be a strong bisimulation.
+\pagebreak\<close>
 
 lemma\<^marker>\<open>tag (proof) visible\<close> HML_equivalence_is_SB:
   assumes
@@ -235,7 +239,8 @@ lemma\<^marker>\<open>tag (proof) visible\<close> HML_equivalence_is_SB:
 proof -
   {
     fix p q p' \<alpha>
-    assume \<open>HML_equivalent p q\<close> \<open>p \<longmapsto>\<alpha> p'\<close>
+    assume \<open>HML_equivalent p q\<close> 
+    assume \<open>p \<longmapsto>\<alpha> p'\<close>
     assume \<open>\<forall>q' \<in> Der(q, \<alpha>). \<not> HML_equivalent p' q'\<close>
     
     hence "exists_\<phi>\<^bsub>q'\<^esub>": \<open>\<forall>q' \<in> Der(q, \<alpha>). \<exists>\<phi>. p' \<Turnstile> \<phi> \<and> \<not> q' \<Turnstile> \<phi>\<close>
@@ -275,7 +280,8 @@ proof -
     using HML_equivalent_symm by blast
 qed
 
-text \<open>We can now conclude the modal characterisation of strong bisimilarity.\<close>
+text \<open>\pagebreak
+We can now conclude the modal characterisation of strong bisimilarity.\<close>
   
 theorem\<^marker>\<open>tag (proof) visible\<close> modal_characterisation_of_strong_bisimilarity: 
   assumes \<open>image_countable\<close>

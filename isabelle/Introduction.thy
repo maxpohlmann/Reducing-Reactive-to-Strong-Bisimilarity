@@ -9,17 +9,20 @@ chapter \<open>Introduction\<close>
 text \<open>\label{chap:introduction}\<close>
 
 text \<open>In this thesis, I show that it is possible to reduce checking strong reactive bisimilarity, as introduced by Rob van Glabbeek in @{cite rbs}, to checking ordinary strong bisimilarity. I do this by specifying a mapping that effectively yields a model of the closed system consisting of the original reactive system and its environment. 
-I formalised all concepts discussed in this thesis, and conducted all the proves, in the interactive proof assistant Isabelle.
+I formalised all concepts discussed in this thesis, and conducted all the proofs, in the interactive proof assistant Isabelle.
 
 Reactive systems are systems that continuously interact with their environment (e.g.\@ a user) and whose behaviour is largely dependent on this interaction @{cite harel85}.
 They can be modelled using labelled transition systems (LTSs) @{cite keller76}; roughly, an LTS is a labelled directed graph, whose nodes correspond to states of a reactive system and whose edges correspond to transitions between those states.%
 \footnote{The topics of this thesis are applicable to any such graphs in an abstract way. However, I will continue to use motivations and terminology derived from the interpretation of LTSs as reactive systems.}
 
-A user interacting with some system can only perceive it in terms of the interactions it reacts to, i.e.\@ the internal state of the system is hidden from the user. This begets a notion of behavioural/observational equivalence: two non-identical systems can exhibit equivalent behaviour as observed by the user. The simplest such equivalence is known as \emph{strong bisimilarity}.
+A user interacting with some system can only perceive it in terms of the interactions it reacts to, i.e.\@ the internal state of the system is hidden from the user. This begets a notion of behavioural/observational equivalence: two non-identical systems may exhibit equivalent behaviour as observed by the user. The simplest such equivalence is known as \emph{strong bisimilarity}.
 
 In classical LTSs, a system cannot react to the absence of interaction, as it would be assumed to simply wait for any interaction. Intuitively, however, a system may be equipped with a clock and perform some activity when it has seen no interaction from the user for a specified time. Such a system would not be describable with classical LTS semantics. Amongst these systems are, e.g., systems implementing mutual exclusion protocols @{cite rbs}.
 
-In @{cite vanglabbeek2021failure}, Rob van~Glabbeek introduces labelled transition systems with time-outs (\LTSt{}), which allow for modelling such systems as well.
+\pagebreak
+In @{cite vanglabbeek2021failure}, Rob van~Glabbeek introduces labelled transition systems with time-outs (\LTSt{})%
+\footnote{He does not use that specific term or abbreviation, however.}%
+, which allow for modelling such systems as well.
 The appertaining equivalence is given in @{cite rbs} as \emph{strong reactive bisimilarity}.
 
 For the first main result of this thesis, I show that it is possible to reduce checking strong reactive bisimilarity to checking strong bisimilarity. This is in line with reductions of other behavioural equivalences to strong bisimilarity. For example, a strategy used to reduce \emph{weak bisimilarity} to strong bisimilarity is called \emph{saturation} and is described in @{cite \<open>Section 3.2.5\<close> advBC_algorithmics}.
@@ -48,6 +51,51 @@ However, almost all proofs are hidden (and replaced simply by \<open>\<proof>\<c
 {github.com/maxpohlmann/Reducing-Reactive-to-Strong-Bisimilarity}}}
 
 All of the sections of \cref{chap:foundations,chap:reductions} are split into two parts: one containing a prosaic and mathematical description of the topics, and one containing the (documented) formalisation/implementation in Isabelle. I try to clearly distinguish between mathematical structures and their implementation. Although the two are, necessarily, closely related, they are not identical. The former is written in \LaTeX{} math mode in this $italic\;font$, the latter is Isabelle code in this \<open>monospaced font\<close>.\<close>
+
+
+subsubsection \<open>Graphical Overview of Main Contents\<close>
+
+text \<open>
+\begin{center}
+\scalebox{.9}{
+\begin{tikzpicture}[node distance=1cm and 2cm]
+    \tikzstyle{every node}=[draw, inner sep=10pt]
+    
+    \node[rectangle] (21) {2.1 LTS}; 
+    \node[rectangle] (22) [right=of 21,yshift=-1.5cm] {2.2 SB}; 
+    \node[rectangle] (23) [right=of 22,yshift=1.5cm] {2.3 HML}; 
+    
+    \node[rectangle] (24) [below=of 21,yshift=-5cm] {2.4 \LTSt{}}; 
+    \node[rectangle] (25) [below=of 22,yshift=-5cm] {2.5 SRB}; 
+    \node[rectangle] (26) [below=of 23,yshift=-5cm] {2.6 \HMLt{}};
+    
+    \node[ellipse] (31) [below=of 21,yshift=-2cm] {3.1 $\vartheta$};
+    \node[ellipse] (32) [below=of 22,yshift=-0.5cm] {3.2};
+    \node[ellipse] (33) [below=of 23,yshift=-2cm] {3.3 $\sigma$};
+    \node[ellipse] (34) [right=of 33] {3.4};
+    
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (22);
+    \draw [shorten <=5pt,shorten >=5pt] (21) to (23);
+    \draw [<->,>=angle 90,shorten <=5pt,shorten >=5pt] (22) to (23);
+    
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (25);
+    \draw [shorten <=5pt,shorten >=5pt] (24) to (26);
+    \draw [<->,dashed,>=angle 90,shorten <=5pt,shorten >=5pt] (25) to (26);
+    
+    \draw [shorten <=5pt] (21) to (31);
+    \draw [shorten <=5pt] (24) to (31);
+    \draw [shorten <=5pt] (22) to (32);
+    \draw [shorten <=5pt] (25) to (32);
+    \draw [shorten <=5pt] (23) to (33);
+    \draw [shorten <=5pt] (26) to (33);
+    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
+    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
+    
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
+    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to[out=20,in=160] (34);
+\end{tikzpicture}}
+\end{center}\<close>
 
 (*<*)
 end

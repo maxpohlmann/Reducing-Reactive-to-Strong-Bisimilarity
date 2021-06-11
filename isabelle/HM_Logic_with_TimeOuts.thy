@@ -9,9 +9,9 @@ begin
 section \<open>Hennessy-Milner Logic with Time-Outs\<close>
 text \<open>\label{sec:HMLt}\<close>
 
-text \<open>In @{cite \<open>Section 3\<close> rbs}, van~Glabbeek extends Hennessy-Milner logic by a family of new modal operators $\langle X \rangle \varphi$, for $X \subseteq A$, as well as additional satisfaction relations $\vDash_X$ for each $X \subseteq A$. Intuitively, $p \vDash \langle X \rangle \varphi$ means that $p$ is idle when placed in an environment~$X$ \emph{and} $p$ can perform a $t$-transition into a state that satisfies $\varphi$; $p \vDash_X \varphi$ means that $p$ satisfies $\varphi$ in environments~$X$.
+text \<open>In @{cite \<open>Section 3\<close> rbs}, van~Glabbeek extends Hennessy-Milner logic by a family of new modal operators $\langle X \rangle \varphi$, for $X \subseteq A$, as well as additional satisfaction relations $\vDash_X$ for $X \subseteq A$. Intuitively, $p \vDash \langle X \rangle \varphi$ means that $p$ is idle when placed in an environment~$X$ \emph{and} $p$ can perform a $t$-transition into a state that satisfies $\varphi$; $p \vDash_X \varphi$ means that $p$ satisfies $\varphi$ in environments~$X$.
 
-I call this extension \emph{Hennessy-Milner Logic with Time-Outs} (\HMLt{}) and $\langle X \rangle$ for $X \subseteq A$ the \emph{time-out--possibility operators} (to be distinguished from the ordinary possibility operators $\langle \alpha \rangle$ for $\alpha \in \Act$).
+I will refer to this extension as \emph{Hennessy-Milner Logic with Time-Outs} (\HMLt{}) and to $\langle X \rangle$ for $X \subseteq A$ as the \emph{time-out--possibility operators} (to be distinguished from the ordinary possibility operators $\langle \alpha \rangle$ for $\alpha \in \Act$).
 
 The precise semantics are given by the following inductive definition of the satisfaction relation @{cite \<open>Section 3\<close> rbs} (notation slightly adapted):
 
@@ -55,13 +55,14 @@ The precise semantics are given by the following inductive definition of the sat
     & $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset \wedge p \vDash \varphi$
 \end{tabular}\<close>
 
-text \<open>The same intuitions regarding triggered and stable environments as for the definition of strong reactive bisimulations in \cref{sec:strong_bisimilarity} hold. $\vDash$ expresses that a property holds in triggered environments and $\vDash_X$ that a property holds in environments~$X$. The last clause expresses the possibility of stable environments timing out into triggered environments.
+text \<open>The same intuitions regarding triggered and stable environments as for the definition of strong reactive bisimulations in \cref{sec:strong_bisimilarity} hold. $\vDash$ expresses that a property holds in indeterminate environments and $\vDash_X$ that a property holds in stable environments~$X$. The last clause expresses the possibility of stable environments timing out into triggered environments.
 
 Van~Glabbeek then also proves that \HMLt{} characterises strong reactive/$X$-bisimilarity, i.e.\@ that 
 $p \leftrightarrow_r q \iff (\forall \varphi .\; p \vDash \varphi \longleftrightarrow q \vDash \varphi)$ and 
 $p \leftrightarrow_r^X q \iff (\forall \varphi .\; p \vDash_X \varphi \longleftrightarrow q \vDash_X \varphi)$,
 where $\varphi$ are formulas of \HMLt{}.
-A replication of the proof of this characterisation, however, is not part of this thesis.\<close>
+A replication of the proof of this characterisation, however, is not part of this thesis.
+\<close>
 
 
 subsection \<open>Isabelle\<close>
@@ -83,19 +84,19 @@ text \<open>In order to formalise the semantics, I combined both the usual satis
 Note that, in Isabelle code, I use the symbol \<open>\<TTurnstile>\<close> for all satisfaction relations in the context of \HMLt{}, whereas I use \<open>\<Turnstile>\<close> for satisfaction relations in the context of ordinary HML. 
 This notational nuance will be important when we examine the relationship between the satisfaction relations of \HMLt{} and HML in the context of the reduction in \cref{sec:reduction_satisfaction}.
 
-The first four clauses of my formalisation, then, are clearly direct translations of the clauses for the satisfaction relation $\vDash$ quoted above. To see that the next four clauses do, in fact, correspond to the five clauses for $\vDash_X$ above is less straightforward. 
+The first four clauses of my formalisation are clearly direct translations of the clauses for the satisfaction relation $\vDash$ above. It is less easy to see that the next four clauses do, in fact, correspond to the five clauses for $\vDash_X$. 
 
 First, each of the four clauses requires that \<open>X\<close> is a subset of the visible actions; in the original definition, the satisfaction relations $\vDash_X$ are only defined for those $X$ to begin with.
 
 Next, the clause for \<open>p \<TTurnstile>?[Some X] (HMLt_poss \<alpha> \<phi>)\<close> combines the original clauses for $p \vDash_X \langle a \rangle \varphi$ and $p \vDash_X \langle \tau \rangle \varphi$. 
 
-Lastly and most importantly, the last clause of the original definition, stating that $p \vDash_X \varphi$ if $p$ is idle in environments~$X$ and $p \vDash \varphi$, is added disjunctively to the cases \<open>p \<TTurnstile>?[Some X] (HMLt_poss \<alpha> \<phi>)\<close> and \<open>p \<TTurnstile>?[Some X] (HMLt_time Y \<phi>)\<close>; the latter case is not part of the original definition and can only be true by virtue of the last clause of the original definition, wherefore this is the only way for the last clause of the function definition below to be true. 
+Lastly and most importantly, the last clause of the original definition, stating that $p \vDash_X \varphi$ if $p$ is idle in environments~$X$ and $p \vDash \varphi$, is added disjunctively to the cases \<open>p \<TTurnstile>?[Some X] (HMLt_poss \<alpha> \<phi>)\<close> and \<open>p \<TTurnstile>?[Some X] (HMLt_time Y \<phi>)\<close>; the latter case is not part of the original definition and can only be true by virtue of the last clause of the original definition, wherefore this is the only way for this case in the function definition below to be true. 
 
-I will show below that this is sufficient to assure that my satisfaction function satisfies the last clause of the original definition, i.e.\@ that it does not need to be added disjunctively to the cases \<open>p \<TTurnstile>?[Some X] (HMLt_conj \<Phi>)\<close> and \<open>p \<TTurnstile>?[Some X] (HMLt_neg \<phi>)\<close>.\<close>
+I will show below that this is sufficient to assure that my satisfaction function satisfies the last clause of the original definition, i.e.\@ that it is not required to be added disjunctively to the cases \<open>p \<TTurnstile>?[Some X] (HMLt_conj \<Phi>)\<close> and \<open>p \<TTurnstile>?[Some X] (HMLt_neg \<phi>)\<close>.\<close>
 
 context lts_timeout begin
 
-function HMLt_sat :: \<open>'s \<Rightarrow> 'a set option \<Rightarrow> ('a)HMLt_formula \<Rightarrow> bool\<close> 
+function HMLt_sat :: \<open>'s\<Rightarrow>'a set option\<Rightarrow>('a)HMLt_formula \<Rightarrow> bool\<close> 
   (\<open>_ \<TTurnstile>?[_] _\<close> [50, 50, 50] 50)
   where
     \<open>(p \<TTurnstile>?[None] (HMLt_conj \<Phi>)) = 
@@ -104,10 +105,10 @@ function HMLt_sat :: \<open>'s \<Rightarrow> 'a set option \<Rightarrow> ('a)HML
       (\<not> p \<TTurnstile>?[None] \<phi>)\<close> 
   | \<open>(p \<TTurnstile>?[None] (HMLt_poss \<alpha> \<phi>)) = 
       ((\<alpha> \<in> visible_actions \<union> {\<tau>}) \<and> 
-        (\<exists> p'. p \<longmapsto>\<alpha> p' \<and> p' \<TTurnstile>?[None] \<phi>))\<close> 
+       (\<exists> p'. p \<longmapsto>\<alpha> p' \<and> p' \<TTurnstile>?[None] \<phi>))\<close> 
   | \<open>(p \<TTurnstile>?[None] (HMLt_time X \<phi>)) = 
       ((X \<subseteq> visible_actions) \<and> (idle p X) \<and> 
-        (\<exists> p'. p \<longmapsto>t p' \<and> p' \<TTurnstile>?[Some X] \<phi>))\<close> 
+       (\<exists> p'. p \<longmapsto>t p' \<and> p' \<TTurnstile>?[Some X] \<phi>))\<close> 
   
   | \<open>(p \<TTurnstile>?[Some X] (HMLt_conj \<Phi>)) = (X \<subseteq> visible_actions \<and>
       (\<forall> \<phi>. \<phi> \<in>\<^sub>c \<Phi> \<longrightarrow> p \<TTurnstile>?[Some X] \<phi>))\<close> 
@@ -115,8 +116,8 @@ function HMLt_sat :: \<open>'s \<Rightarrow> 'a set option \<Rightarrow> ('a)HML
       (\<not> p \<TTurnstile>?[Some X] \<phi>))\<close> 
   | \<open>(p \<TTurnstile>?[Some X] (HMLt_poss \<alpha> \<phi>)) = (X \<subseteq> visible_actions \<and>
       (((\<alpha> \<in> X) \<and> (\<exists> p'. p \<longmapsto>\<alpha> p' \<and> p' \<TTurnstile>?[None] \<phi>)) \<or> 
-        ((\<alpha> = \<tau>) \<and> (\<exists> p'. p \<longmapsto>\<tau> p' \<and> p' \<TTurnstile>?[Some X] \<phi>)) \<or> 
-        ((idle p X) \<and> (p \<TTurnstile>?[None] (HMLt_poss \<alpha> \<phi>)))))\<close> 
+       ((\<alpha> = \<tau>) \<and> (\<exists> p'. p \<longmapsto>\<tau> p' \<and> p' \<TTurnstile>?[Some X] \<phi>)) \<or> 
+       ((idle p X) \<and> (p \<TTurnstile>?[None] (HMLt_poss \<alpha> \<phi>)))))\<close> 
   | \<open>(p \<TTurnstile>?[Some X] (HMLt_time Y \<phi>)) = (X \<subseteq> visible_actions \<and>
       ((idle p X) \<and> (p \<TTurnstile>?[None] (HMLt_time Y \<phi>))))\<close>
   using HMLt_formula.exhaust
@@ -241,7 +242,7 @@ proposition
     \<open>p \<TTurnstile>[X] \<phi>\<close>
   using idle_sat_lemma[OF assms(2,1)] assms(3) ..
 
-text \<open>As the last clause of van Glabbeek definition is the main difference to the function definition of \<open>HMLt_sat\<close>, this proposition gives confidence that the original definition and the function definition correspond.\<close>
+text \<open>As the last clause of van Glabbeek definition is the main disparity to the function definition of \<open>HMLt_sat\<close>, this proposition gives confidence that the function does indeed formalise the original definition.\<close>
 
 end \<comment> \<open>of \<open>context lts_timeout\<close>\<close>
 (*<*)

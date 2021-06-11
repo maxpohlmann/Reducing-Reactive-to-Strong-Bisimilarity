@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{book}
+\documentclass[11pt,a4paper,openany]{book}
 \usepackage{isabelle,isabellesym}
 
 \usepackage[UKenglish]{babel}
@@ -15,9 +15,12 @@
 \usetikzlibrary{arrows,automata,shapes,positioning}
 \usepackage{pdfsetup}
 \usepackage[nameinlink]{cleveref}
+\usepackage{graphicx}
 
 \urlstyle{rm}
 \isabellestyle{tt}
+\def\isachardoublequoteopen{}%
+\def\isachardoublequoteclose{}%
 
 
 
@@ -58,51 +61,54 @@
 
 \title{Reducing Reactive Bisimilarity\\to Strong Bisimilarity}
 \author{Maximilian Pohlmann}
-\maketitle
+
+\begin{titlepage}
+\begin{center}
+    \includegraphics[scale=.2]{TU_Logo}
+
+    \vspace{3.5em}
+
+    {\sc\large 
+        {\LARGE Technische Universität Berlin}\\
+        {Fakultät IV --  Elektrotechnik und Informatik}\\
+        {Modelle und Theorie Verteilter Systeme}
+
+        \vspace{4em}
+
+        {Bachelor's Thesis}
+
+        \vspace{1.5em}
+
+        {\huge\upshape\bf Reducing Reactive Bisimilarity\\[.25em]
+        to Strong Bisimilarity}
+
+        \vspace{3em}
+
+        {\Large Maximilian Pohlmann}\\
+        {Student ID: 387210}
+
+        \vfill
+
+        {\normalsize
+            \begin{tabular}{r l}
+                First Evaluator: & Prof. Dr. Uwe Nestmann \\
+                Second Evaluator: & Prof. Dr. Stephan Kreutzer
+            \end{tabular}
+        }
+
+        \vspace{3em}
+
+        Berlin\\
+        June 2021
+    }
+\end{center}
+\end{titlepage}
+
 \newpage\null\thispagestyle{empty}\newpage
 
 \tableofcontents
-\newpage
-\subsubsection{Graphical Overview of Main Contents}
-\begin{center}
-\begin{tikzpicture}[node distance=1cm and 2cm]
-    \tikzstyle{every node}=[draw, inner sep=10pt]
-    
-    \node[rectangle] (21) {2.1 LTS}; 
-    \node[rectangle] (22) [right=of 21,yshift=-2cm] {2.2 SB}; 
-    \node[rectangle] (23) [right=of 22,yshift=2cm] {2.3 HML}; 
-    
-    \node[rectangle] (24) [below=of 21,yshift=-10cm] {2.4 \LTSt{}}; 
-    \node[rectangle] (25) [below=of 22,yshift=-10cm] {2.5 SRB}; 
-    \node[rectangle] (26) [below=of 23,yshift=-10cm] {2.6 \HMLt{}};
-    
-    \node[ellipse] (31) [below=of 21,yshift=-5cm] {3.1 $\vartheta$};
-    \node[ellipse] (32) [below=of 22,yshift=-3cm] {3.2};
-    \node[ellipse] (33) [below=of 23,yshift=-5cm] {3.3 $\sigma$};
-    \node[ellipse] (34) [right=of 33] {3.4};
-    
-    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (21) to (22);
-    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (21) to (23);
-    \draw [<->,>=angle 90,shorten <=5pt,shorten >=5pt] (22) to (23);
-    
-    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (24) to (25);
-    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (24) to (26);
-    \draw [<->,dashed,>=angle 90,shorten <=5pt,shorten >=5pt] (25) to (26);
-    
-    \draw [shorten <=5pt] (21) to (31);
-    \draw [shorten <=5pt] (24) to (31);
-    \draw [shorten <=5pt] (22) to (32);
-    \draw [shorten <=5pt] (25) to (32);
-    \draw [shorten <=5pt] (23) to (33);
-    \draw [shorten <=5pt] (26) to (33);
-    \draw [shorten <=5pt] (23) to[in=90,out=-40] (34);
-    \draw [shorten <=5pt] (26) to[in=-90,out=30] (34);
-    
-    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to (32);
-    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (33) to (34);
-    \draw [->,>=angle 90,shorten <=5pt,shorten >=5pt] (31) to[in=145,out=35] (34);
-\end{tikzpicture}
-\end{center}
+\newpage\null\thispagestyle{empty}\newpage
+
 
 % sane default for proof documents
 \parindent 0pt\parskip 0.5ex
@@ -124,8 +130,12 @@
 \input{Discussion}
 
 % optional bibliography
+{
+\clubpenalty10000
+\interlinepenalty=10000
 \bibliographystyle{alphaurl}
 \bibliography{root}
+}
 
 \appendix
 \input{Isabelle}

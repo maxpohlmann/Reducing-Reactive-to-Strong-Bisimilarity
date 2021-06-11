@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="isabelle.css"/>
+<title>Theory Reductions</title>
+</head>
+
+
+<body>
+<div class="head">
+<h1>Theory Reductions</h1>
+</div>
+
+<pre class="source"><span class="comment1">(*&lt;*)</span>
+<span class="keyword1"><span class="command">theory</span></span> Reductions
+  <span class="keyword2"><span class="keyword">imports</span></span> <a href="../../Pure/Pure/Pure.html">Pure</a>
+<span class="keyword2"><span class="keyword">begin</span></span>
+<span class="comment1">(*&gt;*)</span>
+
+<span class="keyword1"><span class="command">chapter</span></span> <span class="quoted"><span class="plain_text">‹The Reductions›</span></span>
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\label{chap:reductions}›</span></span>
+
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹In <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> rbs<span class="antiquote"><span class="antiquote">}</span></span></span></span>, van~Glabbeek presents various characterisations of reactive bisimilarity, three of which have been presented in previous sections (SRBs, GSRBs, and the modal characterisation). Another one introduces \emph{environment operators} $\theta_X$ (for $X \subseteq A$), which \enquote{place a process in \textins{a \emph{stable}} environment that allows exactly the actions in $X$ to occur} <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> ‹section 4› rbs<span class="antiquote"><span class="antiquote">}</span></span></span></span>. The precise semantics are given by structural operational rules, e.g.: $p \xrightarrow{\tau} p' \Longrightarrow \theta_X(p) \xrightarrow{\tau} \theta_X(p')$. However, for the characterisation of reactive bisimilarity, the definition of another kind of relations, namely \emph{time-out bisimulations}, is required. 
+
+This inspired me to come up with a mapping (from \LTSt{}s to LTSs) that explicitly models the entire behaviour of the environment (including triggered environments that may stabilise into arbitrary stable environments) and its interaction with the reactive system. Concretely, the resulting LTS will contain a state for each state of the original \LTSt{} in every possible environment. By doing this, the resulting LTS will not be a model of a reactive system, but of the closed system consisting of the original underlying system and its environment, modelling all possible combined states and the transitions between those.
+
+Since the entire semantics of \LTSt{}s will be incorporated in the mapping, the observable behaviour of the closed system will be equivalent for underlying reactive systems that are strongly reactive bisimilar. In other words: two processes of an \LTSt{} are strongly reactive bisimilar iff their corresponding processes in the mapped LTS are strongly bisimilar. This mapping will be presented in \cref{sec:mapping_lts} and the reduction established in \cref{sec:reduction_bisimilarity}.
+
+As a natural consequence, a reduction for the satisfaction of \HMLt{} formulas can be given as well.
+In \cref{sec:mapping_formulas}, I will present a mapping from \HMLt{} formulas to HML formulas such that, as we will see in \cref{sec:reduction_satisfaction}, a mapped formula holds in a process of a mapped LTS iff the original formula holds in the corresponding process of the original \LTSt{}.›</span></span>
+
+<span class="comment1">(*&lt;*)</span>
+<span class="keyword2"><span class="keyword">end</span></span>
+<span class="comment1">(*&gt;*)</span></pre>
+</body>
+
+</html>

@@ -13,8 +13,8 @@ text \<open>\label{sec:reduction_bisimilarity}\<close>
 text \<open>The main result of this section will be that two processes $p$ and $q$ of an \LTSt{} $\mathbb{T}$ are strongly reactive bisimilar (strongly $X$-bisimilar) iff the corresponding processes $\vartheta(p)$ and $\vartheta(q)$ ($\vartheta_X(p)$ and $\vartheta_X(q)$) of $\mathbb{T}_\vartheta$ are strongly bisimilar. 
 
 We show the $\Longrightarrow$-direction first. For an SRB $\mathcal{R}$, let
-$$\mathcal{S} = \{ (\vartheta(p), \vartheta(q)) \mid (p, q) \in R \} \cup \{ (\vartheta_X(p), \vartheta_X(q)) \mid (p, X, q) \in R \}.$$
-We can prove that $\mathcal{S}$ is an SB, by showing that the mapping satiesfies all clauses of the definition of SBs, using the fact that $\mathcal{R}$ is an SRB as well as the rules and generation lemmas for $\rightarrow_\vartheta$. Hence, the existence of an SRB $\mathcal{R}$ with $(p, q) \in R$ implies the existence of an SB $\mathcal{S}$ with $(\vartheta(p), \vartheta(q)) \in \mathcal{S}$ (and similarly for $\vartheta_X$), so strong reactive/$X$-bisimilarity in $\mathbb{T}$ implies strong bisimilarity in $\mathbb{T}_\vartheta$.
+$$\mathcal{S} = \{ (\vartheta(p), \vartheta(q)) \mid (p, q) \in \mathcal{R} \} \cup \{ (\vartheta_X(p), \vartheta_X(q)) \mid (p, X, q) \in \mathcal{R} \}.$$
+We can prove that $\mathcal{S}$ is an SB, by showing that the mapping satiesfies all clauses of the definition of SBs, using the fact that $\mathcal{R}$ is an SRB as well as the rules and generation lemmas for $\rightarrow_\vartheta$. Hence, the existence of an SRB $\mathcal{R}$ with $(p, q) \in \mathcal{R}$ implies the existence of an SB $\mathcal{S}$ with $(\vartheta(p), \vartheta(q)) \in \mathcal{S}$ (and similarly for $\vartheta_X$), so strong reactive/$X$-bisimilarity in $\mathbb{T}$ implies strong bisimilarity in $\mathbb{T}_\vartheta$.
 
 Next, we show the $\Longleftarrow$-direction. Let
 $$\mathcal{R} = \{ (p, q) \mid \vartheta(p) \leftrightarrow \vartheta(q) \} \cup \{ (p, X, q) \mid \vartheta_X(p) \leftrightarrow \vartheta_X(q) \}.$$
@@ -49,8 +49,7 @@ definition SRB_mapping \<comment> \<open>$\mathcal{S}$\<close>
 
 lemma SRB_mapping_is_SB:
   assumes \<open>SRB R\<close>
-  shows \<open>lts_theta.SB (SRB_mapping R)\<close>
-    (is \<open>lts_theta.SB ?S\<close>)
+  shows \<open>lts_theta.SB (SRB_mapping R)\<close> (is \<open>lts_theta.SB ?S\<close>)
 proof -
   {
     fix P Q P' a
@@ -164,11 +163,11 @@ definition strong_bisimilarity_mapping \<comment> \<open>$\mathcal{R}$\<close>
   :: \<open>'s\<Rightarrow>'a set option\<Rightarrow>'s \<Rightarrow> bool\<close>
   where \<open>(strong_bisimilarity_mapping) p XoN q 
     \<equiv> (XoN = None \<and> (\<theta>(p)) \<leftrightarrow> (\<theta>(q))) \<or>
-    (\<exists> X. XoN = Some X \<and> X \<subseteq> visible_actions \<and> (\<theta>[X](p)) \<leftrightarrow> (\<theta>[X](q)))\<close>
+    (\<exists> X. XoN = Some X \<and> X \<subseteq> visible_actions \<and> 
+     \<theta>[X](p) \<leftrightarrow> \<theta>[X](q))\<close>
 
 lemma strong_bisimilarity_mapping_is_SRB:
-  shows \<open>SRB strong_bisimilarity_mapping\<close>
-    (is \<open>SRB ?R\<close>)
+  shows \<open>SRB strong_bisimilarity_mapping\<close> (is \<open>SRB ?R\<close>)
   unfolding SRB_def
 proof (safe)
   fix p XoN q
@@ -268,11 +267,11 @@ text \<open>We need to include the assumption \<open>X \<subseteq> visible_actio
 
 subsubsection \<open>Iff (\boldmath{$\Longleftrightarrow$})\<close>
 
-theorem\<^marker>\<open>tag (proof) visible\<close> strongly_reactive_bisimilar_iff_theta_strongly_bisimilar:
+theorem\<^marker>\<open>tag (proof) visible\<close> strongly_reactive_bisim_iff_triggered_strongly_bisim:
   shows \<open>p \<leftrightarrow>\<^sub>r q  \<Longleftrightarrow>  \<theta>(p) \<leftrightarrow> \<theta>(q)\<close>
   using sby_implies_srby srby_implies_sby by fast
 
-theorem\<^marker>\<open>tag (proof) visible\<close> strongly_X_bisimilar_iff_theta_X_strongly_bisimilar:
+theorem\<^marker>\<open>tag (proof) visible\<close> strongly_X_bisim_iff_stable_strongly_bisim:
   assumes \<open>X \<subseteq> visible_actions\<close>
   shows \<open>p \<leftrightarrow>\<^sub>r\<^sup>X q  \<Longleftrightarrow>  \<theta>[X](p) \<leftrightarrow> \<theta>[X](q)\<close>
   using sxby_implies_sby sby_implies_sxby assms by fast

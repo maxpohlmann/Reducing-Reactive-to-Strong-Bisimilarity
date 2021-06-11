@@ -45,10 +45,10 @@ $$
 {\vartheta_X(p) \xrightarrow{t}_\vartheta \vartheta_X(p')}
 $$\\
 
-These rules are motivated by the intuitions developed in \cref{sec:LTSt,sec:reactive_bisimilarity}:
+These rules are motivated by the intuitions developed in \cref{sec:reactive_bisimilarity}:
 
 \begin{enumerate}[nosep]
-    \item triggered environments can stabilise into arbitrary stable environments~$X$ for $X \subseteq A$,
+    \item indeterminate environments can stabilise into arbitrary stable \linebreak environments~$X$ for $X \subseteq A$,
     \item $\tau$-transitions can be performed regardless of the environment,
     \item if the underlying system is idle, the environment may time-out and turn into an indeterminate/triggered environment,
     \item facilitated visible transitions can be performed and can trigger a change in the environment,
@@ -57,11 +57,11 @@ These rules are motivated by the intuitions developed in \cref{sec:LTSt,sec:reac
 \end{enumerate}
 
 \example{%
-The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on the right. States that have no incoming or outgoing transitions other than $\varepsilon_X$ or $t_\varepsilon$ are omitted. Note how $\vartheta(T)$ is not reachable from $\vartheta(P)$.
+The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on the right. States that have no incoming or outgoing transitions other than $\varepsilon_X$ or $t_\varepsilon$ are omitted. Note how $\vartheta(p_4)$ is not reachable from $\vartheta(p)$.
 
 \phantomsection
 \label{fig:mapping_example}
-\lts{
+\scalebox{.9}{\vbox{\lts{
     \node[state]    (P)                             {$p$};
     \node[state]    (Q) [below left of=P]           {$p_1$};
     \node[state]    (R) [below right of=P]          {$p_2$};
@@ -109,24 +109,26 @@ The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on t
     \draw [dotted,->,shorten <= 7pt] (Qc) to[bend right] node[right] {$t_\varepsilon$} (Qt);
     \draw [dotted,->,shorten >= 7pt] (Tt) to[bend right] node[left] {$\varepsilon_{\dots}$} (Tc);
     \draw [dotted,->,shorten <= 7pt] (Tc) to[bend right] node[right] {$t_\varepsilon$} (Tt);
-}}\<close>
+}}}}
+\vspace{-1cm}\<close>
 
 
 subsection \<open>Isabelle\<close>
 
 subsubsection \<open>Formalising \boldmath{$\Proc_\vartheta$} and \boldmath{$\Act_\vartheta$}\<close>
 
-text \<open>For the formalisation, we specify another type of LTS based on \<open>lts_timeout\<close>, where the aforementioned special actions and operators are considered; we call it \<open>lts_timeout_mappable\<close>. 
+text \<open>We specify another locale based on \<open>lts_timeout\<close>, where the aforementioned special actions and operators are considered; we call it \<open>lts_timeout_mappable\<close>. 
 Since $\Proc \cap \Proc_\vartheta = \emptyset$, we introduce a new type variable \<open>'ss\<close> for $\Proc_\vartheta$, but use \<open>'a\<close> for both $\Act$ and $\Act_\vartheta$.
 We formalise the family of special actions $\varepsilon_X$ as a mapping \<open>\<epsilon>[_] :: 'a set \<Rightarrow> 'a\<close>, and the environment operators $\vartheta$/$\vartheta_X$ as a single mapping \<open>\<theta>?[_](_) :: 'a set option \<Rightarrow> 's \<Rightarrow> 'ss\<close>.
 
-As for \<open>lts_timeout\<close> in \cref{sec:LTSt}, we require that no two special actions are equal, formalised by the first set of assumptions \<open>distinctness_special_actions\<close>.
+As for \<open>lts_timeout\<close> in \cref{sec:LTSt}, we require that all special actions are distinct, formalised by the first set of assumptions \<open>distinctness_special_actions\<close>.
 
-As an operator, the term $\vartheta_X(p)$ simply refers to the specific state $p$ in an environment~$X$; when understood as a mapping, we have to be more careful, since \<open>\<theta>?[Some X](p)\<close> is now a state itself. Specifically, we have to assume that the mapping \<open>\<theta>?[_](_)\<close> is injective (when restricted to domains where \<open>X \<subseteq> visible_actions\<close>). Otherwise, we might have that \<open>\<theta>?[None](p) = \<theta>?[None](q)\<close> for \<open>p \<noteq> q\<close>, which is obviously problematic. Hence, the (restricted) injectivity of \<open>\<theta>?[_](_)\<close> is formalised as the set of assumptions \<open>injectivity_theta\<close>. (We do not require injectivity for subsets of the domain with \<open>\<not> X \<subseteq> visible_actions\<close>, since $\vartheta_X$ is not defined for those $X$).
+As an operator, the term $\vartheta_X(p)$ simply refers to the state $p$ in an environment~$X$; when understood as a mapping, we have to be more careful, since \<open>\<theta>?[Some X](p)\<close> is now itself a state. Specifically, we have to assume that \<open>\<theta>?[_](_)\<close> is injective (when restricted to domains where \<open>X \<subseteq> visible_actions\<close>, because $\vartheta_X$ is only defined for those $X \subseteq A$). Otherwise, we might have \<open>\<theta>?[None](p) = \<theta>?[None](q)\<close> for \<open>p \<noteq> q\<close>, which is problematic if e.g.\@ \<open>p\<close> has a \<open>\<tau>\<close>-transition, but \<open>q\<close> does not.
+Hence, the (restricted) injectivity of \<open>\<theta>?[_](_)\<close> is formalised as the set of assumptions \<open>injectivity_theta\<close>.
 
-The same is required for the mapping \<open>\<epsilon>[_]\<close>, as formalised in the last clause of the set of assumptions \<open>distinctness_special_actions\<close> (the (restricted) injectivity of \<open>\<epsilon>[_]\<close> is part of the requirement that all special actions must be distinct). Again, we only require injectivity for the mapping restricted to the domain \<open>visible_actions\<close>. If we would require that \<open>\<epsilon>[_] :: 'a set \<Rightarrow> 'a\<close> were injective over its entire domain \<open>'a set\<close>, we would run into problems, since such a function cannot exist by Cantor's theorem.
+The same is required for the mapping \<open>\<epsilon>[_]\<close>, as formalised in the last clause of the set of assumptions \<open>distinctness_special_actions\<close> (the (restricted) injectivity of \<open>\<epsilon>[_]\<close> is part of the requirement that all special actions must be distinct). Again, we only require injectivity for the mapping restricted to the domain \<open>visible_actions\<close>. If we required that \<open>\<epsilon>[_] :: 'a set \<Rightarrow> 'a\<close> were injective over its entire domain \<open>'a set\<close>, we would run into problems, since such a function cannot exist by Cantor's theorem.
 
-For now, we assume that such mappings exist, in order to proof the general case for any such mappings. In \cref{chap:example_instantiation}, I give examples for these mappings and show that, with these, any \<open>lts_timeout\<close> can be interpreted as an \<open>lts_timeout_mappable\<close>.
+That such mappings exist is intuitively clear, whence there were no ambiguities when defining them as operators in the prosaic/mathematical section above. Formalising these mappings in HOL, however, is not so straight\-forward: as operators, we assume that they are only defined for certain parameters; in HOL, every mapping must be total. For now, we simply assume that such total functions that formalise these operators exist. Doing this significantly improves the readability of following sections, since we must only consider the relevant properties of the mappings given by the assumptions. In \cref{chap:example_instantiation}, I give examples for these mappings and show that, together with these, any \<open>lts_timeout\<close> can be interpreted as an \<open>lts_timeout_mappable\<close>, i.e.\@ every \LTSt{} $\mathbb{T}$ can be mapped to an LTS $\mathbb{T}_\vartheta$.
 
 Lastly, we formalise our requirements $t_\varepsilon \notin \Act$ and $\forall X \subseteq A.\; \varepsilon_X \notin \Act$ as the last set of assumptions \<open>no_epsilon_in_tran\<close>. Technically, these assumptions only state that the $\varepsilon$-actions do not label any transition of $\mathbb{T}$. However, we can assume that 
 $\Act = \{ \alpha \mid \exists p, p'.\; p \xrightarrow{\alpha} p' \}$, 
@@ -170,14 +172,12 @@ abbreviation stable_env :: \<open>'a set \<Rightarrow> 's \<Rightarrow> 'ss\<clo
   (\<open>\<theta>[_]'(_')\<close>)
   where \<open>\<theta>[X](p) \<equiv> \<theta>?[Some X](p)\<close>
 
-text \<open>With four special actions (three plus a family), the following abbreviation will be convenient later on.\<close>
-
-abbreviation no_special_action :: \<open>'a \<Rightarrow> bool\<close>
+(* This abbreviation and this lemma are not important for the thesis document. *)
+(*<*)
+abbreviation\<^marker>\<open>tag unimportant\<close> no_special_action :: \<open>'a \<Rightarrow> bool\<close>
   where \<open>no_special_action \<alpha> 
     \<equiv> \<alpha> \<noteq> \<tau> \<and> \<alpha> \<noteq> t \<and> \<alpha> \<noteq> t_\<epsilon> \<and> (\<forall> X. \<alpha> \<noteq> \<epsilon>[X])\<close>
 
-(* This lemma is not important for the thesis document. *)
-(*<*)
 lemma\<^marker>\<open>tag (proof) unimportant\<close> special_actions_invisible:
   assumes \<open>X \<subseteq> visible_actions\<close> \<open>\<alpha> \<in> X\<close>
   shows \<open>no_special_action \<alpha>\<close>
@@ -185,33 +185,33 @@ lemma\<^marker>\<open>tag (proof) unimportant\<close> special_actions_invisible:
 (*>*)
 
 subsubsection \<open>Formalising \boldmath{$\rightarrow_\vartheta$}\<close>
-text \<open>We now formalise the transition relation of our mapping, given above by the structural operational rules. We use the notation \<open>_ \<longmapsto>\<^sup>\<theta>_ _\<close> instead of the more obvious \<open>_ \<longmapsto>\<^sub>\<theta>_ _\<close> simply because of better readability.
+text \<open>We formalise the transition relation of our mapping, given above by the structural operational rules, as a function \<open>tran_theta\<close>.% 
+\footnote{We use the notation \<open>_ \<longmapsto>\<^sup>\<theta>_ _\<close> instead of the more obvious \<open>_ \<longmapsto>\<^sub>\<theta>_ _\<close> simply because of better readability.}
 
-It should be easy to see that the clauses below correspond directly to the rules above. Like in previous sections, we have to take extra care to handle the requirement \<open>X \<subseteq> visible_actions\<close>.
+We use the \<open>inductive\<close> command, because this allows us to define separate clauses (as opposed to the \<open>definition\<close> command). Technically speaking, however, this inductive definition only has base cases, since none of the premises involves \<open>\<longmapsto>\<^sup>\<theta>\<close>.
 
-We use the \<open>inductive\<close> command, because this allows us to define separate individual (as opposed to the \<open>definition\<close> command). Technically speaking, this inductive definition only has base cases, though, since no premise involves \<open>\<longmapsto>\<^sup>\<theta>\<close>.\<close>
+It should be easy to see that the clauses below correspond directly to the rules above. Like in previous sections, we have to take extra care to handle the requirement \<open>X \<subseteq> visible_actions\<close>.\<close>
 
-(* todo: order and naming *)
 inductive tran_theta :: \<open>'ss \<Rightarrow> 'a \<Rightarrow> 'ss \<Rightarrow> bool\<close> 
   (\<open>_ \<longmapsto>\<^sup>\<theta>_ _\<close> [70, 70, 70] 70)
   where 
-    env_stabilise:  \<open>X \<subseteq> visible_actions \<Longrightarrow> 
+    env_stabilise: \<open>X \<subseteq> visible_actions \<Longrightarrow> 
       \<theta>(p) \<longmapsto>\<^sup>\<theta>\<epsilon>[X] \<theta>[X](p)\<close>
-  | triggered_tau:  
+  | triggered_tau:
       \<open>p \<longmapsto>\<tau> q \<Longrightarrow> \<theta>(p) \<longmapsto>\<^sup>\<theta>\<tau> \<theta>(q)\<close>
-  | env_timeout:    \<open>X \<subseteq> visible_actions \<Longrightarrow> 
+  | env_timeout: \<open>X \<subseteq> visible_actions \<Longrightarrow> 
       idle p X \<Longrightarrow> \<theta>[X](p) \<longmapsto>\<^sup>\<theta>t_\<epsilon> \<theta>(p)\<close>
-  | tran_visible:  \<open>X \<subseteq> visible_actions \<Longrightarrow> 
+  | tran_visible: \<open>X \<subseteq> visible_actions \<Longrightarrow> 
       a \<in> X \<Longrightarrow> p \<longmapsto>a q \<Longrightarrow> \<theta>[X](p) \<longmapsto>\<^sup>\<theta>a \<theta>(q)\<close>
-  | stable_tau:      \<open>X \<subseteq> visible_actions \<Longrightarrow> 
+  | stable_tau: \<open>X \<subseteq> visible_actions \<Longrightarrow> 
       p \<longmapsto>\<tau> q \<Longrightarrow> \<theta>[X](p) \<longmapsto>\<^sup>\<theta>\<tau> \<theta>[X](q)\<close>
-  | sys_timeout:  \<open>X \<subseteq> visible_actions \<Longrightarrow> 
+  | sys_timeout: \<open>X \<subseteq> visible_actions \<Longrightarrow> 
       idle p X \<Longrightarrow> p \<longmapsto>t q \<Longrightarrow> \<theta>[X](p) \<longmapsto>\<^sup>\<theta>t \<theta>[X](q)\<close>
 
-
+text \<open>\pagebreak\<close>
 subsubsection \<open>Generation Lemmas\<close>
 
-text \<open>For the remainder of this section, we will derive a set of generation lemmas, i.e.\@ lemmas that allow us to reason backwards: if we know \<open>P \<longmapsto>\<^sup>\<theta>\<alpha> P'\<close> and some other information about \<open>P\<close> and/or \<open>\<alpha>\<close>, we can deduce some information about the other variables as well as the transitions of the original LTS.\<close>
+text \<open>Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to reason backwards: if we know \<open>P \<longmapsto>\<^sup>\<theta>\<alpha> P'\<close> and some other information about \<open>P\<close> and/or \<open>\<alpha>\<close>, we can deduce some information about the other variables as well as the transitions of the original \LTSt{}.\<close>
 
 lemma generation_triggered_transitions:
   assumes \<open>\<theta>(p) \<longmapsto>\<^sup>\<theta>\<alpha> P'\<close>

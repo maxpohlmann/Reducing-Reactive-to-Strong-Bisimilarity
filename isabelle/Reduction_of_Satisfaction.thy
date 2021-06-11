@@ -8,12 +8,14 @@ begin
 section \<open>Reduction of Formula Satisfaction\<close>
 text \<open>\label{sec:reduction_satisfaction}\<close>
 
-text \<open>We will show that, for a process $p$ of an \LTSt{} and a formula $\varphi$ of \HMLt{}, we have $p \vDash \varphi \iff \vartheta(p) \vDash \sigma(\varphi)$ and $p \vDash_X \varphi \iff \vartheta_X(p) \vDash \sigma(\varphi)$. The proof is rather straightforward: we simply use induction over \HMLt{} formulas and show that, for each case, the semantics given by van~Glabbeek's satisfaction relations and those given by the mappings $\sigma$ and $\vartheta$/$\vartheta_X$ coincide. Due to the relative complexity of the mapping and the satisfaction relations, the proof is quite tedious, however.\<close>
+text \<open>We will show that, for a process $p$ of an \LTSt{} and a formula $\varphi$ of \HMLt{}, we have $p \vDash \varphi \iff \vartheta(p) \vDash \sigma(\varphi)$ and $p \vDash_X \varphi \iff \vartheta_X(p) \vDash \sigma(\varphi)$. The proof is rather straightforward: we use induction over \HMLt{} formulas and show that, for each case, the semantics given by van~Glabbeek's satisfaction relations and those given by the mappings $\sigma$ and $\vartheta$/$\vartheta_X$ coincide. Due to the relative complexity of the mapping and the satisfaction relations, the proof is quite tedious, however.
+\vspace{-.3cm}\<close>
 
 
 subsection \<open>Isabelle\<close>
 
-text \<open>Similar to the formalisations of \cref{sec:reduction_bisimilarity}, we begin by interpreting our transition mapping \<open>tran_theta\<close> as an \<open>lts\<close> and reassigning notation appropriately (we only care about HML formula satisfaction for $\mathbb{T}_\vartheta$, not $\mathbb{T}$).\<close>
+text \<open>\vspace{-.4cm}
+Similarly to the formalisations in \cref{sec:reduction_bisimilarity}, we begin by interpreting our transition mapping \<open>tran_theta\<close> as an \<open>lts\<close> and reassigning notation appropriately (we only care about HML formula satisfaction for $\mathbb{T}_\vartheta$, not $\mathbb{T}$).\<close>
 
 context lts_timeout_mappable begin
 
@@ -405,12 +407,12 @@ next
   qed
 qed
 
-text \<open>The theorems using the nicer notation are now immediate consequences of this lemma.\<close>
+text \<open>Theorems using nicer notation are immediate consequences of this lemma.\<close>
 
-theorem\<^marker>\<open>tag (proof) visible\<close> HMLt_HMLt_sat_triggered_iff_triggered_env_HML_sat:
+theorem\<^marker>\<open>tag (proof) visible\<close> HMLt_sat_triggered_iff_triggered_env_HML_sat:
   shows \<open>p \<TTurnstile> \<phi>  \<Longleftrightarrow>  \<theta>(p) \<Turnstile> \<sigma>(\<phi>)\<close> 
   using HMLt_sat_iff_HML_sat by blast
-theorem\<^marker>\<open>tag (proof) visible\<close> HMLt_HMLt_sat_stable_iff_stable_env_HML_sat:
+theorem\<^marker>\<open>tag (proof) visible\<close> HMLt_sat_stable_iff_stable_env_HML_sat:
   assumes \<open>X \<subseteq> visible_actions\<close>
   shows \<open>p \<TTurnstile>[X] \<phi>  \<Longleftrightarrow>  \<theta>[X](p) \<Turnstile> \<sigma>(\<phi>)\<close> 
   using HMLt_sat_iff_HML_sat assms by blast

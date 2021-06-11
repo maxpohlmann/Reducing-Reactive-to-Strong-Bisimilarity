@@ -36,33 +36,35 @@ The processes $p$ and $q$ are behaviourally equivalent for \LTSt{} semantics, i.
 }}\<close>
 
 subsubsection \<open>Strong Reactive Bisimulations\<close>
-text \<open>Van~Glabbeek introduces several characterisations of this equivalence, beginning with \emph{strong reactive bisimulation} (SRB) relations. These differ from strong bisimulations in that the relations contain not only pairs of processes $(p,q)$, but additionally triples consisting of two processes and a set of actions, $(p,X,q)$. The following definition of SRB relations is quoted, with minor adaptations, from @{cite \<open>Definition 1\<close> rbs}:
+text \<open>Van~Glabbeek introduces several characterisations of this equivalence, beginning with \emph{strong reactive bisimulation} (SRB) relations. These differ from strong bisimulations in that the relations contain not only pairs of processes $(p,q)$, but additionally triples consisting of two processes and a set of actions $(p,X,q)$. The following definition of SRB relations is quoted, with minor adaptations, from @{cite \<open>Definition 1\<close> rbs}:
 
 A \emph{strong reactive bisimulation} is a symmetric relation 
 $$\mathcal{R} \subseteq (\Proc \times \mathcal{P}(A) \times \Proc) \cup (\Proc \times \Proc)$$
 (meaning that $(p,X,q)\!\in\!\mathcal{R}\!\iff\!(q,X,p)\!\in\!\mathcal{R}$ and
 $(p,q)\!\in\!\mathcal{R}\!\iff\!(q,p)\!\in\!\mathcal{R}$),\\
-such that, for all $(p,q) \in \mathcal{R}$:
+such that,
+\newpage
+for all $(p,q) \in \mathcal{R}$:
 \begin{enumerate}
-    \item if $p \xrightarrow{\tau} p'$, then there exists a $q'$ such that $q \xrightarrow{\tau} q'$ and $(p',q') \in \mathcal{R}$,
+    \item if $p \xrightarrow{\tau} p'$, then $\exists q'$ such that $q \xrightarrow{\tau} q'$ and $(p',q') \in \mathcal{R}$,
     \item $(p,X,q) \in \mathcal{R}$ for all $X \subseteq A$,
 \end{enumerate}
 and for all $(p,X,q) \in \mathcal{R}$:
 \begin{enumerate}
     \setcounter{enumi}{2}
     \item if $p \xrightarrow{a} p'$ with $a \in X$, then $\exists q'$ such that $q \xrightarrow{a} q'$ and $(p',q') \in \mathcal{R}$,
-    \item if $p \xrightarrow{\tau} p'$, then there exists a $q'$ such that $q \xrightarrow{\tau} q'$ and $(p',X,q') \in \mathcal{R}$,
+    \item if $p \xrightarrow{\tau} p'$, then $\exists q'$ such that $q \xrightarrow{\tau} q'$ and $(p',X,q') \in \mathcal{R}$,
     \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$, then $(p,q) \in \mathcal{R}$, and
-    \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$ and $p \xrightarrow{t} p'$, then there exists a $q'$ such that $q \xrightarrow{t} q'$ and $(p',X,q') \in \mathcal{R}$.
+    \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$ and $p \xrightarrow{t} p'$, then $\exists q'$ such that $q \xrightarrow{t} q'$ and $(p',X,q') \in \mathcal{R}$.
 \end{enumerate}
 
-This definition explicitly formalises the semantics of \LTSt{}s. We can derive the following intuitions: an environment can either be stable, allowing a specific set of actions, or indeterminate. Indeterminate environments cannot facilitate any transitions, but they can stabilise into arbitrary stable environments. This is expressed by clause 2. Hence, $X$-bisimilarity is behavioural equivalence in stable environments~$X$, and reactive bisimilarity is behavioural equivalence in indeterminate environments (and thus in arbitrary stable environments).
+We can derive the following intuitions: an environment can either be stable, allowing a specific set of actions, or indeterminate. Indeterminate environments cannot facilitate any transitions, but they can stabilise into arbitrary stable environments. This is expressed by clause 2. Hence, $X$-bisimilarity is behavioural equivalence in stable environments~$X$, and reactive bisimilarity is behavioural equivalence in indeterminate environments (and thus in arbitrary stable environments).
 
 Since only stable environments can facilitate transitions, there are no clauses involving visible action transitions for $(p,q) \in \mathcal{R}$. However, $\tau$-transitions can be performed regardless of the environment, hence clause 1.
 
-At this point, it is important to discuss what exactly it means for an action to be visible or hidden in this context: as we saw in the last section, the environment cannot react (change its set of allowed actions) when the system performs a $\tau$- or a $t$-transition, since these are hidden actions. However, since we are talking about a \emph{strong} bisimilarity (as opposed to e.g.\@ weak bisimilarity briefly mentioned in \cref{sec:strong_bisimilarity}), the performance of $\tau$- or $t$-transitions is still relevant when examining and comparing the behavior of systems.
+At this point, it is important to discuss what exactly it means for an action to be visible or hidden in this context: as we saw in the last section, the environment cannot react (change its set of allowed actions) when the system performs a $\tau$- or a $t$-transition, since these are hidden actions. However, since we are talking about a \emph{strong} bisimilarity (as opposed to e.g.\@ weak bisimilarity), the performance of $\tau$- or $t$-transitions is still relevant when examining and comparing the behavior of systems.
 
-Therewith, we can look more closely at the remaining clauses:
+With that, we can look more closely at the remaining clauses:
 in clause 3, given $(p,X,q) \in \mathcal{R}$, for $p \xrightarrow{a} p'$ with $a \in X$, we require for the \enquote{mirroring} state $q'$ that $(p',q') \in \mathcal{R}$, because $a$ is a visible action and the transition can thus trigger a change of the environment;%
 \footnote{This is why van~Glabbeek talks about \emph{triggered} environments rather than indeterminate ones. I will use both terms interchangeably.}
 on the other hand, in clause 4, for $p \xrightarrow{\tau} p'$, and in clause 6, for $p \xrightarrow{t} p'$, we require $(p',X,q') \in \mathcal{R}$, because these actions are hidden and cannot trigger a change of the environment.
@@ -73,11 +75,11 @@ These intuitions also form the basis for the process mapping which will be prese
 
 
 subsubsection \<open>Strong Reactive/$X$-Bisimilarity\<close>
-text \<open>Two processes $p$ and $q$ are \emph{strongly reactive bisimilar} (written $p \leftrightarrow_r q$) iff there is an SRB containing $(p,q)$, and \emph{strongly $X$-bisimilar} (written $p \leftrightarrow_r^X q$), i.e.\@ \enquote{equivalent} in environments~$X$, when there is an SRB containing $(p,X,q)$.\<close>
+text \<open>Two processes $p$ and $q$ are \emph{strongly reactive bisimilar} ($p \leftrightarrow_r q$) iff there is an SRB containing $(p,q)$, and \emph{strongly $X$-bisimilar} ($p \leftrightarrow_r^X q$), i.e.\@ \enquote{equivalent} in environments~$X$, when there is an SRB containing $(p,X,q)$.\<close>
 
 
 subsubsection \<open>Generalised Strong Reactive Bisimulations\<close>
-text \<open>Another characterisation of reactive bisimilarity uses \emph{generalised strong reactive bisimulation} (GSRB) relations, defined over the same set as SRBs, but with different clauses @{cite \<open>Definition 3\<close> rbs}. It is proved that both characterisations do, in fact, characterise the same equivalence.\<close>
+text \<open>Another characterisation of reactive bisimilarity uses \emph{generalised strong reactive bisimulation} (GSRB) relations, defined over the same set as SRBs, but with different clauses @{cite \<open>Definition 3\<close> rbs}. It is proved that both characterisations do, in fact, characterise the same equivalence. More details will be discussed in the formalisation below.\<close>
 
 
 subsection \<open>Isabelle\<close>
@@ -99,7 +101,8 @@ This last set can now be easily formalised in terms of a type, where we formalis
 $\mathscr{P}(\Act) \cup \{\bot\}$
 as \<open>'a set option\<close>.
 
-The fact that SRBs are defined using the power set of visible actions ($A$), whereas our type uses all actions ($\Act$ / \<open>'a\<close>), is handled by the first line of the definition below. The second line formalises that symmetry is required by definition. All other lines are direct formalisations of the clauses of the original definition.\<close>
+The fact that SRBs are defined using the power set of visible actions ($A$), whereas our type uses all actions ($\Act$ / \<open>'a\<close>), is handled by the first line of the definition below. The second line formalises that symmetry is required by definition. All other lines are direct formalisations of the clauses of the original definition.
+\pagebreak\<close>
 
 context lts_timeout begin
 
@@ -149,14 +152,14 @@ definition strongly_X_bisimilar :: \<open>'s \<Rightarrow> 'a set \<Rightarrow> 
   (\<open>_ \<leftrightarrow>\<^sub>r\<^sup>_ _\<close> [70, 70, 70] 70)
   where \<open>p \<leftrightarrow>\<^sub>r\<^sup>X q \<equiv> \<exists> R. SRB R \<and> R p (Some X) q\<close>
 
-text \<open>For the upcoming proofs, it is useful to combine both reactive and $X$-bisimilarity into a single one.\<close>
+text \<open>For the upcoming proofs, it is useful to combine both reactive and $X$-bisimilarity into a single relation.\<close>
 
 definition strongly_reactive_or_X_bisimilar 
   :: \<open>'s \<Rightarrow> 'a set option \<Rightarrow> 's \<Rightarrow> bool\<close>
   where \<open>strongly_reactive_or_X_bisimilar p XoN q 
     \<equiv> \<exists> R. SRB R \<and> R p XoN q\<close>
 
-text \<open>Obviously, then, these predicates coincide accordingly.\<close>
+text \<open>Obviously, then, these relations coincide accordingly.\<close>
 
 corollary \<open>p \<leftrightarrow>\<^sub>r q \<Longleftrightarrow> strongly_reactive_or_X_bisimilar p None q\<close>
   using strongly_reactive_bisimilar_def strongly_reactive_or_X_bisimilar_def by force
@@ -166,7 +169,7 @@ corollary \<open>p \<leftrightarrow>\<^sub>r\<^sup>X q \<Longleftrightarrow> str
                                                                 
 subsubsection \<open>Generalised Strong Reactive Bisimulations\<close>
 
-text \<open>Since GSRBs are defined over the same set as SRBs, the same considerations as above hold.\<close>
+text \<open>Since GSRBs are defined over the same set as SRBs, the same considerations concerning the type and the clauses of the definition as above hold.\<close>
 
 \<comment> \<open>generalised strong reactive bisimulation @{cite \<open>Definition 3\<close> rbs}\<close>
 definition GSRB :: \<open>('s \<Rightarrow> 'a set option \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool\<close>
@@ -266,7 +269,8 @@ next
     using SRB_ruleformat(8)[OF assms] by blast
 qed
 
-text \<open>Then, we show that each GSRB can be extended to yield an SRB. First, we define this extension. Generally, GSRBs can be smaller than SRBs when proving reactive bisimilarity, because they require triples $(p,X,q)$ only after encountering $t$-transitions, whereas SRBs require these triples for all processes and environments. These triples (and also some process pairs $(p,q)$ related to environment time-outs) are re-added by this extension.\<close>
+text \<open>Then, we show that each GSRB can be extended to yield an SRB. First, we define this extension. Generally, GSRBs can be smaller than SRBs when proving reactive bisimilarity of processes, because they require triples $(p,X,q)$ only after encountering $t$-transitions, whereas SRBs require these triples for all processes and all environments. These triples (and also some process pairs $(p,q)$ related to environment time-outs, also omitted in GSRBs) are re-added by this extension.
+\pagebreak\<close>
 
 definition GSRB_extension 
   :: \<open>('s\<Rightarrow>'a set option\<Rightarrow>'s \<Rightarrow> bool)\<Rightarrow>('s\<Rightarrow>'a set option\<Rightarrow>'s \<Rightarrow> bool)\<close>
@@ -490,7 +494,8 @@ proposition\<^marker>\<open>tag (proof) visible\<close> GSRBs_characterise_stron
 end \<comment> \<open>of \<open>context lts_timeout\<close>\<close>
 
 
-text \<open>As a little meta-comment, I would like to point out that van~Glabbeek's proof spans a total of five lines (\enquote{Clearly, \textelp{}}, \enquote{It is straightforward to check \textelp{}}), whereas the Isabelle proof takes up around 250 lines of code. This just goes to show that for things which are clear and straightforward for humans, it might require quite some effort to \enquote{explain} them to a computer.\<close>
+text \<open>As a little meta-comment, I would like to point out that van~Glabbeek's proof spans a total of five lines (\enquote{Clearly, \textelp{}}, \enquote{It is straightforward to check \textelp{}}), whereas the Isabelle proof takes up around 250 lines of code. This just goes to show that for things which are clear and straightforward for humans, it might require quite some effort to \enquote{explain} them to a computer.
+\pagebreak\<close>
 
 (*<*)
 end \<comment> \<open>of \<open>theory\<close>\<close>

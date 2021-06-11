@@ -22,16 +22,10 @@
 \def\isachardoublequoteopen{}%
 \def\isachardoublequoteclose{}%
 
-
-
 \renewcommand{\isamarkupsubsection}[1]{\subsection*{#1}}
 \renewcommand{\isamarkupsubsubsection}[1]{\subsubsection*{#1}}
 \renewcommand{\isamarkupparagraph}[1]{\paragraph{#1}}
 \providecommand*{\code}[1]{\texttt{#1}}
-
-%\titleformat{\chapter}
-%  {\normalfont\huge\bfseries}{\Huge\thechapter}{20pt}{\Huge#1}
-%\titlespacing*{\chapter}{0pt}{0pt}{15pt}
 
 \def\headline#1{\hbox to \hsize{\hrulefill\quad\lower.3em\hbox{#1}\quad\hrulefill}}
 \titleformat{\section}
@@ -62,47 +56,7 @@
 \title{Reducing Reactive Bisimilarity\\to Strong Bisimilarity}
 \author{Maximilian Pohlmann}
 
-\begin{titlepage}
-\begin{center}
-    \includegraphics[scale=.2]{TU_Logo}
-
-    \vspace{3.5em}
-
-    {\sc\large 
-        {\LARGE Technische Universität Berlin}\\
-        {Fakultät IV --  Elektrotechnik und Informatik}\\
-        {Modelle und Theorie Verteilter Systeme}
-
-        \vspace{4em}
-
-        {Bachelor's Thesis}
-
-        \vspace{1.5em}
-
-        {\huge\upshape\bf Reducing Reactive Bisimilarity\\[.25em]
-        to Strong Bisimilarity}
-
-        \vspace{3em}
-
-        {\Large Maximilian Pohlmann}\\
-        {Student ID: 387210}
-
-        \vfill
-
-        {\normalsize
-            \begin{tabular}{r l}
-                First Evaluator: & Prof. Dr. Uwe Nestmann \\
-                Second Evaluator: & Prof. Dr. Stephan Kreutzer
-            \end{tabular}
-        }
-
-        \vspace{3em}
-
-        Berlin\\
-        June 2021
-    }
-\end{center}
-\end{titlepage}
+\input{titlepage}
 
 \newpage\null\thispagestyle{empty}\newpage
 
@@ -145,57 +99,9 @@
 \newpage\null\thispagestyle{empty}
 
 \newpage
-\pdfbookmark{[German-language summary]}{german}
-\chapter*{German-language summary / Zusammenfassung in Deutscher Sprache}
-\thispagestyle{empty}
-
-In dieser Arbeit zeige ich, dass es möglich ist, die Bestimmung von starker reaktive Bisimilarität (strong reactive bisimilarity), wie sie von Rob van Glabbeek in \cite{rbs} eingeführt wurde, auf die Bestimmung von gewöhnlicher starker Bisimilarität zu reduzieren, indem ich ein Mapping spezifiziere, welches ein Modell des geschlossenen Systems, bestehend aus einem zugrundeliegenden reaktiven System und dessen Umgebung, liefert. Ich habe alle Kon\-zepte, die ich in dieser Arbeit diskutiere, sowie alle Beweise, die ich durchgeführt habe, im interaktiven Beweisassistenten Isabelle formalisiert.
-
-Reaktive Systeme sind Systeme, die kontinuierlich mit ihrer Umgebung (z.\@~B.\@ einem Benutzer) interagieren und deren Verhalten weitgehend von dieser Interaktion abhängig ist \cite{harel85}.
-Sie können mit Hilfe von beschrifteten Übergangssystemen (labelled transition systems, LTSs) modelliert werden \cite{keller76}; grob gesagt ist ein LTS ein beschrifteter gerichteter Graph, dessen Knoten den Zuständen eines reaktiven Systems und dessen Kanten den Übergängen zwischen diesen Zuständen entsprechen.
-
-Ein Benutzer, der mit einem System interagiert, kann es nur in Bezug auf die Interaktionen wahrnehmen, auf die das System reagiert, d.\@~h.\@ der interne Zustand des Systems ist dem Benutzer verborgen. Daraus ergibt sich der Begriff der Verhaltens-/Beobachteräquivalenz: Zwei nicht identische Systeme können, aus Sicht des Benutzers, ein äquivalentes Verhalten vorzeigen. Die einfachste derartige Äquivalenz ist als \emph{starke Bisimilarität} bekannt.
-
-In klassischen LTSs kann ein System nicht auf die Abwesenheit von Interaktion reagieren, da angenommen wird, dass es einfach auf irgendeine Interaktion wartet. Intuitiv kann ein System jedoch mit einer Uhr ausgestattet sein und eine Aktivität ausführen, wenn es eine bestimmte Zeit lang keine Interaktion des Benutzers gesehen hat. Ein solches System wäre mit klassischer LTS-Semantik nicht beschreibbar.
-
-\pagebreak
-In \cite{vanglabbeek2021failure} führt Rob van~Glabbeek beschriftete Übergangssysteme mit Time-outs (\LTSt{}) ein, mit denen auch solche Systeme modelliert werden können.
-Die zugehörige Äquivalenz ist in \cite{rbs} als \emph{starke reaktive Bisimilarität} (strong reactive bisimilarity) gegeben.
-
-Als erstes Hauptergebnis dieser Arbeit zeige ich, dass es möglich ist, die Bestimmung starker reaktiver Bisimilarität auf die Bestimmung starker \linebreak Bisimilarität zu reduzieren.
-
-Die Strategie zur Reduktion von reaktiver Bisimilarität auf starke Bisimilarität basiert auf der Tatsache, dass das Konzept der starken reaktiven Bisimilarität eine explizite Berücksichtigung der Umgebungen erfordert, in denen spezifizierte Systeme existieren können. Konkret spezifiziere ich ein Mapping von \LTSt{}s auf LTSs, wobei jeder Zustand des gemappten LTS einem Zustand des ursprünglichen \LTSt{} in einer bestimmten Umgebung entspricht.
-
-Eine weitere interessante Möglichkeit, das Verhalten eines LTS zu untersuchen, ist die Verwendung von modalen Logiken, bei denen Formeln bestimmte Eigenschaften beschreiben und auf Zuständen eines LTS ausgewertet werden. Die in der Forschung zu reaktiven Systemen am häufigsten verwendete Modallogik ist als Hennessy-Milner-Logik (HML) bekannt. 
-Eine Erweiterung von HML für die Auswertung auf Zuständen einer \LTSt{} ist ebenfalls in \cite{rbs} gegeben; ich bezeichne diese Erweiterung als Hennessy-Milner-Logik mit Zeitüberschreitungen (\HMLt{}).
-
-Als zweites Hauptergebnis dieser Arbeit zeige ich, dass es möglich ist, die Erfüllung von \HMLt{}-Formeln in \LTSt{}s auf die Erfüllung von HML in LTSs zu reduzieren (unter Verwendung eines weiteren Mappings für Formeln, zusammen mit dem Mapping aus der ersten Reduktion).
-
-\thispagestyle{empty}
+\input{german_summary}
 
 \newpage
-\pdfbookmark{[Statement of Authorship]}{authorship}
-\chapter*{Statement of Authorship}
-
-I hereby declare that the thesis submitted is my own, unaided work, completed without any
-unpermitted external help. Only the sources and resources listed were used.
-
-The independent and unaided completion of the thesis is affirmed by affidavit:
-
-\vspace{3cm}
-
-Berlin, \rule{2cm}{.2pt}\hspace{2cm}\rule{5.5cm}{.2pt}
-
-\hspace{7cm} Signature
-
-
-\thispagestyle{empty}
-
-
+\input{statement_of_independence}
 
 \end{document}
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% End:

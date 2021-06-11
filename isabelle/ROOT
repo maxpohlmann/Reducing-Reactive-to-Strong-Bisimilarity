@@ -26,3 +26,6 @@ session R_RB2SB = HOL +
     "root.bib"
     "pdfsetup.sty"
     "TU_Logo.png"
+    "titlepage.tex"
+    "statement_of_independence.tex"
+    "german_summary.tex"

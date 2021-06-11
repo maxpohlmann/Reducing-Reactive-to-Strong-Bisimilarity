@@ -202,3 +202,5 @@ body {
 }
 
 .tooltip pre { margin: 1px; white-space: pre-wrap; }
+
+.style { white-space: pre-wrap; }

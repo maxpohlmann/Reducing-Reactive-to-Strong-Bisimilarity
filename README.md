@@ -4,7 +4,7 @@ This repository contains all the files related to my Bachelor's thesis. More inf
 
 ## Thesis Abstract
 
-> In this thesis, I show that it is possible to reduce checking strong reactive bisimilarity, as introduced by Rob van Glabbeek, to checking ordinary strong bisimilarity. I do this by specifying a mapping that effectively yields a model of the closed system consisting of the original reactive systemand its environment. I formalised all concepts discussed in this thesis, and conducted all the proofs, in the interactive proof assistant Isabelle.
+> In this thesis, I show that it is possible to reduce the problem of checking strong reactive bisimilarity, as introduced by Rob van Glabbeek, to checking ordinary strong bisimilarity. I do this by specifying a mapping that effectively yields a model of the closed system consisting of the original reactive systemand its environment. I formalised all concepts discussed in this thesis, and conducted all the proofs, in the interactive proof assistant Isabelle.
 
 ## Files in Repo
 

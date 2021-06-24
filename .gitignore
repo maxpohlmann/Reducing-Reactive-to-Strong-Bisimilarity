@@ -3,3 +3,5 @@
 .DS_Store
 presentation
 isabelle/browser_info
+isabelle/output
+isabelle/document/statement_of_authorship_signed.pdf

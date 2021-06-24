@@ -1,5 +1,8 @@
 \pdfbookmark{[German-language summary]}{german}
 \chapter*{German-language summary / Zusammenfassung in Deutscher Sprache}
+\thispagestyle{empty}
+
+\textbf{Reduktion von Starker Reaktiver Bisimilarität\\auf Starke Bisimilarität}
 
 In dieser Arbeit zeige ich, dass es möglich ist, die Bestimmung von starker reaktive Bisimilarität (strong reactive bisimilarity), wie sie von Rob van Glabbeek in \cite{rbs} eingeführt wurde, auf die Bestimmung von gewöhnlicher starker Bisimilarität zu reduzieren, indem ich ein Mapping spezifiziere, welches ein Modell des geschlossenen Systems, bestehend aus einem zugrundeliegenden reaktiven System und dessen Umgebung, liefert. Ich habe alle Kon\-zepte, die ich in dieser Arbeit diskutiere, sowie alle Beweise, die ich durchgeführt habe, im interaktiven Beweisassistenten Isabelle formalisiert.
 
@@ -10,8 +13,6 @@ Ein Benutzer, der mit einem System interagiert, kann es nur in Bezug auf die Int
 
 In klassischen LTSs kann ein System nicht auf die Abwesenheit von Interaktion reagieren, da angenommen wird, dass es einfach auf irgendeine Interaktion wartet. Intuitiv kann ein System jedoch mit einer Uhr ausgestattet sein und eine Aktivität ausführen, wenn es eine bestimmte Zeit lang keine Interaktion des Benutzers gesehen hat. Ein solches System wäre mit klassischer LTS-Semantik nicht beschreibbar.
 
-\thispagestyle{empty}
-\pagebreak
 In \cite{vanglabbeek2021failure} führt Rob van~Glabbeek beschriftete Übergangssysteme mit Time-outs (\LTSt{}) ein, mit denen auch solche Systeme modelliert werden können.
 Die zugehörige Äquivalenz ist in \cite{rbs} als \emph{starke reaktive Bisimilarität} (strong reactive bisimilarity) gegeben.
 

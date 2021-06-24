@@ -8,11 +8,11 @@ begin
 chapter \<open>Example Instantiation\<close>
 text \<open>\label{chap:example_instantiation}\<close>
 
-text \<open>To complete the proofs from \cref{chap:reductions}, I will show that mappings \<open>stabilise\<close> (\<open>\<epsilon>(_)\<close>) and \<open>in_env\<close> (\<open>\<theta>?[_](_)\<close>), which existence we assumed up to now, do, in fact, exist. I will define example mappings and show that, together with these, arbitrary \<open>lts_timeout\<close> can be interpreted as \<open>lts_timeout_mappable\<close>, thereby showing that the reductions are valid for arbitrary \LTSt{}s.
+text \<open>To complete the proofs from \cref{chap:reductions}, I will show that mappings \<open>stabilise\<close> (\<open>\<epsilon>(_)\<close>) and \<open>in_env\<close> (\<open>\<theta>?[_](_)\<close>), whose existence we assumed up to now, do, in fact, exist. I will define example mappings and show that, together with these, arbitrary \<open>lts_timeout\<close> can be interpreted as \<open>lts_timeout_mappable\<close>, thereby showing that the reductions are valid for arbitrary \LTSt{}s.
 
-First, we define the types for $\Proc_\vartheta$ and $\Act_\vartheta$ in dependence to arbitrary types \<open>'s\<close> and \<open>'a\<close> for $\Proc$ and $\Act$, respectively:\<close>
+First, we define the types for $\Proc_\vartheta$ and $\Act_\vartheta$ in dependence on arbitrary types \<open>'s\<close> and \<open>'a\<close> for $\Proc$ and $\Act$, respectively:\<close>
 
-datatype ('s, 'a)Proc_\<theta> = triggered 's | stable \<open>'a set\<close> 's | DumpState
+datatype ('s,'a)Proc_\<theta> = triggered 's | stable \<open>'a set\<close> 's | DumpState
 datatype ('a)Act_\<theta> = act 'a | t_\<epsilon> | \<epsilon> \<open>'a set\<close> | DumpAction
 
 text \<open>Since $\Act \neq \Act_\vartheta$, we define a new predicate \<open>tran_mappable\<close>.\<close>
@@ -32,7 +32,7 @@ function stabilise :: \<open>('a)Act_\<theta> set \<Rightarrow> ('a)Act_\<theta>
 termination using "termination" by blast
 
 text \<open>\pagebreak\<close>
-function in_env :: \<open>('a)Act_\<theta> set option \<Rightarrow> 's \<Rightarrow> ('s, 'a)Proc_\<theta>\<close>
+function in_env :: \<open>('a)Act_\<theta> set option \<Rightarrow> 's \<Rightarrow> ('s,'a)Proc_\<theta>\<close>
   where 
     \<open>in_env None p = triggered p\<close>
   | \<open>\<forall> \<alpha>\<in>X. (\<exists> \<alpha>'. \<alpha> = act \<alpha>') \<Longrightarrow> 
@@ -196,7 +196,7 @@ abbreviation idle
   where \<open>idle \<equiv> tiny_lts_mappable.idle\<close>
 (*>*)
 
-text \<open>We can now prove a few lemmas about our example \LTSt{} that we would need for any bisimilarity proofs. I abstained from actually including a proof, but the second lemma should suffice to convince you that it would be possible.\<close>
+text \<open>We can now prove a few lemmas about our example \LTSt{} that we would need for any bisimilarity proofs. I abstained from actually including a bisimilarity proof, but these lemmas should, hopefully, suffice to convince you that it would be possible.\<close>
 
 lemma\<^marker>\<open>tag (proof) visible\<close> \<open>tiny_lts_mappable.visible_actions = \<emptyset>\<close> 
 proof -

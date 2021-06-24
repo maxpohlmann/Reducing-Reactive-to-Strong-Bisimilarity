@@ -9,11 +9,11 @@ begin
 section \<open>Hennessy-Milner Logic with Time-Outs\<close>
 text \<open>\label{sec:HMLt}\<close>
 
-text \<open>In @{cite \<open>Section 3\<close> rbs}, van~Glabbeek extends Hennessy-Milner logic by a family of new modal operators $\langle X \rangle \varphi$, for $X \subseteq A$, as well as additional satisfaction relations $\vDash_X$ for $X \subseteq A$. Intuitively, $p \vDash \langle X \rangle \varphi$ means that $p$ is idle when placed in an environment~$X$ \emph{and} $p$ can perform a $t$-transition into a state that satisfies $\varphi$; $p \vDash_X \varphi$ means that $p$ satisfies $\varphi$ in environments~$X$.
+text \<open>In @{cite \<open>section 3\<close> rbs}, van~Glabbeek extends Hennessy-Milner logic by a family of new modal operators $\langle X \rangle \varphi$ for $X \subseteq A$, as well as additional satisfaction relations $\vDash_X$ for $X \subseteq A$. Intuitively, $p \vDash \langle X \rangle \varphi$ means that $p$ is idle when placed in an environment~$X$ \emph{and} $p$ can perform a $t$-transition into a state that satisfies $\varphi$; $p \vDash_X \varphi$ means that $p$ satisfies $\varphi$ in environments~$X$.
 
 I will refer to this extension as \emph{Hennessy-Milner Logic with Time-Outs} (\HMLt{}) and to $\langle X \rangle$ for $X \subseteq A$ as the \emph{time-out--possibility operators} (to be distinguished from the ordinary possibility operators $\langle \alpha \rangle$ for $\alpha \in \Act$).
 
-The precise semantics are given by the following inductive definition of the satisfaction relation @{cite \<open>Section 3\<close> rbs} (notation slightly adapted):
+The precise semantics are given by the following inductive definition of the satisfaction relation @{cite \<open>section 3\<close> rbs} (notation adapted):
 
 \begin{tabular}{l l l}
     $p \vDash \bigwedge_{i \in I} \varphi_i$ 
@@ -86,7 +86,7 @@ This notational nuance will be important when we examine the relationship betwee
 
 The first four clauses of my formalisation are clearly direct translations of the clauses for the satisfaction relation $\vDash$ above. It is less easy to see that the next four clauses do, in fact, correspond to the five clauses for $\vDash_X$. 
 
-First, each of the four clauses requires that \<open>X\<close> is a subset of the visible actions; in the original definition, the satisfaction relations $\vDash_X$ are only defined for those $X$ to begin with.
+First, each of the four clauses below includes the requirement that \<open>X\<close> is a subset of the visible actions; in the original definition, the satisfaction relations $\vDash_X$ are only defined for those $X$ to begin with.
 
 Next, the clause for \<open>p \<TTurnstile>?[Some X] (HMLt_poss \<alpha> \<phi>)\<close> combines the original clauses for $p \vDash_X \langle a \rangle \varphi$ and $p \vDash_X \langle \tau \rangle \varphi$. 
 
@@ -123,7 +123,7 @@ function HMLt_sat :: \<open>'s\<Rightarrow>'a set option\<Rightarrow>('a)HMLt_fo
   using HMLt_formula.exhaust
   by (metis (no_types, hide_lams) not_Some_eq prod_cases3, fast+)
 
-text \<open>The well-founded relation used for the termination proof of the satisfaction function is considerably more difficult due to the last line of the definition containing the same formula on both sides of the implication (as opposed to the other lines of the definition, where the premises only contain subformulas of the formula in the conclusion). This required me to define two relations, prove their well-foundedness separately, and then prove that their union is well-founded using the theorem @{thm wf_union_compatible} (where \<open>O\<close> is relation composition). Further details have been excluded from the thesis document.\<close>
+text \<open>The well-founded relation used for the termination proof of the satisfaction function is considerably more difficult due to the last line of the definition containing the same formula on both sides of the implication (as opposed to the other lines of the definition, where the premises only contain subformulas of the formula in the conclusion). We define two relations \<open>R\<close> and \<open>S\<close>, prove their well-foundedness separately, and show that \<open>R O S \<subseteq> R\<close> (where \<open>O\<close> is relation composition), yielding that the union of \<open>R\<close> and \<open>S\<close> is well-founded using the theorem @{thm wf_union_compatible}. Further details are omitted from the thesis document.\<close>
 
 
 (* These lemmas are not important for the thesis document. *)
@@ -242,7 +242,7 @@ proposition
     \<open>p \<TTurnstile>[X] \<phi>\<close>
   using idle_sat_lemma[OF assms(2,1)] assms(3) ..
 
-text \<open>As the last clause of van Glabbeek definition is the main disparity to the function definition of \<open>HMLt_sat\<close>, this proposition gives confidence that the function does indeed formalise the original definition.\<close>
+text \<open>As the last clause of van Glabbeek's definition is the main disparity to the function definition of \<open>HMLt_sat\<close>, this proposition gives confidence that the function does indeed formalise the original definition.\<close>
 
 end \<comment> \<open>of \<open>context lts_timeout\<close>\<close>
 (*<*)

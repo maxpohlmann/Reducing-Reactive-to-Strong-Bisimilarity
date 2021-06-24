@@ -26,16 +26,16 @@
 <span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹In their seminal paper <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> hm85<span class="antiquote"><span class="antiquote">}</span></span></span></span>, Matthew Hennessy and Robin Milner present a modal-logical characterisation of strong bisimilarity (although they do not call it that), by process properties: \enquote{two processes are equivalent if and only if they enjoy the same set of properties.} These properties are expressed as terms of a modal-logical language, consisting merely of (finite) conjunction, negation, and a family of modal possibility operators. This language is known today as Hennessy-Milner logic (HML), with formulas $\varphi$ defined by the following grammar (where $\alpha$ ranges over the set of actions $\Act$):
 $$\varphi ::= t\!t \mid \varphi_1 \;\wedge\; \varphi_2 \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
 
-The semantics (on LTS processes) is given as follows: all processes satisfy $t\!t$, $\varphi_1 \;\wedge\; \varphi_2$ is satisfied if both $\varphi_1$ and $\varphi_2$ are satisfied, $\neg\varphi$ is satisfied if $\varphi$ is not satisfied, and $\langle\alpha\rangle\varphi$ is satisfied by a process if it is possible to do an $\alpha$-transition into a process that satisfies $\varphi$.
+The semantics (on LTS processes) is given as follows: all processes satisfy $t\!t$, $\varphi_1 \;\wedge\; \varphi_2$ is satisfied if both $\varphi_1$ and $\varphi_2$ are satisfied, $\neg\varphi$ is satisfied if $\varphi$ is not satisfied, and $\langle\alpha\rangle\varphi$ is satisfied by a process if it is possible to perform an $\alpha$-transition into a process that satisfies $\varphi$.
 
 <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> hm85<span class="antiquote"><span class="antiquote">}</span></span></span></span> also contains the proof that this modal-logical characterisation of strong bisimilarity coincides with a characterisation that is effectively the same as the one we saw in \cref{sec:strong_bisimilarity} using strong bisimulations. Although they use different terminology, their result can be summarised as follows: for image-finite LTSs, two processes are strongly bisimilar iff they satisfy the same set of HML formulas. We call this the \emph{modal characterisation} of strong bisimilarity.
 
-Let the \emph{cardinality of conjunction} be the maximally allowed cardinality of sets of formulas conjoined under a conjunction term (for a given variant of HML). For the simple variant above, conjunction has finite cardinality. By allowing for conjunction of arbitrary cardinality (infinitary HML), the modal characterisation of strong bisimilarity can be proved for arbitrary LTSs. This is done in \cref{chap:HML_infinitary}.
+Let the \emph{cardinality of conjunction} be the maximally allowed cardinality of sets of (sub-)formulas conjoined within a formula (for a given variant of HML). For the simple variant above, conjunction has finite cardinality. By allowing for conjunction of arbitrary cardinality (infinitary HML), the modal characterisation of strong bisimilarity can be proved for arbitrary LTSs. This is done in \cref{chap:HML_infinitary}.
 
 In this section, however, conjunction is constrained to be of countable cardinality, as this turned out to be significantly easier to deal with in the upcoming proofs. The modal characterisation of strong bisimilarity, then, works for LTSs that are image-countable, as we shall see below.
 
 Formulas $\varphi$ are given by the following grammar, where $I$ ranges over all subsets of the natural numbers:
-$$\varphi ::= \textstyle\bigwedge_{i \in I} \varphi_i \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
+$$\varphi ::= \bigwedge_{i \in I} \varphi_i \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
 
 The semantics of HML formulas on LTSs are as above, with the alteration that a process satisfies $\bigwedge_{i \in I} \varphi_i$ iff it satisfies $\varphi_i$ for all $i \in I$.
 
@@ -43,7 +43,7 @@ Additional logical constants can be added as \enquote{syntactic sugar}:
 \begin{align*}
     t\!t &amp;\equiv \textstyle\bigwedge_{i \in \emptyset} \varphi_i \\
     f\!\!f &amp;\equiv \neg t\!t \\
-    \textstyle\bigvee_{i \in I} \varphi_i &amp;\equiv \neg \textstyle\bigwedge_{i \in I} \neg\varphi_i
+    \bigvee_{i \in I} \varphi_i &amp;\equiv \neg \bigwedge_{i \in I} \neg\varphi_i
 \end{align*}›</span></span>
 
 
@@ -61,7 +61,7 @@ I abstained from assigning the constructors a more readable symbolic notation be
 <span class="main">|</span> HML_neg   <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="tfree">'a</span><span class="main">)</span>HML_formula›</span></span> <span class="comment1">― ‹$\neg\varphi$›</span> 
 <span class="main">|</span> HML_poss  <span class="quoted"><span class="quoted">‹<span class="tfree">'a</span>›</span></span> <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="tfree">'a</span><span class="main">)</span>HML_formula›</span></span> <span class="comment1">― ‹$\langle\alpha\rangle\varphi$›</span>
 
-<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The following abbreviations introduce useful constants as syntactic sugar, where <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>cimage HML_neg Φ›</span></span></span></span> corresponds to $\{ \neg\varphi \mid \varphi\in\Phi \}$.›</span></span>
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The following abbreviations introduce useful constants as syntactic sugar (where <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>cimage HML_neg Φ›</span></span></span></span> corresponds to $\{ \neg\varphi \mid \varphi\in\Phi \}$).›</span></span>
 
 <span class="keyword1"><span class="command">abbreviation</span></span> <span class="entity">HML_true</span> <span class="main">::</span> <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="tfree">'a</span><span class="main">)</span>HML_formula›</span></span> <span class="comment1">― ‹$t\!t$›</span>
   <span class="keyword2"><span class="keyword">where</span></span> <span class="quoted"><span class="quoted">‹<span class="free">HML_true</span> <span class="main">≡</span> HML_conj <span class="main">(</span>acset <span class="main">∅</span><span class="main">)</span>›</span></span>
@@ -142,12 +142,12 @@ These proofs were inspired by the Isabelle formalisations done in <span class="a
 
 <span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹The semantic clauses for our additional constants are now easily derivable.›</span></span>
 
-<span class="keyword1"><span class="command">lemma</span></span> HML_sat_top<span class="main">:</span>
+<span class="keyword1"><span class="command">lemma</span></span> HML_sat_true<span class="main">:</span>
   <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="free">p</span> <span class="main">⊨</span> HML_true<span class="main">)</span> <span class="main">=</span> True›</span></span>
   <span class="keyword1"><span class="command">using</span></span> bot_cset.abs_eq <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
-<span class="keyword1"><span class="command">lemma</span></span> HML_sat_bot<span class="main">:</span>
+<span class="keyword1"><span class="command">lemma</span></span> HML_sat_false<span class="main">:</span>
   <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="free">p</span> <span class="main">⊨</span> HML_false<span class="main">)</span> <span class="main">=</span> False›</span></span>
-  <span class="keyword1"><span class="command">using</span></span> HML_sat_top <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
+  <span class="keyword1"><span class="command">using</span></span> HML_sat_true <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
 <span class="keyword1"><span class="command">lemma</span></span> HML_sat_disj<span class="main">:</span>
   <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹<span class="main">(</span><span class="free">p</span> <span class="main">⊨</span> HML_disj <span class="free">Φ</span><span class="main">)</span> <span class="main">=</span> <span class="main">(</span><span class="main">∃</span> <span class="bound">φ</span><span class="main">.</span> <span class="bound">φ</span> <span class="keyword1">∈<span class="hidden">⇩</span><sub>c</sub></span> <span class="free">Φ</span> <span class="main">∧</span> <span class="free">p</span> <span class="main">⊨</span> <span class="bound">φ</span><span class="main">)</span>›</span></span>
   <span class="keyword1"><span class="command">by</span></span> <span class="operator">auto</span>
@@ -183,7 +183,9 @@ These proofs were inspired by the Isabelle formalisations done in <span class="a
   <span class="keyword2"><span class="keyword">shows</span></span> <span class="quoted"><span class="quoted">‹HML_equivalent <span class="free">q</span> <span class="free">p</span>›</span></span>
   <span class="keyword1"><span class="command">using</span></span> HML_equivalent_def assms <span class="keyword1"><span class="command">by</span></span> <span class="operator">presburger</span>
 
-<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹We can now formally prove the modal characterisation of strong bisimilarity, i.e.: two processes are HML-equivalent iff they are strongly bisimilar. The proof follows the strategy from <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> resyst<span class="antiquote"><span class="antiquote">}</span></span></span></span>. I chose to include these proofs in the thesis document, because they translate quite beautifully, in my opinion, and are not so long as to hamper with the flow of reading.
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹We can now formally prove the modal characterisation of strong bisimilarity, i.e.: two processes are HML-equivalent iff they are strongly bisimilar. The proof is borrowed from <span class="antiquoted"><span class="antiquoted"><span class="antiquote"><span class="antiquote">@{</span></span><span class="operator"><span class="operator">cite</span></span> ‹theorem 5.1› reactivesystems<span class="antiquote"><span class="antiquote">}</span></span></span></span>. 
+
+I chose to include these proofs in the thesis document, because they translate quite beautifully, in my opinion, and are comparatively short.
 
 We show the $\Longrightarrow$-case first, by induction over <span class="antiquoted"><span class="raw_text"><span class="antiquoted"><span class="raw_text"><span class="operator"><span class="operator">‹</span></span>φ›</span></span></span></span>.›</span></span>
 
@@ -194,18 +196,19 @@ We show the $\Longrightarrow$-case first, by induction over <span class="antiquo
 <span class="keyword1"><span class="command">proof</span></span> <span class="main">(</span><span class="operator">induct</span> <span class="quoted"><span class="free">φ</span></span> <span class="quasi_keyword">arbitrary</span><span class="main"><span class="main">:</span></span> <span class="quoted"><span class="free">p</span></span> <span class="quoted"><span class="free">q</span></span><span class="main">)</span>
   <span class="keyword3"><span class="command">case</span></span> <span class="main">(</span>HML_conj <span class="skolem">Φ</span><span class="main">)</span>
   <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span> 
-    <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">meson</span> HML_sat_conj cin.rep_eq<span class="main">)</span>
+    <span class="keyword1"><span class="command">using</span></span> HML_sat_conj <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">meson</span> cin.rep_eq<span class="main">)</span>
 <span class="keyword1"><span class="command">next</span></span>
   <span class="keyword3"><span class="command">case</span></span> <span class="main">(</span>HML_neg <span class="skolem">φ</span><span class="main">)</span>
   <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span>
-    <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">meson</span> HML_sat_neg strongly_bisimilar_symm<span class="main">)</span>
+    <span class="keyword1"><span class="command">using</span></span> HML_sat_neg strongly_bisimilar_symm <span class="keyword1"><span class="command">by</span></span> <span class="operator">meson</span>
 <span class="keyword1"><span class="command">next</span></span>
   <span class="keyword3"><span class="command">case</span></span> <span class="main">(</span>HML_poss <span class="skolem">α</span> <span class="skolem">φ</span><span class="main">)</span>
   <span class="keyword1"><span class="command">then</span></span> <span class="keyword3"><span class="command">show</span></span> <span class="var"><span class="quoted"><span class="var">?case</span></span></span>
-    <span class="keyword1"><span class="command">by</span></span> <span class="main">(</span><span class="operator">meson</span> HML_sat_poss strongly_bisimilar_step<span class="main"><span class="main">(</span></span>1<span class="main"><span class="main">)</span></span><span class="main">)</span>
+    <span class="keyword1"><span class="command">using</span></span> HML_sat_poss strongly_bisimilar_step<span class="main">(</span>1<span class="main">)</span> <span class="keyword1"><span class="command">by</span></span> <span class="operator">meson</span>
 <span class="keyword1"><span class="command">qed</span></span>
 
-<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹Before we can show the $\Longleftarrow$-case, we need to prove the following lemma: for some binary predicate $P$, if for every element $a$ of a set $A$, there exists an element $x$ such that $P(a,x)$ is true, then we can obtain a set $X$ that contains these $x$ (for all $a \in A$) and has the same cardinality as $A$. 
+<span class="keyword1"><span class="command">text</span></span> <span class="quoted"><span class="plain_text">‹\pagebreak
+Before we can show the $\Longleftarrow$-case, we need to prove the following lemma: for some binary predicate $P$, if for every element $a$ of a set $A$, there exists an element $x$ such that $P(a,x)$ is true, then we can obtain a set $X$ that contains these $x$ (for all $a \in A$) and has the same cardinality as $A$. 
 
 Since more than one $x$ might exist for each $a$ such that $P(a,x)$ is true, the set
 $\{ x \mid a \in A \wedge P(a,x) \}$

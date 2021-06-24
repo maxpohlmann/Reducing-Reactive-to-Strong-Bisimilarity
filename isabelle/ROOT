@@ -1,5 +1,5 @@
 session R_RB2SB = HOL +
-  options [document = pdf, document_output = "output", document_variants="outline=/proof,-unimportant", browser_info,
+  options [document = pdf, document_output = "output", document_variants="outline=/proof,-unimportant",
       show_question_marks = false]
   sessions
     "HOL-Library"
@@ -25,7 +25,8 @@ session R_RB2SB = HOL +
     "root.tex"
     "root.bib"
     "pdfsetup.sty"
-    "TU_Logo.png"
+    "TU.png"
     "titlepage.tex"
-    "statement_of_independence.tex"
+    "statement_of_authorship.tex"
+    "statement_of_authorship_exp.pdf"
     "german_summary.tex"

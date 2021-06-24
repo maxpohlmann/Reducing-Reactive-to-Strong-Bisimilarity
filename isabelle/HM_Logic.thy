@@ -12,16 +12,16 @@ text \<open>\label{sec:HML}\<close>
 text \<open>In their seminal paper @{cite hm85}, Matthew Hennessy and Robin Milner present a modal-logical characterisation of strong bisimilarity (although they do not call it that), by process properties: \enquote{two processes are equivalent if and only if they enjoy the same set of properties.} These properties are expressed as terms of a modal-logical language, consisting merely of (finite) conjunction, negation, and a family of modal possibility operators. This language is known today as Hennessy-Milner logic (HML), with formulas $\varphi$ defined by the following grammar (where $\alpha$ ranges over the set of actions $\Act$):
 $$\varphi ::= t\!t \mid \varphi_1 \;\wedge\; \varphi_2 \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
 
-The semantics (on LTS processes) is given as follows: all processes satisfy $t\!t$, $\varphi_1 \;\wedge\; \varphi_2$ is satisfied if both $\varphi_1$ and $\varphi_2$ are satisfied, $\neg\varphi$ is satisfied if $\varphi$ is not satisfied, and $\langle\alpha\rangle\varphi$ is satisfied by a process if it is possible to do an $\alpha$-transition into a process that satisfies $\varphi$.
+The semantics (on LTS processes) is given as follows: all processes satisfy $t\!t$, $\varphi_1 \;\wedge\; \varphi_2$ is satisfied if both $\varphi_1$ and $\varphi_2$ are satisfied, $\neg\varphi$ is satisfied if $\varphi$ is not satisfied, and $\langle\alpha\rangle\varphi$ is satisfied by a process if it is possible to perform an $\alpha$-transition into a process that satisfies $\varphi$.
 
 @{cite hm85} also contains the proof that this modal-logical characterisation of strong bisimilarity coincides with a characterisation that is effectively the same as the one we saw in \cref{sec:strong_bisimilarity} using strong bisimulations. Although they use different terminology, their result can be summarised as follows: for image-finite LTSs, two processes are strongly bisimilar iff they satisfy the same set of HML formulas. We call this the \emph{modal characterisation} of strong bisimilarity.
 
-Let the \emph{cardinality of conjunction} be the maximally allowed cardinality of sets of formulas conjoined under a conjunction term (for a given variant of HML). For the simple variant above, conjunction has finite cardinality. By allowing for conjunction of arbitrary cardinality (infinitary HML), the modal characterisation of strong bisimilarity can be proved for arbitrary LTSs. This is done in \cref{chap:HML_infinitary}.
+Let the \emph{cardinality of conjunction} be the maximally allowed cardinality of sets of (sub-)formulas conjoined within a formula (for a given variant of HML). For the simple variant above, conjunction has finite cardinality. By allowing for conjunction of arbitrary cardinality (infinitary HML), the modal characterisation of strong bisimilarity can be proved for arbitrary LTSs. This is done in \cref{chap:HML_infinitary}.
 
 In this section, however, conjunction is constrained to be of countable cardinality, as this turned out to be significantly easier to deal with in the upcoming proofs. The modal characterisation of strong bisimilarity, then, works for LTSs that are image-countable, as we shall see below.
 
 Formulas $\varphi$ are given by the following grammar, where $I$ ranges over all subsets of the natural numbers:
-$$\varphi ::= \textstyle\bigwedge_{i \in I} \varphi_i \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
+$$\varphi ::= \bigwedge_{i \in I} \varphi_i \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
 
 The semantics of HML formulas on LTSs are as above, with the alteration that a process satisfies $\bigwedge_{i \in I} \varphi_i$ iff it satisfies $\varphi_i$ for all $i \in I$.
 
@@ -29,7 +29,7 @@ Additional logical constants can be added as \enquote{syntactic sugar}:
 \begin{align*}
     t\!t &\equiv \textstyle\bigwedge_{i \in \emptyset} \varphi_i \\
     f\!\!f &\equiv \neg t\!t \\
-    \textstyle\bigvee_{i \in I} \varphi_i &\equiv \neg \textstyle\bigwedge_{i \in I} \neg\varphi_i
+    \bigvee_{i \in I} \varphi_i &\equiv \neg \bigwedge_{i \in I} \neg\varphi_i
 \end{align*}\<close>
 
 
@@ -47,7 +47,7 @@ datatype ('a)HML_formula =
 | HML_neg   \<open>('a)HML_formula\<close> \<comment> \<open>$\neg\varphi$\<close> 
 | HML_poss  \<open>'a\<close> \<open>('a)HML_formula\<close> \<comment> \<open>$\langle\alpha\rangle\varphi$\<close>
 
-text \<open>The following abbreviations introduce useful constants as syntactic sugar, where \<open>cimage HML_neg \<Phi>\<close> corresponds to $\{ \neg\varphi \mid \varphi\in\Phi \}$.\<close>
+text \<open>The following abbreviations introduce useful constants as syntactic sugar (where \<open>cimage HML_neg \<Phi>\<close> corresponds to $\{ \neg\varphi \mid \varphi\in\Phi \}$).\<close>
 
 abbreviation HML_true :: \<open>('a)HML_formula\<close> \<comment> \<open>$t\!t$\<close>
   where \<open>HML_true \<equiv> HML_conj (acset \<emptyset>)\<close>
@@ -128,12 +128,12 @@ termination\<^marker>\<open>tag (proof) visible\<close> HML_sat using HML_wf_rel
 
 text \<open>The semantic clauses for our additional constants are now easily derivable.\<close>
 
-lemma HML_sat_top:
+lemma HML_sat_true:
   shows \<open>(p \<Turnstile> HML_true) = True\<close>
   using bot_cset.abs_eq by auto
-lemma HML_sat_bot:
+lemma HML_sat_false:
   shows \<open>(p \<Turnstile> HML_false) = False\<close>
-  using HML_sat_top by auto
+  using HML_sat_true by auto
 lemma HML_sat_disj:
   shows \<open>(p \<Turnstile> HML_disj \<Phi>) = (\<exists> \<phi>. \<phi> \<in>\<^sub>c \<Phi> \<and> p \<Turnstile> \<phi>)\<close>
   by auto
@@ -169,7 +169,9 @@ lemma HML_equivalent_symm:
   shows \<open>HML_equivalent q p\<close>
   using HML_equivalent_def assms by presburger
 
-text \<open>We can now formally prove the modal characterisation of strong bisimilarity, i.e.: two processes are HML-equivalent iff they are strongly bisimilar. The proof follows the strategy from @{cite resyst}. I chose to include these proofs in the thesis document, because they translate quite beautifully, in my opinion, and are not so long as to hamper with the flow of reading.
+text \<open>We can now formally prove the modal characterisation of strong bisimilarity, i.e.: two processes are HML-equivalent iff they are strongly bisimilar. The proof is borrowed from @{cite \<open>theorem 5.1\<close> reactivesystems}. 
+
+I chose to include these proofs in the thesis document, because they translate quite beautifully, in my opinion, and are comparatively short.
 
 We show the $\Longrightarrow$-case first, by induction over \<open>\<phi>\<close>.\<close>
 
@@ -180,18 +182,19 @@ lemma\<^marker>\<open>tag (proof) visible\<close> strong_bisimilarity_implies_HM
 proof (induct \<phi> arbitrary: p q)
   case (HML_conj \<Phi>)
   then show ?case 
-    by (meson HML_sat_conj cin.rep_eq)
+    using HML_sat_conj by (meson cin.rep_eq)
 next
   case (HML_neg \<phi>)
   then show ?case
-    by (meson HML_sat_neg strongly_bisimilar_symm)
+    using HML_sat_neg strongly_bisimilar_symm by meson
 next
   case (HML_poss \<alpha> \<phi>)
   then show ?case
-    by (meson HML_sat_poss strongly_bisimilar_step(1))
+    using HML_sat_poss strongly_bisimilar_step(1) by meson
 qed
 
-text \<open>Before we can show the $\Longleftarrow$-case, we need to prove the following lemma: for some binary predicate $P$, if for every element $a$ of a set $A$, there exists an element $x$ such that $P(a,x)$ is true, then we can obtain a set $X$ that contains these $x$ (for all $a \in A$) and has the same cardinality as $A$. 
+text \<open>\pagebreak
+Before we can show the $\Longleftarrow$-case, we need to prove the following lemma: for some binary predicate $P$, if for every element $a$ of a set $A$, there exists an element $x$ such that $P(a,x)$ is true, then we can obtain a set $X$ that contains these $x$ (for all $a \in A$) and has the same cardinality as $A$. 
 
 Since more than one $x$ might exist for each $a$ such that $P(a,x)$ is true, the set
 $\{ x \mid a \in A \wedge P(a,x) \}$

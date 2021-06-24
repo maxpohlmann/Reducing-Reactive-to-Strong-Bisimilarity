@@ -87,7 +87,7 @@ Similarly to the formalisations in \cref{sec:reduction_bisimilarity}, we begin b
 \ lts{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}HML{\isacharunderscore}{\kern0pt}sat\ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymTurnstile}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{5}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{5}}{\isadigit{0}}{\isacharparenright}{\kern0pt}%
 \begin{isamarkuptext}%
 We show \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}XoN{\isacharbrackright}{\kern0pt}\ {\isasymphi}\ \ {\isasymLongleftrightarrow}\ \ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}XoN{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymsigma}{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}} by induction over \isa{{\isasymphi}}. By using those terms for formula satisfaction and process mappings that handle both triggered and stable environments, we can handle both situations simultaneously, which is required due to the interdependence of $\vDash$ and $\vDash_X$. However, this requires us to consider four cases (each combination of \isa{{\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}XoN\isactrlsub {\isadigit{1}}{\isacharbrackright}{\kern0pt}} and \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}XoN\isactrlsub {\isadigit{2}}{\isacharbrackright}{\kern0pt}} for \isa{XoN\isactrlsub {\isadigit{1}}{\isacharcomma}{\kern0pt}\ XoN\isactrlsub {\isadigit{2}}\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}None{\isacharcomma}{\kern0pt}\ Some\ X{\isacharbraceright}{\kern0pt}}%
-\footnote{Once again, we do not consider cases where \isa{{\isasymnot}\ X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}.}%
+\footnote{Once again, we only consider cases where \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}.}%
 ) per inductive case for \isa{{\isasymphi}}. Together with the many disjunctive clauses in the mapping, a large number of cases needs to be considered, leading to a proof spanning roughly 350 lines of Isabelle code.%
 \end{isamarkuptext}\isamarkuptrue%
 %
@@ -329,7 +329,7 @@ We show \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{
 \ HMt{\isacharunderscore}{\kern0pt}mapping{\isachardot}{\kern0pt}simps{\isacharparenleft}{\kern0pt}{\isadigit{5}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
 \ metis\ \isanewline
 \ \ \ \ \ \ \isacommand{with}\isamarkupfalse%
-\ lts{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}bot\ \isacommand{have}\isamarkupfalse%
+\ lts{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}false\ \isacommand{have}\isamarkupfalse%
 \ False\ \isacommand{by}\isamarkupfalse%
 \ simp\isanewline
 \ \ \ \ \ \ \isacommand{thus}\isamarkupfalse%
@@ -647,7 +647,7 @@ We show \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{
 \ HMt{\isacharunderscore}{\kern0pt}mapping{\isachardot}{\kern0pt}simps{\isacharparenleft}{\kern0pt}{\isadigit{5}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
 \ metis\isanewline
 \ \ \ \ \ \ \isacommand{with}\isamarkupfalse%
-\ lts{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}bot\ \isacommand{have}\isamarkupfalse%
+\ lts{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}false\ \isacommand{have}\isamarkupfalse%
 \ False\ \isacommand{by}\isamarkupfalse%
 \ simp\isanewline
 \ \ \ \ \ \ \isacommand{thus}\isamarkupfalse%

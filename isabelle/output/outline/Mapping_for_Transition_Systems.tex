@@ -51,37 +51,45 @@ Then we define $\mathbb{T}_\vartheta = (\Proc_\vartheta, \Act_\vartheta, \righta
     \Act_\vartheta &= \Act \cup \{t_\varepsilon\} \cup \{ \varepsilon_X \mid X \subseteq A \},
 \end{align*}
 and $\rightarrow_\vartheta$ defined by the following rules:
+\vspace{2\baselineskip}
 
-$$
-(1)\,\frac{}{\vartheta(p) \xrightarrow{\varepsilon_X}_\vartheta \vartheta_X(p)} \; X \subseteq A
-\qquad
-(2)\,\frac{p \xrightarrow{\tau} p'}{\vartheta(p) \xrightarrow{\tau}_\vartheta \vartheta(p')}
-$$
-\\[-5pt]
-$$
-(3)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\}}
+\begin{tabular}{c c}
+$\displaystyle
+(1)\,\frac{p \xrightarrow{\tau} p'}{\vartheta(p) \xrightarrow{\tau}_\vartheta \vartheta(p')}
+$
+&
+$\displaystyle
+(2)\,\frac{}{\vartheta(p) \xrightarrow{\varepsilon_X}_\vartheta \vartheta_X(p)} \; X \subseteq A
+$
+\\[2.5em]
+$\displaystyle
+(3)\,\frac{p \xrightarrow{a} p'}{\vartheta_X(p) \xrightarrow{a}_\vartheta \vartheta(p')} \; a \in X
+$
+&
+$\displaystyle
+(4)\,\frac{p \xrightarrow{\tau} p'}{\vartheta_X(p) \xrightarrow{\tau}_\vartheta \vartheta_X(p')}
+$
+\\[2.5em]
+$\displaystyle
+(5)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\}}
 {\vartheta_X(p) \xrightarrow{t_\varepsilon}_\vartheta \vartheta(p)}
-$$
-\\[-5pt]
-$$
-(4)\,\frac{p \xrightarrow{a} p'}{\vartheta_X(p) \xrightarrow{a}_\vartheta \vartheta(p')} \; a \in X
-\qquad
-(5)\,\frac{p \xrightarrow{\tau} p'}{\vartheta_X(p) \xrightarrow{\tau}_\vartheta \vartheta_X(p')}
-$$
-\\[-5pt]
-$$
-(6)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\} \quad p \xrightarrow{t} p'}
+$
+&
+$\displaystyle
+(6)\,\frac{p \not\xrightarrow{\alpha} \text{ for all } \alpha \in X \cup \{\tau\} \quad\; p \xrightarrow{t} p'}
 {\vartheta_X(p) \xrightarrow{t}_\vartheta \vartheta_X(p')}
-$$\\
+$
+\end{tabular}
+\vspace{2\baselineskip}
 
-These rules are motivated by the intuitions developed in \cref{sec:reactive_bisimilarity}:
+These rules mirror the clauses of the definition of SRBs (cmp.\@ \cref{sec:reactive_bisimilarity}):
 
 \begin{enumerate}[nosep]
-    \item indeterminate environments can stabilise into arbitrary stable \linebreak environments~$X$ for $X \subseteq A$,
     \item $\tau$-transitions can be performed regardless of the environment,
-    \item if the underlying system is idle, the environment may time-out and turn into an indeterminate/triggered environment,
+    \item indeterminate environments can stabilise into arbitrary stable \linebreak environments~$X$ for $X \subseteq A$,
     \item facilitated visible transitions can be performed and can trigger a change in the environment,
     \item $\tau$-transitions cannot be observed by the environment and hence cannot trigger a change,
+    \item if the underlying system is idle, the environment may time-out and turn into an indeterminate/triggered environment,
     \item if the underlying system is idle and has a $t$-transition, the transition may be performed and is not observable by the environment.
 \end{enumerate}
 
@@ -165,15 +173,15 @@ The \LTSt{} on the left (with $\Act = \{a,\tau,t\}$) gets mapped to the LTS on t
 %
 \begin{isamarkuptext}%
 We specify another locale based on \isa{lts{\isacharunderscore}{\kern0pt}timeout}, where the aforementioned special actions and operators are considered; we call it \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}. 
-Since $\Proc \cap \Proc_\vartheta = \emptyset$, we introduce a new type variable \isa{{\isacharprime}{\kern0pt}ss} for $\Proc_\vartheta$, but use \isa{{\isacharprime}{\kern0pt}a} for both $\Act$ and $\Act_\vartheta$.
+Since $\Proc \cap \Proc_\vartheta = \emptyset$, we introduce a new type variable \isa{{\isacharprime}{\kern0pt}ss} for $\Proc_\vartheta$; we use \isa{{\isacharprime}{\kern0pt}a} for both $\Act$ and $\Act_\vartheta$.
 We formalise the family of special actions $\varepsilon_X$ as a mapping \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a}, and the environment operators $\vartheta$/$\vartheta_X$ as a single mapping \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss}.
 
 As for \isa{lts{\isacharunderscore}{\kern0pt}timeout} in \cref{sec:LTSt}, we require that all special actions are distinct, formalised by the first set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions}.
 
-As an operator, the term $\vartheta_X(p)$ simply refers to the state $p$ in an environment~$X$; when understood as a mapping, we have to be more careful, since \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}} is now itself a state. Specifically, we have to assume that \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is injective (when restricted to domains where \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}, because $\vartheta_X$ is only defined for those $X \subseteq A$). Otherwise, we might have \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}} for \isa{p\ {\isasymnoteq}\ q}, which is problematic if e.g.\@ \isa{p} has a \isa{{\isasymtau}}-transition, but \isa{q} does not.
-Hence, the (restricted) injectivity of \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is formalised as the set of assumptions \isa{injectivity{\isacharunderscore}{\kern0pt}theta}.
+As an operator, the term $\vartheta_X(p)$ simply refers to the state $p$ in an environment~$X$; when understood as a mapping, we have to be more careful, since \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}} is now itself a state. Specifically, we have to assume that \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is injective (when restricted to domains where \linebreak \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}, because $\vartheta_X$ is only defined for those $X \subseteq A$). Otherwise, we might have \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}None{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}} for \isa{p\ {\isasymnoteq}\ q}, which is problematic if e.g.\@ \isa{p} has a \isa{{\isasymtau}}-transition, but \isa{q} does not.
+The restricted injectivity of \isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}} is formalised as the set of assumptions \isa{injectivity{\isacharunderscore}{\kern0pt}theta}.
 
-The same is required for the mapping \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}}, as formalised in the last clause of the set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions} (the (restricted) injectivity of \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}} is part of the requirement that all special actions must be distinct). Again, we only require injectivity for the mapping restricted to the domain \isa{visible{\isacharunderscore}{\kern0pt}actions}. If we required that \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a} were injective over its entire domain \isa{{\isacharprime}{\kern0pt}a\ set}, we would run into problems, since such a function cannot exist by Cantor's theorem.
+The same is required for the mapping \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}}, as formalised in the last clause of the set of assumptions \isa{distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions} (the restricted injectivity of \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}} is part of the requirement that all special actions must be distinct). Again, we only require injectivity for the mapping restricted to the domain \isa{visible{\isacharunderscore}{\kern0pt}actions}. If we required that \isa{{\isasymepsilon}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a} were injective over its entire domain \isa{{\isacharprime}{\kern0pt}a\ set}, we would run into problems, since such a function cannot exist by Cantor's theorem.
 
 That such mappings exist is intuitively clear, whence there were no ambiguities when defining them as operators in the prosaic/mathematical section above. Formalising these mappings in HOL, however, is not so straight\-forward: as operators, we assume that they are only defined for certain parameters; in HOL, every mapping must be total. For now, we simply assume that such total functions that formalise these operators exist. Doing this significantly improves the readability of following sections, since we must only consider the relevant properties of the mappings given by the assumptions. In \cref{chap:example_instantiation}, I give examples for these mappings and show that, together with these, any \isa{lts{\isacharunderscore}{\kern0pt}timeout} can be interpreted as an \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}, i.e.\@ every \LTSt{} $\mathbb{T}$ can be mapped to an LTS $\mathbb{T}_\vartheta$.
 
@@ -257,7 +265,7 @@ We can now define abbreviations with notations that correspond more closely to o
 We formalise the transition relation of our mapping, given above by the structural operational rules, as a function \isa{tran{\isacharunderscore}{\kern0pt}theta}.% 
 \footnote{We use the notation \isa{{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}} instead of the more obvious \isa{{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsub {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}} simply because of better readability.}
 
-We use the \isa{inductive} command, because this allows us to define separate clauses (as opposed to the \isa{definition} command). Technically speaking, however, this inductive definition only has base cases, since none of the premises involves \isa{{\isasymlongmapsto}\isactrlsup {\isasymtheta}}.
+We use the \isa{inductive} command, because it allows us to define separate clauses (as opposed to the \isa{definition} command). Technically speaking, however, this inductive definition only has base cases, since none of the premises involves \isa{{\isasymlongmapsto}\isactrlsup {\isasymtheta}}.
 
 It should be easy to see that the clauses below correspond directly to the rules above. Like in previous sections, we have to take extra care to handle the requirement \isa{X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions}.%
 \end{isamarkuptext}\isamarkuptrue%
@@ -265,18 +273,39 @@ It should be easy to see that the clauses below correspond directly to the rules
 \ tran{\isacharunderscore}{\kern0pt}theta\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}ss\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}ss\ {\isasymRightarrow}\ bool{\isacartoucheclose}\ \isanewline
 \ \ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isacharunderscore}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isacartoucheclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharbrackright}{\kern0pt}\ {\isadigit{7}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
 \ \ \isakeyword{where}\ \isanewline
-\ \ \ \ env{\isacharunderscore}{\kern0pt}stabilise{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
-\ \ \ \ \ \ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ {\isacharbar}{\kern0pt}\ triggered{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ triggered{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\isanewline
 \ \ \ \ \ \ {\isacartoucheopen}p\ {\isasymlongmapsto}{\isasymtau}\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymtau}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ {\isacharbar}{\kern0pt}\ env{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
-\ \ \ \ \ \ idle\ p\ X\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ {\isacharbar}{\kern0pt}\ env{\isacharunderscore}{\kern0pt}stabilise{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
 \ \ {\isacharbar}{\kern0pt}\ tran{\isacharunderscore}{\kern0pt}visible{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ a\ {\isasymin}\ X\ {\isasymLongrightarrow}\ p\ {\isasymlongmapsto}a\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}a\ {\isasymtheta}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
 \ \ {\isacharbar}{\kern0pt}\ stable{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ p\ {\isasymlongmapsto}{\isasymtau}\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymtau}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ {\isacharbar}{\kern0pt}\ env{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ idle\ p\ X\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
 \ \ {\isacharbar}{\kern0pt}\ sys{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ idle\ p\ X\ {\isasymLongrightarrow}\ p\ {\isasymlongmapsto}t\ q\ {\isasymLongrightarrow}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharparenright}{\kern0pt}{\isacartoucheclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsubsection{Note on Metavariable usage%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+If not referenced directly by $\vartheta(p)$ or $\vartheta_X(p)$, arbitrary states of a mapped LTS range over $P, Q, P', Q', \dots$, where $P$ and $P'$ are used for states connected by some transition (i.e.\@ $P \xrightarrow{\alpha}_\vartheta P'$), whereas $P$ and $Q$ are used for states possibly related by some equivalence (e.g.\@ $P \leftrightarrow_r Q$).%
+\end{isamarkuptext}\isamarkuptrue%
+%
 \begin{isamarkuptext}%
 \pagebreak%
 \end{isamarkuptext}\isamarkuptrue%
@@ -345,28 +374,6 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \isanewline
 %
 \endisadelimproof
-\ \ \isanewline
-\isacommand{lemma}\isamarkupfalse%
-\ generation{\isacharunderscore}{\kern0pt}env{\isacharunderscore}{\kern0pt}stabilise{\isacharcolon}{\kern0pt}\isanewline
-\ \ \isakeyword{assumes}\ {\isacartoucheopen}P\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isasymexists}\ p{\isachardot}{\kern0pt}\ P\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymand}\ P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
-%
-\isadelimproof
-\ \ %
-\endisadelimproof
-%
-\isatagproof
-\isacommand{using}\isamarkupfalse%
-\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ \isanewline
-\ \ \isacommand{by}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}smt\ {\isacharparenleft}{\kern0pt}z{\isadigit{3}}{\isacharparenright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions{\isacharparenleft}{\kern0pt}{\isadigit{6}}{\isacharparenright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions{\isacharparenleft}{\kern0pt}{\isadigit{7}}{\isacharparenright}{\kern0pt}\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
-\endisatagproof
-{\isafoldproof}%
-%
-\isadelimproof
-\isanewline
-%
-\endisadelimproof
 \isanewline
 \isacommand{lemma}\isamarkupfalse%
 \ generation{\isacharunderscore}{\kern0pt}triggered{\isacharunderscore}{\kern0pt}tau{\isacharcolon}{\kern0pt}\isanewline
@@ -392,9 +399,9 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \endisadelimproof
 \ \ \isanewline
 \isacommand{lemma}\isamarkupfalse%
-\ generation{\isacharunderscore}{\kern0pt}env{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\isanewline
-\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
-\ \ \isakeyword{shows}\ {\isacartoucheopen}P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymand}\ idle\ p\ X{\isacartoucheclose}\isanewline
+\ generation{\isacharunderscore}{\kern0pt}env{\isacharunderscore}{\kern0pt}stabilise{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}P\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}{\isasymepsilon}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}{\isasymexists}\ p{\isachardot}{\kern0pt}\ P\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymand}\ P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isanewline
 %
 \isadelimproof
 \ \ %
@@ -402,9 +409,9 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 %
 \isatagproof
 \isacommand{using}\isamarkupfalse%
-\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharbrackright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\isanewline
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ \isanewline
 \ \ \isacommand{by}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}smt\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ insertCI\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharplus}{\kern0pt}%
+\ {\isacharparenleft}{\kern0pt}smt\ {\isacharparenleft}{\kern0pt}z{\isadigit{3}}{\isacharparenright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions{\isacharparenleft}{\kern0pt}{\isadigit{6}}{\isacharparenright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions{\isacharparenleft}{\kern0pt}{\isadigit{7}}{\isacharparenright}{\kern0pt}\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
 \endisatagproof
 {\isafoldproof}%
 %
@@ -430,14 +437,6 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \ \ \isacommand{case}\isamarkupfalse%
 \ {\isadigit{1}}\isanewline
 \ \ \isacommand{then}\isamarkupfalse%
-\ \isacommand{show}\isamarkupfalse%
-\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}metis\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
-\isacommand{next}\isamarkupfalse%
-\isanewline
-\ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{2}}\isanewline
-\ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{obtain}\isamarkupfalse%
 \ p{\isacharprime}{\kern0pt}\ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
 \ blast\isanewline
@@ -451,28 +450,27 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{3}}\isanewline
+\ {\isadigit{2}}\isanewline
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{show}\isamarkupfalse%
-\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
-\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ visible{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
-\ auto\isanewline
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{4}}\isanewline
+\ {\isadigit{3}}\isanewline
 \ \ \isacommand{hence}\isamarkupfalse%
 \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
 \ {\isacharparenleft}{\kern0pt}metis\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
 \ \ \isacommand{with}\isamarkupfalse%
-\ {\isadigit{4}}\ \isacommand{show}\isamarkupfalse%
+\ {\isadigit{3}}\ \isacommand{show}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
 \ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
 \ blast\isanewline
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{5}}\isanewline
+\ {\isadigit{4}}\isanewline
 \ \ \isacommand{hence}\isamarkupfalse%
 \ False\ \isacommand{using}\isamarkupfalse%
 \ visible{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
@@ -480,6 +478,15 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \ \ \isacommand{thus}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
 \ simp\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{5}}\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
+\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ visible{\isacharunderscore}{\kern0pt}actions{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
@@ -517,17 +524,6 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
 \ \ \isacommand{case}\isamarkupfalse%
 \ {\isadigit{1}}\isanewline
-\ \ \isacommand{hence}\isamarkupfalse%
-\ False\ \isacommand{using}\isamarkupfalse%
-\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
-\ blast\isanewline
-\ \ \isacommand{thus}\isamarkupfalse%
-\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
-\ simp\isanewline
-\isacommand{next}\isamarkupfalse%
-\isanewline
-\ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{2}}\isanewline
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{obtain}\isamarkupfalse%
 \ p{\isacharprime}{\kern0pt}\ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
@@ -542,7 +538,7 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{3}}\isanewline
+\ {\isadigit{2}}\isanewline
 \ \ \isacommand{hence}\isamarkupfalse%
 \ False\ \isacommand{using}\isamarkupfalse%
 \ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
@@ -553,7 +549,7 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{4}}\isanewline
+\ {\isadigit{3}}\isanewline
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{show}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
@@ -562,15 +558,26 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{5}}\isanewline
+\ {\isadigit{4}}\isanewline
 \ \ \isacommand{hence}\isamarkupfalse%
 \ {\isacartoucheopen}X\ {\isasymsubseteq}\ visible{\isacharunderscore}{\kern0pt}actions{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
 \ {\isacharparenleft}{\kern0pt}metis\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
 \ \ \isacommand{with}\isamarkupfalse%
-\ {\isadigit{5}}\ \isacommand{show}\isamarkupfalse%
+\ {\isadigit{4}}\ \isacommand{show}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
 \ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
 \ blast\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{5}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
@@ -584,6 +591,28 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \ simp\isanewline
 \isacommand{qed}\isamarkupfalse%
 %
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\ \ \isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ generation{\isacharunderscore}{\kern0pt}env{\isacharunderscore}{\kern0pt}timeout{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymlongmapsto}\isactrlsup {\isasymtheta}t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ P{\isacharprime}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \isakeyword{shows}\ {\isacartoucheopen}P{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isasymand}\ idle\ p\ X{\isacartoucheclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ iffD{\isadigit{1}}{\isacharbrackleft}{\kern0pt}OF\ tran{\isacharunderscore}{\kern0pt}theta{\isachardot}{\kern0pt}simps\ assms{\isacharbrackright}{\kern0pt}\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ injectivity{\isacharunderscore}{\kern0pt}theta{\isacharparenleft}{\kern0pt}{\isadigit{3}}{\isacharparenright}{\kern0pt}\ insertCI\ no{\isacharunderscore}{\kern0pt}epsilon{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}tran{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharplus}{\kern0pt}%
 \endisatagproof
 {\isafoldproof}%
 %
@@ -608,17 +637,6 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \ {\isacharparenleft}{\kern0pt}elim\ disjE{\isacharcomma}{\kern0pt}\ goal{\isacharunderscore}{\kern0pt}cases{\isacharparenright}{\kern0pt}\isanewline
 \ \ \isacommand{case}\isamarkupfalse%
 \ {\isadigit{1}}\isanewline
-\ \ \isacommand{hence}\isamarkupfalse%
-\ False\ \isacommand{using}\isamarkupfalse%
-\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
-\ blast\isanewline
-\ \ \isacommand{thus}\isamarkupfalse%
-\ {\isacharquery}{\kern0pt}case\ \isacommand{{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}}\isamarkupfalse%
-\isanewline
-\isacommand{next}\isamarkupfalse%
-\isanewline
-\ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{2}}\isanewline
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{obtain}\isamarkupfalse%
 \ p{\isacharprime}{\kern0pt}\ \isakeyword{where}\ {\isacartoucheopen}{\isasymtheta}{\isacharbrackleft}{\kern0pt}X{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isasymtheta}{\isacharparenleft}{\kern0pt}p{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
@@ -633,7 +651,7 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{3}}\isanewline
+\ {\isadigit{2}}\isanewline
 \ \ \isacommand{hence}\isamarkupfalse%
 \ False\ \isacommand{using}\isamarkupfalse%
 \ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
@@ -644,7 +662,7 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{4}}\isanewline
+\ {\isadigit{3}}\isanewline
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{show}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\ \isacommand{using}\isamarkupfalse%
@@ -653,11 +671,22 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
-\ {\isadigit{5}}\isanewline
+\ {\isadigit{4}}\isanewline
 \ \ \isacommand{hence}\isamarkupfalse%
 \ False\ \isacommand{using}\isamarkupfalse%
 \ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}axioms\ lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}def\ \isacommand{by}\isamarkupfalse%
 \ force\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isacommand{{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{case}\isamarkupfalse%
+\ {\isadigit{5}}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ False\ \isacommand{using}\isamarkupfalse%
+\ distinctness{\isacharunderscore}{\kern0pt}special{\isacharunderscore}{\kern0pt}actions\ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
 \ \ \isacommand{thus}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\ \isacommand{{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}}\isamarkupfalse%
 \isanewline
@@ -808,16 +837,16 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 %:%140=111%:%
 %:%141=112%:%
 %:%142=113%:%
-%:%151=116%:%
-%:%155=118%:%
-%:%167=120%:%
-%:%168=121%:%
-%:%169=122%:%
-%:%170=123%:%
-%:%171=124%:%
-%:%172=125%:%
-%:%173=126%:%
-%:%174=127%:%
+%:%143=114%:%
+%:%144=115%:%
+%:%145=116%:%
+%:%146=117%:%
+%:%147=118%:%
+%:%148=119%:%
+%:%149=120%:%
+%:%150=121%:%
+%:%159=124%:%
+%:%163=126%:%
 %:%175=128%:%
 %:%176=129%:%
 %:%177=130%:%
@@ -826,15 +855,15 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 %:%180=133%:%
 %:%181=134%:%
 %:%182=135%:%
+%:%183=136%:%
 %:%184=137%:%
-%:%185=137%:%
-%:%186=138%:%
-%:%187=139%:%
-%:%188=140%:%
-%:%189=141%:%
-%:%190=142%:%
-%:%191=143%:%
-%:%192=144%:%
+%:%185=138%:%
+%:%186=139%:%
+%:%187=140%:%
+%:%188=141%:%
+%:%189=142%:%
+%:%190=143%:%
+%:%192=145%:%
 %:%193=145%:%
 %:%194=146%:%
 %:%195=147%:%
@@ -855,332 +884,342 @@ Lastly, we derive a set of generation lemmas, i.e.\@ lemmas that allow us to rea
 %:%210=162%:%
 %:%211=163%:%
 %:%212=164%:%
+%:%213=165%:%
 %:%214=166%:%
+%:%215=167%:%
 %:%216=168%:%
-%:%217=168%:%
-%:%218=169%:%
-%:%219=170%:%
-%:%220=171%:%
-%:%221=171%:%
-%:%222=172%:%
-%:%223=173%:%
-%:%224=174%:%
-%:%245=187%:%
-%:%257=188%:%
-%:%258=189%:%
-%:%259=190%:%
-%:%260=191%:%
-%:%261=192%:%
-%:%262=193%:%
-%:%264=195%:%
-%:%265=195%:%
-%:%266=196%:%
-%:%267=197%:%
-%:%268=198%:%
-%:%269=199%:%
-%:%270=200%:%
-%:%271=201%:%
-%:%272=202%:%
+%:%217=169%:%
+%:%218=170%:%
+%:%219=171%:%
+%:%220=172%:%
+%:%222=174%:%
+%:%224=176%:%
+%:%225=176%:%
+%:%226=177%:%
+%:%227=178%:%
+%:%228=179%:%
+%:%229=179%:%
+%:%230=180%:%
+%:%231=181%:%
+%:%232=182%:%
+%:%253=195%:%
+%:%265=196%:%
+%:%266=197%:%
+%:%267=198%:%
+%:%268=199%:%
+%:%269=200%:%
+%:%270=201%:%
+%:%272=203%:%
 %:%273=203%:%
 %:%274=204%:%
 %:%275=205%:%
 %:%276=206%:%
 %:%277=207%:%
 %:%278=208%:%
+%:%279=209%:%
+%:%280=210%:%
 %:%281=211%:%
-%:%290=212%:%
-%:%302=214%:%
-%:%304=216%:%
-%:%305=216%:%
-%:%306=217%:%
-%:%307=218%:%
-%:%308=219%:%
-%:%311=220%:%
-%:%315=220%:%
-%:%316=220%:%
-%:%317=221%:%
-%:%318=221%:%
-%:%323=221%:%
-%:%326=222%:%
-%:%327=223%:%
-%:%328=223%:%
-%:%329=224%:%
-%:%330=225%:%
-%:%333=226%:%
-%:%337=226%:%
-%:%338=226%:%
-%:%339=227%:%
-%:%340=227%:%
-%:%345=227%:%
-%:%348=228%:%
-%:%349=229%:%
-%:%350=229%:%
-%:%351=230%:%
-%:%352=231%:%
-%:%355=232%:%
-%:%359=232%:%
-%:%360=232%:%
-%:%361=233%:%
-%:%362=233%:%
-%:%367=233%:%
-%:%370=234%:%
-%:%371=235%:%
-%:%372=235%:%
-%:%373=236%:%
-%:%374=237%:%
-%:%377=238%:%
-%:%381=238%:%
-%:%382=238%:%
-%:%383=239%:%
-%:%384=239%:%
-%:%385=239%:%
-%:%390=239%:%
-%:%393=240%:%
-%:%394=241%:%
-%:%395=241%:%
-%:%396=242%:%
-%:%397=243%:%
-%:%400=244%:%
-%:%404=244%:%
-%:%405=244%:%
-%:%406=245%:%
-%:%407=245%:%
-%:%412=245%:%
-%:%415=246%:%
-%:%416=247%:%
-%:%417=247%:%
-%:%418=248%:%
-%:%419=249%:%
-%:%422=250%:%
-%:%426=250%:%
-%:%427=250%:%
-%:%428=251%:%
-%:%429=251%:%
-%:%430=252%:%
-%:%431=252%:%
-%:%432=253%:%
-%:%433=253%:%
-%:%434=253%:%
-%:%435=253%:%
-%:%436=254%:%
-%:%437=254%:%
-%:%438=255%:%
-%:%439=255%:%
-%:%440=256%:%
-%:%441=256%:%
-%:%442=256%:%
-%:%443=256%:%
-%:%444=257%:%
-%:%445=257%:%
-%:%446=257%:%
-%:%447=257%:%
-%:%448=258%:%
-%:%449=258%:%
-%:%450=258%:%
-%:%451=259%:%
-%:%452=259%:%
-%:%453=260%:%
-%:%454=260%:%
-%:%455=261%:%
-%:%456=261%:%
-%:%457=261%:%
-%:%458=261%:%
-%:%459=261%:%
-%:%460=262%:%
-%:%461=262%:%
-%:%462=263%:%
-%:%463=263%:%
-%:%464=264%:%
-%:%465=264%:%
-%:%466=264%:%
-%:%467=265%:%
-%:%468=265%:%
-%:%469=265%:%
-%:%470=265%:%
-%:%471=265%:%
-%:%472=266%:%
-%:%473=266%:%
-%:%474=267%:%
-%:%475=267%:%
-%:%476=268%:%
-%:%477=268%:%
-%:%478=268%:%
-%:%479=268%:%
-%:%480=269%:%
-%:%481=269%:%
-%:%482=269%:%
-%:%483=270%:%
-%:%484=270%:%
-%:%485=271%:%
-%:%486=271%:%
-%:%487=272%:%
-%:%488=272%:%
-%:%489=272%:%
-%:%490=272%:%
-%:%491=273%:%
-%:%492=273%:%
-%:%493=273%:%
-%:%494=274%:%
-%:%500=274%:%
-%:%503=275%:%
-%:%504=276%:%
-%:%505=276%:%
-%:%506=277%:%
-%:%507=278%:%
-%:%510=279%:%
-%:%514=279%:%
-%:%515=279%:%
-%:%516=280%:%
-%:%517=280%:%
-%:%518=281%:%
-%:%519=281%:%
-%:%520=282%:%
-%:%521=282%:%
-%:%522=282%:%
-%:%523=282%:%
-%:%524=283%:%
-%:%525=283%:%
-%:%526=283%:%
-%:%527=284%:%
-%:%528=284%:%
-%:%529=285%:%
-%:%530=285%:%
-%:%531=286%:%
-%:%532=286%:%
-%:%533=286%:%
-%:%534=286%:%
-%:%535=287%:%
-%:%536=287%:%
-%:%537=287%:%
-%:%538=287%:%
-%:%539=288%:%
-%:%540=288%:%
-%:%541=288%:%
-%:%542=289%:%
-%:%543=289%:%
-%:%544=290%:%
-%:%545=290%:%
-%:%546=291%:%
-%:%547=291%:%
-%:%548=291%:%
-%:%549=291%:%
-%:%550=292%:%
-%:%551=292%:%
-%:%552=292%:%
-%:%553=293%:%
-%:%554=293%:%
-%:%555=294%:%
-%:%556=294%:%
-%:%557=295%:%
-%:%558=295%:%
-%:%559=295%:%
-%:%560=295%:%
-%:%561=295%:%
-%:%562=296%:%
-%:%563=296%:%
-%:%564=297%:%
-%:%565=297%:%
-%:%566=298%:%
-%:%567=298%:%
-%:%568=298%:%
-%:%569=299%:%
-%:%570=299%:%
-%:%571=299%:%
-%:%572=299%:%
-%:%573=299%:%
-%:%574=300%:%
-%:%575=300%:%
-%:%576=301%:%
-%:%577=301%:%
-%:%578=302%:%
-%:%579=302%:%
-%:%580=302%:%
-%:%581=302%:%
-%:%582=303%:%
-%:%583=303%:%
-%:%584=303%:%
-%:%585=304%:%
-%:%591=304%:%
-%:%594=305%:%
-%:%595=306%:%
-%:%596=306%:%
-%:%597=307%:%
-%:%598=308%:%
-%:%601=309%:%
-%:%605=309%:%
-%:%606=309%:%
-%:%607=310%:%
-%:%608=310%:%
-%:%609=311%:%
-%:%610=311%:%
-%:%611=312%:%
-%:%612=312%:%
-%:%613=312%:%
-%:%614=312%:%
-%:%615=313%:%
-%:%616=313%:%
-%:%617=313%:%
-%:%618=314%:%
-%:%619=314%:%
-%:%620=315%:%
-%:%621=315%:%
-%:%622=316%:%
-%:%623=316%:%
-%:%624=316%:%
-%:%625=316%:%
-%:%626=317%:%
-%:%627=317%:%
-%:%628=317%:%
-%:%629=317%:%
-%:%630=318%:%
-%:%631=318%:%
-%:%632=318%:%
-%:%633=319%:%
-%:%634=319%:%
-%:%635=320%:%
-%:%636=320%:%
-%:%637=321%:%
-%:%638=321%:%
-%:%639=321%:%
-%:%640=321%:%
-%:%641=322%:%
-%:%642=322%:%
-%:%643=322%:%
-%:%644=323%:%
-%:%645=323%:%
-%:%646=324%:%
-%:%647=324%:%
-%:%648=325%:%
-%:%649=325%:%
-%:%650=325%:%
-%:%651=325%:%
-%:%652=325%:%
-%:%653=326%:%
-%:%654=326%:%
-%:%655=327%:%
-%:%656=327%:%
-%:%657=328%:%
-%:%658=328%:%
-%:%659=328%:%
-%:%660=328%:%
-%:%661=329%:%
-%:%662=329%:%
-%:%663=329%:%
-%:%664=330%:%
-%:%665=330%:%
-%:%666=331%:%
-%:%667=331%:%
-%:%668=332%:%
-%:%669=332%:%
-%:%670=332%:%
-%:%671=333%:%
-%:%672=333%:%
-%:%673=333%:%
-%:%674=333%:%
-%:%675=333%:%
-%:%676=334%:%
-%:%682=334%:%
-%:%685=335%:%
-%:%686=336%:%
-%:%687=336%:%
-%:%688=336%:%
+%:%282=212%:%
+%:%283=213%:%
+%:%284=214%:%
+%:%285=215%:%
+%:%286=216%:%
+%:%294=219%:%
+%:%306=221%:%
+%:%310=223%:%
+%:%319=224%:%
+%:%331=226%:%
+%:%333=228%:%
+%:%334=228%:%
+%:%335=229%:%
+%:%336=230%:%
+%:%337=231%:%
+%:%340=232%:%
+%:%344=232%:%
+%:%345=232%:%
+%:%346=233%:%
+%:%347=233%:%
+%:%352=233%:%
+%:%355=234%:%
+%:%356=235%:%
+%:%357=235%:%
+%:%358=236%:%
+%:%359=237%:%
+%:%362=238%:%
+%:%366=238%:%
+%:%367=238%:%
+%:%368=239%:%
+%:%369=239%:%
+%:%374=239%:%
+%:%377=240%:%
+%:%378=241%:%
+%:%379=241%:%
+%:%380=242%:%
+%:%381=243%:%
+%:%384=244%:%
+%:%388=244%:%
+%:%389=244%:%
+%:%390=245%:%
+%:%391=245%:%
+%:%392=245%:%
+%:%397=245%:%
+%:%400=246%:%
+%:%401=247%:%
+%:%402=247%:%
+%:%403=248%:%
+%:%404=249%:%
+%:%407=250%:%
+%:%411=250%:%
+%:%412=250%:%
+%:%413=251%:%
+%:%414=251%:%
+%:%419=251%:%
+%:%422=252%:%
+%:%423=253%:%
+%:%424=253%:%
+%:%425=254%:%
+%:%426=255%:%
+%:%429=256%:%
+%:%433=256%:%
+%:%434=256%:%
+%:%435=257%:%
+%:%436=257%:%
+%:%437=258%:%
+%:%438=258%:%
+%:%439=259%:%
+%:%440=259%:%
+%:%441=259%:%
+%:%442=259%:%
+%:%443=260%:%
+%:%444=260%:%
+%:%445=260%:%
+%:%446=260%:%
+%:%447=261%:%
+%:%448=261%:%
+%:%449=261%:%
+%:%450=262%:%
+%:%451=262%:%
+%:%452=263%:%
+%:%453=263%:%
+%:%454=264%:%
+%:%455=264%:%
+%:%456=264%:%
+%:%457=264%:%
+%:%458=265%:%
+%:%459=265%:%
+%:%460=266%:%
+%:%461=266%:%
+%:%462=267%:%
+%:%463=267%:%
+%:%464=267%:%
+%:%465=268%:%
+%:%466=268%:%
+%:%467=268%:%
+%:%468=268%:%
+%:%469=268%:%
+%:%470=269%:%
+%:%471=269%:%
+%:%472=270%:%
+%:%473=270%:%
+%:%474=271%:%
+%:%475=271%:%
+%:%476=271%:%
+%:%477=271%:%
+%:%478=272%:%
+%:%479=272%:%
+%:%480=272%:%
+%:%481=273%:%
+%:%482=273%:%
+%:%483=274%:%
+%:%484=274%:%
+%:%485=275%:%
+%:%486=275%:%
+%:%487=275%:%
+%:%488=275%:%
+%:%489=275%:%
+%:%490=276%:%
+%:%491=276%:%
+%:%492=277%:%
+%:%493=277%:%
+%:%494=278%:%
+%:%495=278%:%
+%:%496=278%:%
+%:%497=278%:%
+%:%498=279%:%
+%:%499=279%:%
+%:%500=279%:%
+%:%501=280%:%
+%:%507=280%:%
+%:%510=281%:%
+%:%511=282%:%
+%:%512=282%:%
+%:%513=283%:%
+%:%514=284%:%
+%:%517=285%:%
+%:%521=285%:%
+%:%522=285%:%
+%:%523=286%:%
+%:%524=286%:%
+%:%525=287%:%
+%:%526=287%:%
+%:%527=288%:%
+%:%528=288%:%
+%:%529=288%:%
+%:%530=288%:%
+%:%531=289%:%
+%:%532=289%:%
+%:%533=289%:%
+%:%534=289%:%
+%:%535=290%:%
+%:%536=290%:%
+%:%537=290%:%
+%:%538=291%:%
+%:%539=291%:%
+%:%540=292%:%
+%:%541=292%:%
+%:%542=293%:%
+%:%543=293%:%
+%:%544=293%:%
+%:%545=293%:%
+%:%546=294%:%
+%:%547=294%:%
+%:%548=294%:%
+%:%549=295%:%
+%:%550=295%:%
+%:%551=296%:%
+%:%552=296%:%
+%:%553=297%:%
+%:%554=297%:%
+%:%555=297%:%
+%:%556=297%:%
+%:%557=297%:%
+%:%558=298%:%
+%:%559=298%:%
+%:%560=299%:%
+%:%561=299%:%
+%:%562=300%:%
+%:%563=300%:%
+%:%564=300%:%
+%:%565=301%:%
+%:%566=301%:%
+%:%567=301%:%
+%:%568=301%:%
+%:%569=301%:%
+%:%570=302%:%
+%:%571=302%:%
+%:%572=303%:%
+%:%573=303%:%
+%:%574=304%:%
+%:%575=304%:%
+%:%576=304%:%
+%:%577=304%:%
+%:%578=305%:%
+%:%579=305%:%
+%:%580=305%:%
+%:%581=306%:%
+%:%582=306%:%
+%:%583=307%:%
+%:%584=307%:%
+%:%585=308%:%
+%:%586=308%:%
+%:%587=308%:%
+%:%588=308%:%
+%:%589=309%:%
+%:%590=309%:%
+%:%591=309%:%
+%:%592=310%:%
+%:%598=310%:%
+%:%601=311%:%
+%:%602=312%:%
+%:%603=312%:%
+%:%604=313%:%
+%:%605=314%:%
+%:%608=315%:%
+%:%612=315%:%
+%:%613=315%:%
+%:%614=316%:%
+%:%615=316%:%
+%:%620=316%:%
+%:%623=317%:%
+%:%624=318%:%
+%:%625=318%:%
+%:%626=319%:%
+%:%627=320%:%
+%:%630=321%:%
+%:%634=321%:%
+%:%635=321%:%
+%:%636=322%:%
+%:%637=322%:%
+%:%638=323%:%
+%:%639=323%:%
+%:%640=324%:%
+%:%641=324%:%
+%:%642=324%:%
+%:%643=324%:%
+%:%644=325%:%
+%:%645=325%:%
+%:%646=325%:%
+%:%647=325%:%
+%:%648=326%:%
+%:%649=326%:%
+%:%650=326%:%
+%:%651=327%:%
+%:%652=327%:%
+%:%653=328%:%
+%:%654=328%:%
+%:%655=329%:%
+%:%656=329%:%
+%:%657=329%:%
+%:%658=329%:%
+%:%659=330%:%
+%:%660=330%:%
+%:%661=330%:%
+%:%662=331%:%
+%:%663=331%:%
+%:%664=332%:%
+%:%665=332%:%
+%:%666=333%:%
+%:%667=333%:%
+%:%668=333%:%
+%:%669=333%:%
+%:%670=333%:%
+%:%671=334%:%
+%:%672=334%:%
+%:%673=335%:%
+%:%674=335%:%
+%:%675=336%:%
+%:%676=336%:%
+%:%677=336%:%
+%:%678=336%:%
+%:%679=337%:%
+%:%680=337%:%
+%:%681=337%:%
+%:%682=338%:%
+%:%683=338%:%
+%:%684=339%:%
+%:%685=339%:%
+%:%686=340%:%
+%:%687=340%:%
+%:%688=340%:%
+%:%689=340%:%
+%:%690=341%:%
+%:%691=341%:%
+%:%692=341%:%
+%:%693=342%:%
+%:%694=342%:%
+%:%695=343%:%
+%:%696=343%:%
+%:%697=344%:%
+%:%698=344%:%
+%:%699=344%:%
+%:%700=345%:%
+%:%701=345%:%
+%:%702=345%:%
+%:%703=345%:%
+%:%704=345%:%
+%:%705=346%:%
+%:%711=346%:%
+%:%714=347%:%
+%:%715=348%:%
+%:%716=348%:%
+%:%717=348%:%

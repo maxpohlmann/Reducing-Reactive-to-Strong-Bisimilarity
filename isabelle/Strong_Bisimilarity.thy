@@ -7,9 +7,9 @@ begin
 section \<open>Strong Bisimilarity\<close>
 text \<open>\label{sec:strong_bisimilarity}\<close>
 
-text \<open>As discussed in the previous section, LTSs can describe the behaviour of reactive systems, and this behaviour is observable by the environment (in terms of the transitions performed by the system). This begets a notion of behavioural equivalence, where two processes are said to be behaviourally equivalent if they exhibit the same (observable) behaviour @{cite resyst}.
+text \<open>As discussed in the previous section, LTSs can describe the behaviour of reactive systems, and this behaviour is observable by the environment (in terms of the transitions performed by the system). This begets a notion of behavioural equivalence, where two processes are said to be behaviourally equivalent if they exhibit the same (observable) behaviour @{cite reactivesystems}.
 
-Bisimilarity (or \emph{strong bisimilarity}, to be precise) is the \enquote{\emph{finest extensional behavioural equivalence} \textelp{} on processes} @{cite introBC}, an extensional property being one that treats the system in question as a black box, i.e.\@ the specific state space of the system remains hidden and performed transitions are only observable in terms of their action-label. This distinguishes bisimilarity from stronger graph equivalences like \emph{graph isomorphism}, where the (intensional) identity of processes (graph nodes) is relevant @{cite advBC_origins}.
+Bisimilarity (or \emph{strong bisimilarity}, to be precise) is the \enquote{\emph{finest extensional behavioural equivalence} \textelp{} on processes} @{cite \<open>section 0.1\<close> introBC}, an extensional property being one that treats the system in question as a black box, i.e.\@ the specific state space of the system remains hidden and performed transitions are only observable in terms of their action-label. This distinguishes bisimilarity from stronger graph equivalences like \emph{graph isomorphism}, where the (intensional) identity of processes (graph nodes) is relevant @{cite advBC_origins}.
 
 \example{%
 The processes $p$ and $q$ are strongly bisimilar (written $p \leftrightarrow q$, following @{cite rbs}), as both can always perform exactly two a-transitions and no further transitions afterwards. There is no isomorphism between the left and right subgraphs, as they have a different number of nodes.
@@ -54,7 +54,7 @@ The processes $p$ and $q$ are not strongly bisimilar, as $p$ can perform an $a$-
             (q1) edge node              {$a$}   (q2);
 }}
 
-Strong bisimilarity is the \emph{finest} extensional behavioural equivalence, because all actions are thought of as observable. An example of a coarser equivalence is \emph{weak bisimilarity}, which treats the aforementioned hidden action $\tau$ as unobservable. However, weak bisimilarity is of no further relevance for this thesis and the interested reader is referred to @{cite \<open>Chapter 3.4\<close> resyst}.
+Strong bisimilarity is the \emph{finest} extensional behavioural equivalence, because all actions are thought of as observable. An example of a coarser equivalence is \emph{weak bisimilarity}, which treats the aforementioned hidden action $\tau$ as unobservable. However, weak bisimilarity is of no further relevance for this thesis and the interested reader is referred to @{cite \<open>Chapter 3.4\<close> reactivesystems}.
 
 The notion of strong bisimilarity can be formalised through \emph{strong bisimulation} (SB) relations, introduced originally by David Park in @{cite park81}. A binary relation $\mathcal{R}$ over the set of processes $\Proc$ is an SB iff for all $(p,q) \in \mathcal{R}$:
 \begin{align*}
@@ -67,7 +67,7 @@ The notion of strong bisimilarity can be formalised through \emph{strong bisimul
 
 subsection \<open>Isabelle\<close>
 
-text \<open>Strong bisimulations are straightforward to formalise in Isabelle, using the curried function definition approach discussed in \cref{chap:isabelle}.\<close>
+text \<open>Strong bisimulations are straightforward to formalise in Isabelle, using the \enquote{curried} definition approach discussed in \cref{chap:isabelle}.\<close>
 
 context lts begin
 
@@ -88,7 +88,7 @@ text \<open>The following corollaries are immediate consequences of these defini
 
 corollary strongly_bisimilar_step:
   assumes 
-    \<open>strongly_bisimilar p q\<close>
+    \<open>p \<leftrightarrow> q\<close>
   shows
     \<open>p \<longmapsto>a p' \<Longrightarrow> (\<exists> q'. (q \<longmapsto>a q') \<and> p' \<leftrightarrow> q')\<close>
     \<open>q \<longmapsto>a q' \<Longrightarrow> (\<exists> p'. (p \<longmapsto>a p') \<and> p' \<leftrightarrow> q')\<close>

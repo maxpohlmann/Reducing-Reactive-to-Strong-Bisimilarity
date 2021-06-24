@@ -11,26 +11,25 @@ text \<open>\label{chap:HML_infinitary}\<close>
 text \<open>We will show that a modal characterisation of strong bisimilarity is possible without any assumptions about the cardinality of derivative sets \<open>Der(p, \<alpha>)\<close>, using infinitary HML (with conjunction of arbitrary cardinality). 
 
 Instead of formalising formulas under a conjunction as a countable set,%
-\footnote{Note that it is impossible to define a type with a constructor depending on a set of the type itself, i.e.\@ \<open>HML_conj \<open>('a)HML_formula set\<close>\<close> would not yield a valid type.}
-we use an index set of arbitrary type \<open>I :: 'x set\<close> and a mapping \linebreak \<open>F :: 'x \<Rightarrow> ('a, 'x)HML_formula\<close> so that each element of \<open>I\<close> is mapped to a formula. This closely resembles the semantics of $\bigwedge_{i \in I} \varphi_i$. Instead of using partial mappings \<open>F :: 'x \<Rightarrow> ('a, 'x)HML_formula option\<close>, I included a constructor \<open>HML_true\<close> and implicitly assume that \<open>F\<close> maps to \<open>HML_true\<close> for all objects of type \<open>'x\<close> that are not elements of \<open>I\<close>.\<close>
+\footnote{Note that it is not possible to define a type with a constructor depending on a set of the type itself, i.e.\@ \<open>HML_conj \<open>('a)HML_formula set\<close>\<close> would not yield a valid type.}
+we use an index set of arbitrary type \<open>I :: 'x set\<close> and a mapping \linebreak \<open>F :: 'x \<Rightarrow> ('a,'x)HML_formula\<close> so that each element of \<open>I\<close> is mapped to a formula. This closely resembles the semantics of $\bigwedge_{i \in I} \varphi_i$. Instead of using partial mappings \<open>F :: 'x \<Rightarrow> ('a,'x)HML_formula option\<close>, I included a constructor \<open>HML_true\<close> and implicitly assume that \<open>F\<close> maps to \<open>HML_true\<close> for all objects of type \<open>'x\<close> that are not elements of \<open>I\<close>.\<close>
 
-datatype ('a, 'x)HML_formula =
+datatype ('a,'x)HML_formula =
   HML_true 
-| HML_conj \<open>'x set\<close> \<open>'x \<Rightarrow> ('a, 'x)HML_formula\<close> 
-| HML_neg \<open>('a, 'x)HML_formula\<close> 
-| HML_poss \<open>'a\<close> \<open>('a, 'x)HML_formula\<close> 
+| HML_conj \<open>'x set\<close> \<open>'x \<Rightarrow> ('a,'x)HML_formula\<close> 
+| HML_neg \<open>('a,'x)HML_formula\<close> 
+| HML_poss \<open>'a\<close> \<open>('a,'x)HML_formula\<close> 
 
 
 subsubsection \<open>Satisfaction Relation\<close>
 
-text \<open>Data types cannot be used with arbitrary parameter types \<open>'x\<close> in concrete contexts; so when using our data type in the \<open>context lts\<close>, we use the type of processes \<open>'s\<close> as the type for conjunction index sets. 
+text \<open>Data types cannot be used with variable parameter types \<open>'x\<close> in concrete contexts; so when using our data type in the \<open>context lts\<close>, we use the type of processes \<open>'s\<close> as the type for conjunction index sets. 
 
 \pagebreak
-Since this suffices to proof the modal characterisation, we can conclude that it suffices for the cardinality of conjunction to be equal to the cardinality of the set of processes $\Proc$. As we can deduce from the part of the proof where formula conjunction is used, a weaker requirement would be to allow for conjunction of cardinality equal to $\displaystyle\max_{\substack{p\in\Proc \\ \alpha\in\Act}} |\text{Der}(p, \alpha)|$.\<close>
+Since this suffices to proof the modal characterisation, we can conclude that it suffices for the cardinality of conjunction to be equal to the cardinality of the set of processes $\Proc$. As we can deduce from the part of the proof where formula conjunction is used, a weaker requirement would be to allow for conjunction of cardinality equal to $\displaystyle\max_{\substack{p\in\Proc \\ \alpha\in\Act}} |\text{Der}(p, \alpha)|$.
 
-subsection \<open>Isabelle\<close>
-
-text \<open>The formalisation of this appendix follows the same structure as that in \cref{sec:HML}. The explanations from there mostly apply here as well.\<close>
+\vspace{1\baselineskip}
+The remainder of this appendix follows the same structure as that in \cref{sec:HML}. The explanations from there mostly apply here as well.\<close>
 
 context lts begin
 
@@ -109,11 +108,13 @@ next
 next
   case (HML_neg \<phi>)
   then show ?case
-    using satisfies.simps(3) strongly_bisimilar_symm by blast
+    using satisfies.simps(3) strongly_bisimilar_symm 
+    by meson
 next
   case (HML_poss \<alpha> \<phi>)
   then show ?case
-    by (meson satisfies.simps(4) strongly_bisimilar_step(1))
+    using satisfies.simps(4) strongly_bisimilar_step(1) 
+    by meson
 qed
 
 text \<open>\newpage\<close>

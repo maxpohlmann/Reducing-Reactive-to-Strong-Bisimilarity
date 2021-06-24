@@ -37,11 +37,11 @@
 \end{isamarkuptext}\isamarkuptrue%
 %
 \begin{isamarkuptext}%
-In \cite[Section 3]{rbs}, van~Glabbeek extends Hennessy-Milner logic by a family of new modal operators $\langle X \rangle \varphi$, for $X \subseteq A$, as well as additional satisfaction relations $\vDash_X$ for $X \subseteq A$. Intuitively, $p \vDash \langle X \rangle \varphi$ means that $p$ is idle when placed in an environment~$X$ \emph{and} $p$ can perform a $t$-transition into a state that satisfies $\varphi$; $p \vDash_X \varphi$ means that $p$ satisfies $\varphi$ in environments~$X$.
+In \cite[section 3]{rbs}, van~Glabbeek extends Hennessy-Milner logic by a family of new modal operators $\langle X \rangle \varphi$ for $X \subseteq A$, as well as additional satisfaction relations $\vDash_X$ for $X \subseteq A$. Intuitively, $p \vDash \langle X \rangle \varphi$ means that $p$ is idle when placed in an environment~$X$ \emph{and} $p$ can perform a $t$-transition into a state that satisfies $\varphi$; $p \vDash_X \varphi$ means that $p$ satisfies $\varphi$ in environments~$X$.
 
 I will refer to this extension as \emph{Hennessy-Milner Logic with Time-Outs} (\HMLt{}) and to $\langle X \rangle$ for $X \subseteq A$ as the \emph{time-out--possibility operators} (to be distinguished from the ordinary possibility operators $\langle \alpha \rangle$ for $\alpha \in \Act$).
 
-The precise semantics are given by the following inductive definition of the satisfaction relation \cite[Section 3]{rbs} (notation slightly adapted):
+The precise semantics are given by the following inductive definition of the satisfaction relation \cite[section 3]{rbs} (notation adapted):
 
 \begin{tabular}{l l l}
     $p \vDash \bigwedge_{i \in I} \varphi_i$ 
@@ -150,7 +150,7 @@ This notational nuance will be important when we examine the relationship betwee
 
 The first four clauses of my formalisation are clearly direct translations of the clauses for the satisfaction relation $\vDash$ above. It is less easy to see that the next four clauses do, in fact, correspond to the five clauses for $\vDash_X$. 
 
-First, each of the four clauses requires that \isa{X} is a subset of the visible actions; in the original definition, the satisfaction relations $\vDash_X$ are only defined for those $X$ to begin with.
+First, each of the four clauses below includes the requirement that \isa{X} is a subset of the visible actions; in the original definition, the satisfaction relations $\vDash_X$ are only defined for those $X$ to begin with.
 
 Next, the clause for \isa{p\ {\isasymTTurnstile}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}Some\ X{\isacharbrackright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}HMLt{\isacharunderscore}{\kern0pt}poss\ {\isasymalpha}\ {\isasymphi}{\isacharparenright}{\kern0pt}} combines the original clauses for $p \vDash_X \langle a \rangle \varphi$ and $p \vDash_X \langle \tau \rangle \varphi$. 
 
@@ -204,7 +204,7 @@ I will show below that this is sufficient to assure that my satisfaction functio
 \endisadelimproof
 %
 \begin{isamarkuptext}%
-The well-founded relation used for the termination proof of the satisfaction function is considerably more difficult due to the last line of the definition containing the same formula on both sides of the implication (as opposed to the other lines of the definition, where the premises only contain subformulas of the formula in the conclusion). This required me to define two relations, prove their well-foundedness separately, and then prove that their union is well-founded using the theorem \isa{{\isasymlbrakk}wf\ R{\isacharsemicolon}{\kern0pt}\ wf\ S{\isacharsemicolon}{\kern0pt}\ R\ O\ S\ {\isasymsubseteq}\ R{\isasymrbrakk}\ {\isasymLongrightarrow}\ wf\ {\isacharparenleft}{\kern0pt}R\ {\isasymunion}\ S{\isacharparenright}{\kern0pt}} (where \isa{O} is relation composition). Further details have been excluded from the thesis document.%
+The well-founded relation used for the termination proof of the satisfaction function is considerably more difficult due to the last line of the definition containing the same formula on both sides of the implication (as opposed to the other lines of the definition, where the premises only contain subformulas of the formula in the conclusion). We define two relations \isa{R} and \isa{S}, prove their well-foundedness separately, and show that \isa{R\ O\ S\ {\isasymsubseteq}\ R} (where \isa{O} is relation composition), yielding that the union of \isa{R} and \isa{S} is well-founded using the theorem \isa{{\isasymlbrakk}wf\ R{\isacharsemicolon}{\kern0pt}\ wf\ S{\isacharsemicolon}{\kern0pt}\ R\ O\ S\ {\isasymsubseteq}\ R{\isasymrbrakk}\ {\isasymLongrightarrow}\ wf\ {\isacharparenleft}{\kern0pt}R\ {\isasymunion}\ S{\isacharparenright}{\kern0pt}}. Further details are omitted from the thesis document.%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimunimportant
@@ -290,7 +290,7 @@ Lastly, we show (by induction over \isa{{\isasymphi}}) that the function \isa{HM
 \endisadelimproof
 %
 \begin{isamarkuptext}%
-As the last clause of van Glabbeek definition is the main disparity to the function definition of \isa{HMLt{\isacharunderscore}{\kern0pt}sat}, this proposition gives confidence that the function does indeed formalise the original definition.%
+As the last clause of van Glabbeek's definition is the main disparity to the function definition of \isa{HMLt{\isacharunderscore}{\kern0pt}sat}, this proposition gives confidence that the function does indeed formalise the original definition.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{end}\isamarkupfalse%
 \ %

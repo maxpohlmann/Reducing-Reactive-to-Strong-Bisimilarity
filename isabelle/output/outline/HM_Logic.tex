@@ -40,16 +40,16 @@
 In their seminal paper \cite{hm85}, Matthew Hennessy and Robin Milner present a modal-logical characterisation of strong bisimilarity (although they do not call it that), by process properties: \enquote{two processes are equivalent if and only if they enjoy the same set of properties.} These properties are expressed as terms of a modal-logical language, consisting merely of (finite) conjunction, negation, and a family of modal possibility operators. This language is known today as Hennessy-Milner logic (HML), with formulas $\varphi$ defined by the following grammar (where $\alpha$ ranges over the set of actions $\Act$):
 $$\varphi ::= t\!t \mid \varphi_1 \;\wedge\; \varphi_2 \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
 
-The semantics (on LTS processes) is given as follows: all processes satisfy $t\!t$, $\varphi_1 \;\wedge\; \varphi_2$ is satisfied if both $\varphi_1$ and $\varphi_2$ are satisfied, $\neg\varphi$ is satisfied if $\varphi$ is not satisfied, and $\langle\alpha\rangle\varphi$ is satisfied by a process if it is possible to do an $\alpha$-transition into a process that satisfies $\varphi$.
+The semantics (on LTS processes) is given as follows: all processes satisfy $t\!t$, $\varphi_1 \;\wedge\; \varphi_2$ is satisfied if both $\varphi_1$ and $\varphi_2$ are satisfied, $\neg\varphi$ is satisfied if $\varphi$ is not satisfied, and $\langle\alpha\rangle\varphi$ is satisfied by a process if it is possible to perform an $\alpha$-transition into a process that satisfies $\varphi$.
 
 \cite{hm85} also contains the proof that this modal-logical characterisation of strong bisimilarity coincides with a characterisation that is effectively the same as the one we saw in \cref{sec:strong_bisimilarity} using strong bisimulations. Although they use different terminology, their result can be summarised as follows: for image-finite LTSs, two processes are strongly bisimilar iff they satisfy the same set of HML formulas. We call this the \emph{modal characterisation} of strong bisimilarity.
 
-Let the \emph{cardinality of conjunction} be the maximally allowed cardinality of sets of formulas conjoined under a conjunction term (for a given variant of HML). For the simple variant above, conjunction has finite cardinality. By allowing for conjunction of arbitrary cardinality (infinitary HML), the modal characterisation of strong bisimilarity can be proved for arbitrary LTSs. This is done in \cref{chap:HML_infinitary}.
+Let the \emph{cardinality of conjunction} be the maximally allowed cardinality of sets of (sub-)formulas conjoined within a formula (for a given variant of HML). For the simple variant above, conjunction has finite cardinality. By allowing for conjunction of arbitrary cardinality (infinitary HML), the modal characterisation of strong bisimilarity can be proved for arbitrary LTSs. This is done in \cref{chap:HML_infinitary}.
 
 In this section, however, conjunction is constrained to be of countable cardinality, as this turned out to be significantly easier to deal with in the upcoming proofs. The modal characterisation of strong bisimilarity, then, works for LTSs that are image-countable, as we shall see below.
 
 Formulas $\varphi$ are given by the following grammar, where $I$ ranges over all subsets of the natural numbers:
-$$\varphi ::= \textstyle\bigwedge_{i \in I} \varphi_i \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
+$$\varphi ::= \bigwedge_{i \in I} \varphi_i \mid \neg\varphi \mid \langle\alpha\rangle\varphi$$
 
 The semantics of HML formulas on LTSs are as above, with the alteration that a process satisfies $\bigwedge_{i \in I} \varphi_i$ iff it satisfies $\varphi_i$ for all $i \in I$.
 
@@ -57,7 +57,7 @@ Additional logical constants can be added as \enquote{syntactic sugar}:
 \begin{align*}
     t\!t &\equiv \textstyle\bigwedge_{i \in \emptyset} \varphi_i \\
     f\!\!f &\equiv \neg t\!t \\
-    \textstyle\bigvee_{i \in I} \varphi_i &\equiv \neg \textstyle\bigwedge_{i \in I} \neg\varphi_i
+    \bigvee_{i \in I} \varphi_i &\equiv \neg \bigwedge_{i \in I} \neg\varphi_i
 \end{align*}%
 \end{isamarkuptext}\isamarkuptrue%
 %
@@ -100,7 +100,7 @@ I abstained from assigning the constructors a more readable symbolic notation be
 \isamarkupcmt{$\langle\alpha\rangle\varphi$%
 }%
 \begin{isamarkuptext}%
-The following abbreviations introduce useful constants as syntactic sugar, where \isa{cimage\ HML{\isacharunderscore}{\kern0pt}neg\ {\isasymPhi}} corresponds to $\{ \neg\varphi \mid \varphi\in\Phi \}$.%
+The following abbreviations introduce useful constants as syntactic sugar (where \isa{cimage\ HML{\isacharunderscore}{\kern0pt}neg\ {\isasymPhi}} corresponds to $\{ \neg\varphi \mid \varphi\in\Phi \}$).%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{abbreviation}\isamarkupfalse%
 \ HML{\isacharunderscore}{\kern0pt}true\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}HML{\isacharunderscore}{\kern0pt}formula{\isacartoucheclose}\ %
@@ -314,7 +314,7 @@ These proofs were inspired by the Isabelle formalisations done in \cite{weber202
 The semantic clauses for our additional constants are now easily derivable.%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{lemma}\isamarkupfalse%
-\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}top{\isacharcolon}{\kern0pt}\isanewline
+\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}true{\isacharcolon}{\kern0pt}\isanewline
 \ \ \isakeyword{shows}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTurnstile}\ HML{\isacharunderscore}{\kern0pt}true{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ True{\isacartoucheclose}\isanewline
 %
 \isadelimproof
@@ -333,7 +333,7 @@ The semantic clauses for our additional constants are now easily derivable.%
 %
 \endisadelimproof
 \isacommand{lemma}\isamarkupfalse%
-\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}bot{\isacharcolon}{\kern0pt}\isanewline
+\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}false{\isacharcolon}{\kern0pt}\isanewline
 \ \ \isakeyword{shows}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}p\ {\isasymTurnstile}\ HML{\isacharunderscore}{\kern0pt}false{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ False{\isacartoucheclose}\isanewline
 %
 \isadelimproof
@@ -342,7 +342,7 @@ The semantic clauses for our additional constants are now easily derivable.%
 %
 \isatagproof
 \isacommand{using}\isamarkupfalse%
-\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}top\ \isacommand{by}\isamarkupfalse%
+\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}true\ \isacommand{by}\isamarkupfalse%
 \ auto%
 \endisatagproof
 {\isafoldproof}%
@@ -466,7 +466,9 @@ HML-equivalence is clearly symmetrical.%
 \endisadelimproof
 %
 \begin{isamarkuptext}%
-We can now formally prove the modal characterisation of strong bisimilarity, i.e.: two processes are HML-equivalent iff they are strongly bisimilar. The proof follows the strategy from \cite{resyst}. I chose to include these proofs in the thesis document, because they translate quite beautifully, in my opinion, and are not so long as to hamper with the flow of reading.
+We can now formally prove the modal characterisation of strong bisimilarity, i.e.: two processes are HML-equivalent iff they are strongly bisimilar. The proof is borrowed from \cite[theorem 5.1]{reactivesystems}. 
+
+I chose to include these proofs in the thesis document, because they translate quite beautifully, in my opinion, and are comparatively short.
 
 We show the $\Longrightarrow$-case first, by induction over \isa{{\isasymphi}}.%
 \end{isamarkuptext}\isamarkuptrue%
@@ -489,8 +491,9 @@ We show the $\Longrightarrow$-case first, by induction over \isa{{\isasymphi}}.%
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{show}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\ \isanewline
-\ \ \ \ \isacommand{by}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}meson\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}conj\ cin{\isachardot}{\kern0pt}rep{\isacharunderscore}{\kern0pt}eq{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}conj\ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}meson\ cin{\isachardot}{\kern0pt}rep{\isacharunderscore}{\kern0pt}eq{\isacharparenright}{\kern0pt}\isanewline
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
@@ -498,8 +501,9 @@ We show the $\Longrightarrow$-case first, by induction over \isa{{\isasymphi}}.%
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{show}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\isanewline
-\ \ \ \ \isacommand{by}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}meson\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}neg\ strongly{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}symm{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}neg\ strongly{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}symm\ \isacommand{by}\isamarkupfalse%
+\ meson\isanewline
 \isacommand{next}\isamarkupfalse%
 \isanewline
 \ \ \isacommand{case}\isamarkupfalse%
@@ -507,8 +511,9 @@ We show the $\Longrightarrow$-case first, by induction over \isa{{\isasymphi}}.%
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{show}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}case\isanewline
-\ \ \ \ \isacommand{by}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}meson\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}poss\ strongly{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}step{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ HML{\isacharunderscore}{\kern0pt}sat{\isacharunderscore}{\kern0pt}poss\ strongly{\isacharunderscore}{\kern0pt}bisimilar{\isacharunderscore}{\kern0pt}step{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ \isacommand{by}\isamarkupfalse%
+\ meson\isanewline
 \isacommand{qed}\isamarkupfalse%
 %
 \endisatagvisible
@@ -519,6 +524,7 @@ We show the $\Longrightarrow$-case first, by induction over \isa{{\isasymphi}}.%
 \endisadelimvisible
 %
 \begin{isamarkuptext}%
+\pagebreak
 Before we can show the $\Longleftarrow$-case, we need to prove the following lemma: for some binary predicate $P$, if for every element $a$ of a set $A$, there exists an element $x$ such that $P(a,x)$ is true, then we can obtain a set $X$ that contains these $x$ (for all $a \in A$) and has the same cardinality as $A$. 
 
 Since more than one $x$ might exist for each $a$ such that $P(a,x)$ is true, the set
@@ -1052,114 +1058,114 @@ We can now conclude the modal characterisation of strong bisimilarity.%
 %:%469=172%:%
 %:%470=173%:%
 %:%471=174%:%
-%:%479=176%:%
-%:%480=176%:%
-%:%481=177%:%
+%:%472=175%:%
+%:%473=176%:%
+%:%481=178%:%
 %:%482=178%:%
 %:%483=179%:%
-%:%484=179%:%
-%:%485=180%:%
-%:%486=180%:%
-%:%487=181%:%
-%:%488=181%:%
-%:%489=182%:%
-%:%490=182%:%
-%:%491=182%:%
-%:%492=183%:%
-%:%493=183%:%
-%:%494=184%:%
-%:%495=184%:%
+%:%484=180%:%
+%:%485=181%:%
+%:%486=181%:%
+%:%487=182%:%
+%:%488=182%:%
+%:%489=183%:%
+%:%490=183%:%
+%:%491=184%:%
+%:%492=184%:%
+%:%493=184%:%
+%:%494=185%:%
+%:%495=185%:%
 %:%496=185%:%
-%:%497=185%:%
+%:%497=186%:%
 %:%498=186%:%
-%:%499=186%:%
-%:%500=186%:%
-%:%501=187%:%
-%:%502=187%:%
+%:%499=187%:%
+%:%500=187%:%
+%:%501=188%:%
+%:%502=188%:%
 %:%503=188%:%
-%:%504=188%:%
+%:%504=189%:%
 %:%505=189%:%
 %:%506=189%:%
 %:%507=190%:%
 %:%508=190%:%
-%:%509=190%:%
+%:%509=191%:%
 %:%510=191%:%
-%:%511=191%:%
+%:%511=192%:%
 %:%512=192%:%
-%:%522=194%:%
-%:%523=195%:%
-%:%524=196%:%
-%:%525=197%:%
-%:%526=198%:%
-%:%534=200%:%
-%:%535=200%:%
-%:%536=201%:%
-%:%537=202%:%
-%:%538=203%:%
-%:%539=204%:%
-%:%540=205%:%
-%:%541=206%:%
-%:%542=207%:%
-%:%543=208%:%
-%:%544=208%:%
-%:%545=209%:%
-%:%546=209%:%
+%:%513=192%:%
+%:%514=193%:%
+%:%515=193%:%
+%:%516=193%:%
+%:%517=194%:%
+%:%527=196%:%
+%:%528=197%:%
+%:%529=198%:%
+%:%530=199%:%
+%:%531=200%:%
+%:%532=201%:%
+%:%540=203%:%
+%:%541=203%:%
+%:%542=204%:%
+%:%543=205%:%
+%:%544=206%:%
+%:%545=207%:%
+%:%546=208%:%
 %:%547=209%:%
 %:%548=210%:%
-%:%549=210%:%
+%:%549=211%:%
 %:%550=211%:%
-%:%551=211%:%
+%:%551=212%:%
 %:%552=212%:%
-%:%553=213%:%
+%:%553=212%:%
 %:%554=213%:%
-%:%555=214%:%
+%:%555=213%:%
 %:%556=214%:%
-%:%565=214%:%
-%:%569=214%:%
-%:%570=214%:%
-%:%577=214%:%
-%:%580=215%:%
-%:%584=215%:%
-%:%585=215%:%
-%:%586=216%:%
-%:%587=216%:%
-%:%596=216%:%
-%:%600=216%:%
-%:%601=216%:%
-%:%608=216%:%
-%:%611=217%:%
-%:%615=217%:%
-%:%616=217%:%
-%:%617=218%:%
-%:%618=218%:%
-%:%627=218%:%
-%:%631=218%:%
-%:%632=218%:%
-%:%639=218%:%
-%:%646=219%:%
-%:%656=221%:%
-%:%657=222%:%
-%:%658=223%:%
-%:%659=224%:%
-%:%660=225%:%
-%:%661=226%:%
-%:%662=227%:%
-%:%663=228%:%
-%:%664=229%:%
-%:%665=230%:%
-%:%666=231%:%
-%:%667=232%:%
-%:%675=234%:%
-%:%676=234%:%
-%:%677=235%:%
-%:%678=236%:%
-%:%679=237%:%
-%:%680=238%:%
-%:%681=239%:%
-%:%682=239%:%
-%:%683=240%:%
-%:%684=240%:%
-%:%685=241%:%
+%:%557=214%:%
+%:%558=215%:%
+%:%559=216%:%
+%:%560=216%:%
+%:%561=217%:%
+%:%562=217%:%
+%:%571=217%:%
+%:%575=217%:%
+%:%576=217%:%
+%:%583=217%:%
+%:%586=218%:%
+%:%590=218%:%
+%:%591=218%:%
+%:%592=219%:%
+%:%593=219%:%
+%:%602=219%:%
+%:%606=219%:%
+%:%607=219%:%
+%:%614=219%:%
+%:%617=220%:%
+%:%621=220%:%
+%:%622=220%:%
+%:%623=221%:%
+%:%624=221%:%
+%:%633=221%:%
+%:%637=221%:%
+%:%638=221%:%
+%:%645=221%:%
+%:%652=222%:%
+%:%662=224%:%
+%:%663=225%:%
+%:%664=226%:%
+%:%665=227%:%
+%:%666=228%:%
+%:%667=229%:%
+%:%668=230%:%
+%:%669=231%:%
+%:%670=232%:%
+%:%671=233%:%
+%:%672=234%:%
+%:%673=235%:%
+%:%681=237%:%
+%:%682=237%:%
+%:%683=238%:%
+%:%684=239%:%
+%:%685=240%:%
 %:%686=241%:%
 %:%687=242%:%
 %:%688=242%:%
@@ -1168,101 +1174,107 @@ We can now conclude the modal characterisation of strong bisimilarity.%
 %:%691=244%:%
 %:%692=244%:%
 %:%693=245%:%
-%:%694=246%:%
+%:%694=245%:%
 %:%695=246%:%
-%:%696=247%:%
+%:%696=246%:%
 %:%697=247%:%
 %:%698=247%:%
 %:%699=248%:%
 %:%700=249%:%
 %:%701=249%:%
-%:%702=249%:%
+%:%702=250%:%
 %:%703=250%:%
 %:%704=250%:%
-%:%705=250%:%
-%:%706=251%:%
+%:%705=251%:%
+%:%706=252%:%
 %:%707=252%:%
 %:%708=252%:%
 %:%709=253%:%
-%:%710=254%:%
-%:%711=255%:%
-%:%712=256%:%
-%:%713=256%:%
-%:%714=257%:%
-%:%715=258%:%
-%:%716=259%:%
-%:%717=260%:%
-%:%718=260%:%
-%:%719=261%:%
-%:%720=262%:%
-%:%721=262%:%
-%:%722=263%:%
+%:%710=253%:%
+%:%711=253%:%
+%:%712=254%:%
+%:%713=255%:%
+%:%714=255%:%
+%:%715=256%:%
+%:%716=257%:%
+%:%717=258%:%
+%:%718=259%:%
+%:%719=259%:%
+%:%720=260%:%
+%:%721=261%:%
+%:%722=262%:%
 %:%723=263%:%
-%:%724=264%:%
-%:%725=265%:%
+%:%724=263%:%
+%:%725=264%:%
 %:%726=265%:%
-%:%727=266%:%
-%:%728=267%:%
-%:%729=267%:%
+%:%727=265%:%
+%:%728=266%:%
+%:%729=266%:%
 %:%730=267%:%
 %:%731=268%:%
 %:%732=268%:%
 %:%733=269%:%
-%:%734=269%:%
+%:%734=270%:%
 %:%735=270%:%
-%:%736=271%:%
+%:%736=270%:%
 %:%737=271%:%
 %:%738=271%:%
 %:%739=272%:%
 %:%740=272%:%
 %:%741=273%:%
-%:%742=273%:%
+%:%742=274%:%
 %:%743=274%:%
 %:%744=274%:%
 %:%745=275%:%
 %:%746=275%:%
 %:%747=276%:%
-%:%748=277%:%
+%:%748=276%:%
 %:%749=277%:%
 %:%750=277%:%
 %:%751=278%:%
 %:%752=278%:%
-%:%753=278%:%
-%:%754=279%:%
-%:%755=279%:%
-%:%756=279%:%
-%:%757=279%:%
-%:%758=280%:%
-%:%759=280%:%
-%:%760=280%:%
-%:%761=281%:%
-%:%771=283%:%
-%:%772=284%:%
-%:%780=286%:%
-%:%781=286%:%
-%:%782=287%:%
-%:%783=288%:%
-%:%784=289%:%
-%:%785=289%:%
-%:%786=290%:%
-%:%787=290%:%
-%:%788=291%:%
+%:%753=279%:%
+%:%754=280%:%
+%:%755=280%:%
+%:%756=280%:%
+%:%757=281%:%
+%:%758=281%:%
+%:%759=281%:%
+%:%760=282%:%
+%:%761=282%:%
+%:%762=282%:%
+%:%763=282%:%
+%:%764=283%:%
+%:%765=283%:%
+%:%766=283%:%
+%:%767=284%:%
+%:%777=286%:%
+%:%778=287%:%
+%:%786=289%:%
+%:%787=289%:%
+%:%788=290%:%
 %:%789=291%:%
 %:%790=292%:%
-%:%791=293%:%
+%:%791=292%:%
 %:%792=293%:%
-%:%793=294%:%
+%:%793=293%:%
 %:%794=294%:%
-%:%795=295%:%
+%:%795=294%:%
 %:%796=295%:%
 %:%797=296%:%
 %:%798=296%:%
 %:%799=297%:%
-%:%800=298%:%
+%:%800=297%:%
 %:%801=298%:%
-%:%802=299%:%
-%:%810=299%:%
-%:%811=300%:%
-%:%812=301%:%
-%:%813=301%:%
-%:%814=301%:%
+%:%802=298%:%
+%:%803=299%:%
+%:%804=299%:%
+%:%805=300%:%
+%:%806=301%:%
+%:%807=301%:%
+%:%808=302%:%
+%:%816=302%:%
+%:%817=303%:%
+%:%818=304%:%
+%:%819=304%:%
+%:%820=304%:%

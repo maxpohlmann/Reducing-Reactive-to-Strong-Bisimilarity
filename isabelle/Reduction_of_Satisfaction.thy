@@ -24,7 +24,7 @@ no_notation local.HML_sat ("_ \<Turnstile> _" [50, 50] 50)
 notation lts_theta.HML_sat ("_ \<Turnstile> _" [50, 50] 50)
 
 text \<open>We show \<open>p \<TTurnstile>?[XoN] \<phi>  \<Longleftrightarrow>  \<theta>?[XoN](p) \<Turnstile> \<sigma>(\<phi>)\<close> by induction over \<open>\<phi>\<close>. By using those terms for formula satisfaction and process mappings that handle both triggered and stable environments, we can handle both situations simultaneously, which is required due to the interdependence of $\vDash$ and $\vDash_X$. However, this requires us to consider four cases (each combination of \<open>\<TTurnstile>?[XoN\<^sub>1]\<close> and \<open>\<theta>?[XoN\<^sub>2]\<close> for \<open>XoN\<^sub>1, XoN\<^sub>2 \<in> {None, Some X}\<close>%
-\footnote{Once again, we do not consider cases where \<open>\<not> X \<subseteq> visible_actions\<close>.}%
+\footnote{Once again, we only consider cases where \<open>X \<subseteq> visible_actions\<close>.}%
 ) per inductive case for \<open>\<phi>\<close>. Together with the many disjunctive clauses in the mapping, a large number of cases needs to be considered, leading to a proof spanning roughly 350 lines of Isabelle code.\<close>
 
 (* These lemmas are not important for the thesis document. *)
@@ -71,7 +71,7 @@ proof -
   proof (rule ccontr)
     assume \<open>\<not> Y \<subseteq> visible_actions\<close>
     with assms have \<open>\<theta>?[XoN](p) \<Turnstile> HML_false\<close> by simp
-    thus False using lts_theta.HML_sat_bot by fast
+    thus False using lts_theta.HML_sat_false by fast
   qed
   let ?disj = \<open>{HML_poss (\<epsilon>[Y]) (HML_poss t \<sigma>(\<phi>)), 
     HML_poss t_\<epsilon> (HML_poss (\<epsilon>[Y]) (HML_poss t \<sigma>(\<phi>)))}\<close>
@@ -176,7 +176,7 @@ next
     moreover have \<open>\<alpha> = t \<or> \<alpha> = t_\<epsilon> \<or> (\<exists> X. \<alpha> = \<epsilon>[X]) \<Longrightarrow> p \<TTurnstile> HMLt_poss \<alpha> \<phi>\<close> proof -
       assume \<open>\<alpha> = t \<or> \<alpha> = t_\<epsilon> \<or> (\<exists> X. \<alpha> = \<epsilon>[X])\<close>
       with \<open>\<theta>(p) \<Turnstile> \<sigma>(HMLt_poss \<alpha> \<phi>)\<close> have \<open>\<theta>(p) \<Turnstile> HML_false\<close> using HMt_mapping.simps(5) by metis 
-      with lts_theta.HML_sat_bot have False by simp
+      with lts_theta.HML_sat_false have False by simp
       thus \<open>p \<TTurnstile> HMLt_poss \<alpha> \<phi>\<close> by simp
     qed
     moreover have \<open>no_special_action \<alpha> \<Longrightarrow> p \<TTurnstile> HMLt_poss \<alpha> \<phi>\<close> proof -
@@ -291,7 +291,7 @@ next
     moreover have \<open>\<alpha> = t \<or> \<alpha> = t_\<epsilon> \<or> (\<exists> X. \<alpha> = \<epsilon>[X]) \<Longrightarrow> p \<TTurnstile>[X] HMLt_poss \<alpha> \<phi>\<close> proof -
       assume \<open>\<alpha> = t \<or> \<alpha> = t_\<epsilon> \<or> (\<exists> X. \<alpha> = \<epsilon>[X])\<close>
       with prem have \<open>\<theta>[X](p) \<Turnstile> HML_false\<close> using HMt_mapping.simps(5) by metis
-      with lts_theta.HML_sat_bot have False by simp
+      with lts_theta.HML_sat_false have False by simp
       thus \<open>p \<TTurnstile>[X] HMLt_poss \<alpha> \<phi>\<close> by simp
     qed
     moreover have \<open>\<alpha> \<noteq> \<tau> \<and> \<alpha> \<noteq> t \<and> \<alpha> \<noteq> t_\<epsilon> \<and> (\<forall>X. \<alpha> \<noteq> \<epsilon>[X]) \<Longrightarrow> p \<TTurnstile>[X] HMLt_poss \<alpha> \<phi>\<close> proof -

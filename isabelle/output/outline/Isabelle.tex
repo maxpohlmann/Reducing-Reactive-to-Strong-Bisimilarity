@@ -21,7 +21,7 @@
 %
 \isatagdocument
 %
-\isamarkupchapter{Isabelle%
+\isamarkupchapter{Introduction to Isabelle%
 }
 \isamarkuptrue%
 %
@@ -37,7 +37,7 @@
 \end{isamarkuptext}\isamarkuptrue%
 %
 \begin{isamarkuptext}%
-Isabelle is an interactive proof assistant and Isabelle/HOL is an implementation of \emph{higher-order logic} in Isabelle. With it, one can interactively prove propositions about theories that are formalised in terms of higher-order logic. Many theories have been formalised (and many theorems proven) in Isabelle/HOL and are publicly available.\footnote{see Isabelle's Archive of Formal Proofs at \code{\href{https://www.isa-afp.org}{isa-afp.org}}}
+Isabelle is an interactive proof assistant and Isabelle/HOL is an implementation of \emph{higher-order logic} in Isabelle. With it, one can interactively prove propositions about theories that are formalised in terms of higher-order \linebreak logic. Many theories have been formalised (and many theorems proven) in Isabelle/HOL and are publicly available.\footnote{see Isabelle's Archive of Formal Proofs at \code{\href{https://www.isa-afp.org}{isa-afp.org}}}
 
 In this appendix, I will give a short introduction into the most important concepts of Isabelle. For an extensive tutorial, see \cite{prog_prove}. A complete documentation can be found in \cite{isar_ref}.
 \vspace{-.3cm}%
@@ -121,7 +121,7 @@ Abbreviations are used the same way as definitions, except that, in order to use
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-Propositions can be given using any of the commands \isa{proposition}, \isa{lemma}, \isa{theorem}, \isa{corollary}, and require a proof.
+Propositions can be stated using any of the commands \isa{proposition}, \isa{lemma}, \isa{theorem}, \isa{corollary}, and require a proof.
 
 Since Isabelle is an \emph{interactive} proof assistant, proofs are usually meant to be spelled out in code so as to be readable by humans, and the validity of individual steps is verified by certain automated proof methods (e.g.\@ \isa{simp}, \isa{arith}, \isa{auto}, \isa{fast}, \isa{blast}, \dots). 
 
@@ -293,7 +293,7 @@ Inductively defined predicates can be given using premise-conclusion pairs and m
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-The command \isa{function} also establishes equalities, but usually in more complex ways, so that it may not obvious whether a function is well-defined. Hence, the well-definedness needs to be proved explicitly. (These proofs are usually solved by the automated proof methods.)
+The command \isa{function} also establishes equalities, but usually in more complex ways, so that it may not obvious whether a function is well-defined. Hence, the well-definedness needs to be proved explicitly. (These proofs are often solved by the automated proof methods.)
 
 The function is then assumed to be partial. The command \isa{termination} introduces proof obligations to show that the function always terminates (and is thus total). For the example below, this is again proved automatically.
 
@@ -377,9 +377,7 @@ We can define type constructors, i.e.\@ types depending on other types (to be di
 \endisadelimdocument
 %
 \begin{isamarkuptext}%
-Locales define a context consisting of type variables, object variables, and assumptions. These can be accessed in the entire context. Locales can also be instantiated by specifying concrete types (or type variables from another context) for the type variables, and extended to form new locales. We can reenter the context of a locale later on, using the command \isa{context}.
-
-\Cref{sec:LTS} provides a good example for how locales are used in Isabelle to formalise linear transition systems.%
+Locales define a context consisting of type variables, object variables, and assumptions. These can be accessed in the entire context. Locales can be instantiated by specifying concrete types/objects (or variables from another context) for the type/object variables, and extended to form new locales. We can reenter the locale contexts later on, using the command \isa{context}. \Cref{sec:LTS} provides a good example for how locales are used in Isabelle to formalise linear transition systems.%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimtheory
@@ -559,5 +557,3 @@ Locales define a context consisting of type variables, object variables, and ass
 %:%361=142%:%
 %:%368=144%:%
 %:%380=146%:%
-%:%381=147%:%
-%:%382=148%:%

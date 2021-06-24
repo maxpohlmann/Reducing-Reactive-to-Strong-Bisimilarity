@@ -69,10 +69,6 @@ Only in environments blocking $a$, $p$ can make a $t$-transition to $p_2$. Howev
 
 These semantics of \LTSt{}s induce a novel notion of behavioural equivalence, which will be discussed in the next section.\<close>
 
-subsubsection \<open>Note on Metavariable usage\<close>
-
-text \<open>If not referenced directly by $\vartheta(p)$ or $\vartheta_X(p)$, arbitrary states of an \LTSt{} range over $P, Q, P', Q', \dots$, where $P$ and $P'$ are used for states connected by some transition (i.e.\@ $P \xrightarrow{\alpha}_\vartheta P'$), whereas $P$ and $Q$ are used for states possibly related by an equivalence, as will be discussed in the next section.\<close>
-
 subsubsection \<open>Practical Example\<close>
 
 text \<open>As in \cref{sec:LTS}, we shall consider a real-world machine that may be modelled as an \LTSt{}. Continuing with our example, let us imagine that our simple vending machine ejects the coin if no snack has been selected after a certain amount of time. We can attempt to model the machine with this extended behaviour as an LTS, where the coin ejection requires no interaction and is therefore also modelled as a $\tau$-transition.
@@ -96,7 +92,7 @@ text \<open>As in \cref{sec:LTS}, we shall consider a real-world machine that ma
 }
 
 However, this LTS also models a machine that randomly ejects coins right after insertion.
-In order to distinguish these behaviours, we need a $t$-transition along with \LTSt{} semantics.
+In order to distinguish these behaviours, we need a \linebreak $t$-transition along with \LTSt{} semantics.
 
 \lts{
     \node[state]    (p0) {$p$};
@@ -121,7 +117,8 @@ In order to distinguish these behaviours, we need a $t$-transition along with \L
 
 subsection \<open>Isabelle\<close>
 
-text \<open>We extend LTSs with hidden actions (\<open>lts_tau\<close>) by the special action \<open>t\<close>. We have to explicitly require (/assume) that \<open>\<tau> \<noteq> t\<close>; when instantiating the locale \<open>lts_timeout\<close> and specifying a concrete type for the type variable \<open>'a\<close>, this assumption must be (proved to be) satisfied.\<close>
+text \<open>We extend LTSs with hidden actions (\<open>lts_tau\<close>) by the special action \<open>t\<close>. We have to explicitly require (/assume) that \<open>\<tau> \<noteq> t\<close>; when instantiating the locale \<open>lts_timeout\<close> and specifying a concrete type for the type variable \<open>'a\<close>, this assumption must be (proved to be) satisfied.
+\pagebreak\<close>
 
 locale lts_timeout = lts_tau tran \<tau> 
   for tran :: "'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool" 
@@ -131,13 +128,13 @@ locale lts_timeout = lts_tau tran \<tau>
   assumes tau_not_t: \<open>\<tau> \<noteq> t\<close>
 begin
 
-text \<open>We define the set of (relevant) visible actions (usually denoted by $A \subseteq \Act$) as the set of all actions that are not hidden and that are labels of some transition in the given LTS.\<close>
+text \<open>We define the set of (relevant) visible actions (denoted by $A \subseteq \Act$) as the set of all actions that are not hidden and that are labels of some transition in the given LTS.\<close>
 
 definition visible_actions :: \<open>'a set\<close>
   where \<open>visible_actions 
     \<equiv> {a. (a \<noteq> \<tau>) \<and> (a \<noteq> t) \<and> (\<exists> p p'. p \<longmapsto>a p')}\<close>
 
-text \<open>The formalisations in upcoming sections will often involve the type \<open>'a set option\<close>, which has values of the form \<open>None\<close> and \<open>Some X\<close> for some \<open>X :: 'a set\<close>. We will usually use the metavariable \<open>XoN\<close> (for \enquote{\<open>X\<close> or \<open>None\<close>}). The following abbreviation will be useful in these situations.\<close>
+text \<open>The formalisations in upcoming sections will often involve the type \<open>'a set option\<close>, which has values of the form \<open>None\<close> and \<open>Some X\<close> for some \<open>X :: 'a set\<close>. We will use the metavariable \<open>XoN\<close> (for \enquote{\<open>X\<close> or \<open>None\<close>}). The following abbreviation will be useful in these situations.\<close>
 
 abbreviation some_visible_subset :: \<open>'a set option \<Rightarrow> bool\<close>
   where \<open>some_visible_subset XoN 

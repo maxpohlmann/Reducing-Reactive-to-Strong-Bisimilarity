@@ -37,12 +37,12 @@
 \end{isamarkuptext}\isamarkuptrue%
 %
 \begin{isamarkuptext}%
-To complete the proofs from \cref{chap:reductions}, I will show that mappings \isa{stabilise} (\isa{{\isasymepsilon}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}}) and \isa{in{\isacharunderscore}{\kern0pt}env} (\isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}}), which existence we assumed up to now, do, in fact, exist. I will define example mappings and show that, together with these, arbitrary \isa{lts{\isacharunderscore}{\kern0pt}timeout} can be interpreted as \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}, thereby showing that the reductions are valid for arbitrary \LTSt{}s.
+To complete the proofs from \cref{chap:reductions}, I will show that mappings \isa{stabilise} (\isa{{\isasymepsilon}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}}) and \isa{in{\isacharunderscore}{\kern0pt}env} (\isa{{\isasymtheta}{\isacharquery}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharunderscore}{\kern0pt}{\isacharparenright}{\kern0pt}}), whose existence we assumed up to now, do, in fact, exist. I will define example mappings and show that, together with these, arbitrary \isa{lts{\isacharunderscore}{\kern0pt}timeout} can be interpreted as \isa{lts{\isacharunderscore}{\kern0pt}timeout{\isacharunderscore}{\kern0pt}mappable}, thereby showing that the reductions are valid for arbitrary \LTSt{}s.
 
-First, we define the types for $\Proc_\vartheta$ and $\Act_\vartheta$ in dependence to arbitrary types \isa{{\isacharprime}{\kern0pt}s} and \isa{{\isacharprime}{\kern0pt}a} for $\Proc$ and $\Act$, respectively:%
+First, we define the types for $\Proc_\vartheta$ and $\Act_\vartheta$ in dependence on arbitrary types \isa{{\isacharprime}{\kern0pt}s} and \isa{{\isacharprime}{\kern0pt}a} for $\Proc$ and $\Act$, respectively:%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{datatype}\isamarkupfalse%
-\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}s{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}Proc{\isacharunderscore}{\kern0pt}{\isasymtheta}\ {\isacharequal}{\kern0pt}\ triggered\ {\isacharprime}{\kern0pt}s\ {\isacharbar}{\kern0pt}\ stable\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ set{\isacartoucheclose}\ {\isacharprime}{\kern0pt}s\ {\isacharbar}{\kern0pt}\ DumpState\isanewline
+\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}s{\isacharcomma}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}Proc{\isacharunderscore}{\kern0pt}{\isasymtheta}\ {\isacharequal}{\kern0pt}\ triggered\ {\isacharprime}{\kern0pt}s\ {\isacharbar}{\kern0pt}\ stable\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ set{\isacartoucheclose}\ {\isacharprime}{\kern0pt}s\ {\isacharbar}{\kern0pt}\ DumpState\isanewline
 \isacommand{datatype}\isamarkupfalse%
 \ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}Act{\isacharunderscore}{\kern0pt}{\isasymtheta}\ {\isacharequal}{\kern0pt}\ act\ {\isacharprime}{\kern0pt}a\ {\isacharbar}{\kern0pt}\ t{\isacharunderscore}{\kern0pt}{\isasymepsilon}\ {\isacharbar}{\kern0pt}\ {\isasymepsilon}\ {\isacartoucheopen}{\isacharprime}{\kern0pt}a\ set{\isacartoucheclose}\ {\isacharbar}{\kern0pt}\ DumpAction%
 \begin{isamarkuptext}%
@@ -99,7 +99,7 @@ We can now specify mappings \isa{stabilise} and \isa{in{\isacharunderscore}{\ker
 \pagebreak%
 \end{isamarkuptext}\isamarkuptrue%
 \isacommand{function}\isamarkupfalse%
-\ in{\isacharunderscore}{\kern0pt}env\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}Act{\isacharunderscore}{\kern0pt}{\isasymtheta}\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}s{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}Proc{\isacharunderscore}{\kern0pt}{\isasymtheta}{\isacartoucheclose}\isanewline
+\ in{\isacharunderscore}{\kern0pt}env\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacartoucheopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}Act{\isacharunderscore}{\kern0pt}{\isasymtheta}\ set\ option\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}s\ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}s{\isacharcomma}{\kern0pt}{\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}Proc{\isacharunderscore}{\kern0pt}{\isasymtheta}{\isacartoucheclose}\isanewline
 \ \ \isakeyword{where}\ \isanewline
 \ \ \ \ {\isacartoucheopen}in{\isacharunderscore}{\kern0pt}env\ None\ p\ {\isacharequal}{\kern0pt}\ triggered\ p{\isacartoucheclose}\isanewline
 \ \ {\isacharbar}{\kern0pt}\ {\isacartoucheopen}{\isasymforall}\ {\isasymalpha}{\isasymin}X{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymexists}\ {\isasymalpha}{\isacharprime}{\kern0pt}{\isachardot}{\kern0pt}\ {\isasymalpha}\ {\isacharequal}{\kern0pt}\ act\ {\isasymalpha}{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymLongrightarrow}\ \isanewline
@@ -415,7 +415,7 @@ We interpret the \isa{Tran} predicate as an \isa{lts{\isacharunderscore}{\kern0p
 \endisadelimvisible
 %
 \begin{isamarkuptext}%
-We can now prove a few lemmas about our example \LTSt{} that we would need for any bisimilarity proofs. I abstained from actually including a proof, but the second lemma should suffice to convince you that it would be possible.%
+We can now prove a few lemmas about our example \LTSt{} that we would need for any bisimilarity proofs. I abstained from actually including a bisimilarity proof, but these lemmas should, hopefully, suffice to convince you that it would be possible.%
 \end{isamarkuptext}\isamarkuptrue%
 %
 \isadelimvisible

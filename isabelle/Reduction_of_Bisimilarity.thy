@@ -10,11 +10,11 @@ begin
 section \<open>Reduction of Bisimilarity\<close>
 text \<open>\label{sec:reduction_bisimilarity}\<close>
 
-text \<open>The main result of this section will be that two processes $p$ and $q$ of an \LTSt{} $\mathbb{T}$ are strongly reactive bisimilar (strongly $X$-bisimilar) iff the corresponding processes $\vartheta(p)$ and $\vartheta(q)$ ($\vartheta_X(p)$ and $\vartheta_X(q)$) of $\mathbb{T}_\vartheta$ are strongly bisimilar. 
+text \<open>The result of this section will be that two processes $p$ and $q$ of an \LTSt{} $\mathbb{T}$ are strongly reactive bisimilar (strongly $X$-bisimilar) iff the corresponding processes $\vartheta(p)$ and $\vartheta(q)$ ($\vartheta_X(p)$ and $\vartheta_X(q)$) of $\mathbb{T}_\vartheta$ are strongly bisimilar. 
 
 We show the $\Longrightarrow$-direction first. For an SRB $\mathcal{R}$, let
 $$\mathcal{S} = \{ (\vartheta(p), \vartheta(q)) \mid (p, q) \in \mathcal{R} \} \cup \{ (\vartheta_X(p), \vartheta_X(q)) \mid (p, X, q) \in \mathcal{R} \}.$$
-We can prove that $\mathcal{S}$ is an SB, by showing that the mapping satiesfies all clauses of the definition of SBs, using the fact that $\mathcal{R}$ is an SRB as well as the rules and generation lemmas for $\rightarrow_\vartheta$. Hence, the existence of an SRB $\mathcal{R}$ with $(p, q) \in \mathcal{R}$ implies the existence of an SB $\mathcal{S}$ with $(\vartheta(p), \vartheta(q)) \in \mathcal{S}$ (and similarly for $\vartheta_X$), so strong reactive/$X$-bisimilarity in $\mathbb{T}$ implies strong bisimilarity in $\mathbb{T}_\vartheta$.
+We can prove that $\mathcal{S}$ is an SB, by showing that the mapping satisfies the clauses of the definition of SBs, using the fact that $\mathcal{R}$ is an SRB as well as the rules and generation lemmas for $\rightarrow_\vartheta$. Hence, the existence of an SRB $\mathcal{R}$ with $(p, q) \in \mathcal{R}$ implies the existence of an SB $\mathcal{S}$ with $(\vartheta(p), \vartheta(q)) \in \mathcal{S}$ (and similarly for $\vartheta_X$), so strong reactive/$X$-bisimilarity in $\mathbb{T}$ implies strong bisimilarity in $\mathbb{T}_\vartheta$.
 
 Next, we show the $\Longleftarrow$-direction. Let
 $$\mathcal{R} = \{ (p, q) \mid \vartheta(p) \leftrightarrow \vartheta(q) \} \cup \{ (p, X, q) \mid \vartheta_X(p) \leftrightarrow \vartheta_X(q) \}.$$
@@ -147,14 +147,13 @@ qed
 lemma srby_implies_sby:
   assumes \<open>p \<leftrightarrow>\<^sub>r q\<close> 
   shows \<open>\<theta>(p) \<leftrightarrow> \<theta>(q)\<close>
-  using assms
-  by (metis SRB_mapping_def SRB_mapping_is_SB lts_theta.strongly_bisimilar_def strongly_reactive_bisimilar_def)
-
+  using assms SRB_mapping_def SRB_mapping_is_SB lts_theta.strongly_bisimilar_def strongly_reactive_bisimilar_def
+  by metis
 lemma sxby_implies_sby:
   assumes \<open>p \<leftrightarrow>\<^sub>r\<^sup>X q\<close> 
   shows \<open>\<theta>[X](p) \<leftrightarrow> \<theta>[X](q)\<close>
-  using assms
-  by (metis SRB_mapping_def SRB_mapping_is_SB strongly_X_bisimilar_def lts_theta.strongly_bisimilar_def)
+  using assms SRB_mapping_def SRB_mapping_is_SB strongly_X_bisimilar_def lts_theta.strongly_bisimilar_def
+  by metis
 
 
 subsubsection \<open>\dots{} and only if (\boldmath{$\Longleftarrow$})\<close>
@@ -255,14 +254,14 @@ lemma sby_implies_srby:
   assumes \<open>\<theta>(p) \<leftrightarrow> \<theta>(q)\<close> 
   shows \<open>p \<leftrightarrow>\<^sub>r q\<close>
   using assms strong_bisimilarity_mapping_is_SRB
-  using strong_bisimilarity_mapping_def strongly_reactive_bisimilar_def by auto
-
+    strong_bisimilarity_mapping_def strongly_reactive_bisimilar_def by auto
 lemma sby_implies_sxby:
   assumes \<open>\<theta>[X](p) \<leftrightarrow> \<theta>[X](q)\<close> \<open>X \<subseteq> visible_actions\<close>
-  shows \<open>p \<leftrightarrow>\<^sub>r\<^sup>X q\<close> using assms strong_bisimilarity_mapping_is_SRB
-  using strong_bisimilarity_mapping_def strongly_X_bisimilar_def by auto
+  shows \<open>p \<leftrightarrow>\<^sub>r\<^sup>X q\<close> 
+  using assms strong_bisimilarity_mapping_is_SRB
+    strong_bisimilarity_mapping_def strongly_X_bisimilar_def by auto
 
-text \<open>We need to include the assumption \<open>X \<subseteq> visible_actions\<close>, since for \<open>\<not> X \<subseteq> visible_actions\<close>, \<open>\<theta>[X](p)\<close> and \<open>\<theta>[X](q)\<close> might be identical (since we do not require injectivity for that subset of the domain), so \<open>\<theta>[X](p) \<leftrightarrow> \<theta>[X](q)\<close> would be true, whereas \<open>p \<leftrightarrow>\<^sub>r\<^sup>X q\<close> would be false (since \<open>X \<subseteq> visible_actions\<close> is part of the definition of SRBs).\<close>
+text \<open>We need to include the assumption \<open>X \<subseteq> visible_actions\<close>, since for \linebreak \<open>\<not> X \<subseteq> visible_actions\<close>, \<open>\<theta>[X](p)\<close> and \<open>\<theta>[X](q)\<close> might be identical (since we do not require injectivity for that subset of the domain), so \<open>\<theta>[X](p) \<leftrightarrow> \<theta>[X](q)\<close> would be true, whereas \<open>p \<leftrightarrow>\<^sub>r\<^sup>X q\<close> would be false (since \linebreak \<open>X \<subseteq> visible_actions\<close> is part of the definition of SRBs).\<close>
 
 
 subsubsection \<open>Iff (\boldmath{$\Longleftrightarrow$})\<close>

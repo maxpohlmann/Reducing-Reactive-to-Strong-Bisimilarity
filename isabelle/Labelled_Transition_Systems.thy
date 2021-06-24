@@ -14,7 +14,7 @@ notation (input)
 section \<open>Labelled Transition Systems\<close>
 text \<open>\label{sec:LTS}\<close>
 
-text \<open>A Labelled Transition System (LTS) consists of a set of processes (or states) $\Proc$, a set of actions $\Act$, and a relation of transitions $\cdot\xrightarrow{\cdot}\cdot \subseteq \Proc\times\Act\times\Proc$ which directedly connect two processes by an action (the action being the label of the transition) @{cite resyst}. We call a transition labelled by an action $\alpha$ an \emph{$\alpha$-transition}.
+text \<open>A Labelled Transition System (LTS) consists of a set of processes (or states) $\Proc$, a set of actions $\Act$, and a relation of transitions $\cdot\xrightarrow{\cdot}\cdot \subseteq \Proc\times\Act\times\Proc$ which directedly connect two processes by an action (the action being the label of the transition) @{cite reactivesystems}. We call a transition labelled by an action $\alpha$ an \emph{$\alpha$-transition}.
 
 LTSs can model reactive systems, as discussed in \cref{chap:introduction}. A process of an LTS, then, corresponds to a momentary state of a reactive system. The outgoing transitions of each process correspond to the actions the reactive system could perform in that state (yielding a subsequent process/state), if facilitated by the environment. The choice between the facilitated transitions of a process is non-deterministic.
 
@@ -38,17 +38,17 @@ The process $p$ can perform any of the $a$-transitions in environments allowing 
                  edge node[above right]         {$b$}   (p3);
 }}
 
-A \emph{hidden action}, denoted by $\tau$, allows for additional semantics: a $\tau$-transition can be performed by a process without any interaction from the environment. Depending on the specific semantic context, the performance of a hidden action may also be unobservable (hence the name).\<close>
+A \emph{hidden action}, denoted by $\tau$, allows for additional semantics: a $\tau$-transition can be performed by a process without any interaction from the environment. Depending on the specific semantic context, the performance of a hidden action may also be unobservable (hence the name), i.e.\@ not part of the observable behaviour of the system.\<close>
 
 subsubsection \<open>Some Definitions\<close>
 
 text \<open>The $\alpha$-derivatives of a state are those states that can be reached with one $\alpha$-transition:
 $$\mathit{Der}(p, \alpha) = \{ p' \mid p \xrightarrow{\alpha} p' \}.$$
 
-An LTS is image-finite iff all derivative sets are finite:
+An LTS is image-finite iff all derivative sets are finite, i.e.:
 $$\forall p \in \Proc, \alpha \in \Act .\; \mathit{Der}(p, \alpha) \text{ is finite}.$$
 
-Similarly, we can say an LTS is image-countable iff all derivative sets are countable:
+Similarly, we can say that an LTS is image-countable iff all derivative sets are countable, i.e.:
 $$\forall p \in \Proc, \alpha \in \Act .\; \mathit{Der}(p, \alpha) \text{ is countable}.$$\<close>
 
 subsubsection \<open>Note on Metavariable usage\<close>

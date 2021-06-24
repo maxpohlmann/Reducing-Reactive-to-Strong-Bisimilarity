@@ -36,7 +36,7 @@ The processes $p$ and $q$ are behaviourally equivalent for \LTSt{} semantics, i.
 }}\<close>
 
 subsubsection \<open>Strong Reactive Bisimulations\<close>
-text \<open>Van~Glabbeek introduces several characterisations of this equivalence, beginning with \emph{strong reactive bisimulation} (SRB) relations. These differ from strong bisimulations in that the relations contain not only pairs of processes $(p,q)$, but additionally triples consisting of two processes and a set of actions $(p,X,q)$. The following definition of SRB relations is quoted, with minor adaptations, from @{cite \<open>Definition 1\<close> rbs}:
+text \<open>Van~Glabbeek introduces several characterisations of this equivalence, beginning with \emph{strong reactive bisimulation} (SRB) relations. These differ from strong bisimulations in that the relations contain not only pairs of processes, $(p,q)$, but additionally triples consisting of two processes and a set of actions, $(p,X,q)$. The following definition of SRBs is quoted, with minor adaptations, from @{cite \<open>definition 1\<close> rbs}:
 
 A \emph{strong reactive bisimulation} is a symmetric relation 
 $$\mathcal{R} \subseteq (\Proc \times \mathcal{P}(A) \times \Proc) \cup (\Proc \times \Proc)$$
@@ -55,7 +55,7 @@ and for all $(p,X,q) \in \mathcal{R}$:
     \item if $p \xrightarrow{a} p'$ with $a \in X$, then $\exists q'$ such that $q \xrightarrow{a} q'$ and $(p',q') \in \mathcal{R}$,
     \item if $p \xrightarrow{\tau} p'$, then $\exists q'$ such that $q \xrightarrow{\tau} q'$ and $(p',X,q') \in \mathcal{R}$,
     \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$, then $(p,q) \in \mathcal{R}$, and
-    \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$ and $p \xrightarrow{t} p'$, then $\exists q'$ such that $q \xrightarrow{t} q'$ and $(p',X,q') \in \mathcal{R}$.
+    \item if $\mathcal{I}(p) \cap (X \cup \{\tau\}) = \emptyset$ and $p \xrightarrow{t} p'$, then $\exists q'$ such that $q \xrightarrow{t} q'$\\and $(p',X,q') \in \mathcal{R}$.
 \end{enumerate}
 
 We can derive the following intuitions: an environment can either be stable, allowing a specific set of actions, or indeterminate. Indeterminate environments cannot facilitate any transitions, but they can stabilise into arbitrary stable environments. This is expressed by clause 2. Hence, $X$-bisimilarity is behavioural equivalence in stable environments~$X$, and reactive bisimilarity is behavioural equivalence in indeterminate environments (and thus in arbitrary stable environments).
@@ -75,16 +75,16 @@ These intuitions also form the basis for the process mapping which will be prese
 
 
 subsubsection \<open>Strong Reactive/$X$-Bisimilarity\<close>
-text \<open>Two processes $p$ and $q$ are \emph{strongly reactive bisimilar} ($p \leftrightarrow_r q$) iff there is an SRB containing $(p,q)$, and \emph{strongly $X$-bisimilar} ($p \leftrightarrow_r^X q$), i.e.\@ \enquote{equivalent} in environments~$X$, when there is an SRB containing $(p,X,q)$.\<close>
+text \<open>Two processes $p$ and $q$ are \emph{strongly reactive bisimilar} ($p \leftrightarrow_r q$) iff there is an SRB containing $(p,q)$, and \emph{strongly $X$-bisimilar} ($p \leftrightarrow_r^X q$), i.e.\@ equivalent in environments~$X$, when there is an SRB containing $(p,X,q)$.\<close>
 
 
 subsubsection \<open>Generalised Strong Reactive Bisimulations\<close>
-text \<open>Another characterisation of reactive bisimilarity uses \emph{generalised strong reactive bisimulation} (GSRB) relations, defined over the same set as SRBs, but with different clauses @{cite \<open>Definition 3\<close> rbs}. It is proved that both characterisations do, in fact, characterise the same equivalence. More details will be discussed in the formalisation below.\<close>
+text \<open>Another characterisation of reactive bisimilarity uses \emph{generalised strong reactive bisimulation} (GSRB) relations @{cite \<open>definition 3\<close> rbs}, defined over the same set as SRBs. It is proved that both characterisations do, in fact, characterise the same equivalence. More details will be discussed in the formalisation below.\<close>
 
 
 subsection \<open>Isabelle\<close>
 
-text \<open>I first formalise both SRB and GSRB relations (as well as strong reactive bisimilarity, defined by the existence of an SRB, as above), and then replicate the proof of their correspondence.\<close>
+text \<open>We first formalise both SRB and GSRB relations (as well as strong reactive bisimilarity, defined by the existence of an SRB, as above), and then replicate the proof of their correspondence.\<close>
 
 
 subsubsection \<open>Strong Reactive Bisimulations\<close>
@@ -106,7 +106,7 @@ The fact that SRBs are defined using the power set of visible actions ($A$), whe
 
 context lts_timeout begin
 
-\<comment> \<open>strong reactive bisimulation @{cite \<open>Definition 1\<close> rbs}\<close>
+\<comment> \<open>strong reactive bisimulation @{cite \<open>definition 1\<close> rbs}\<close>
 definition SRB :: \<open>('s \<Rightarrow> 'a set option \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool\<close>
   where \<open>SRB R \<equiv>
   (\<forall> p X q. R p (Some X) q  \<longrightarrow>  X \<subseteq> visible_actions) \<and>
@@ -171,7 +171,7 @@ subsubsection \<open>Generalised Strong Reactive Bisimulations\<close>
 
 text \<open>Since GSRBs are defined over the same set as SRBs, the same considerations concerning the type and the clauses of the definition as above hold.\<close>
 
-\<comment> \<open>generalised strong reactive bisimulation @{cite \<open>Definition 3\<close> rbs}\<close>
+\<comment> \<open>generalised strong reactive bisimulation @{cite \<open>definition 3\<close> rbs}\<close>
 definition GSRB :: \<open>('s \<Rightarrow> 'a set option \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool\<close>
   where \<open>GSRB R \<equiv>
     (\<forall> p X q. R p (Some X) q  \<longrightarrow>  X \<subseteq> visible_actions) \<and>
@@ -209,7 +209,7 @@ lemma\<^marker>\<open>tag (proof) unimportant\<close> GSRB_ruleformat:
 
 subsubsection \<open>GSRBs characterise strong reactive/$X$-bisimilarity\<close>
 
-text \<open>@{cite \<open>Proposition 4\<close> rbs} reads (notation adapted): \enquote{$p \leftrightarrow_r q$ iff there exists a GSRB $\mathcal{R}$ with $(p,q) \in \mathcal{R}$. Likewise, $p \leftrightarrow_r^X q$ iff there exists a GSRB $\mathcal{R}$ with $(p,X,q) \in \mathcal{R}$.} We shall now replicate the proof of this proposition. First, we prove that each SRB is a GSRB (by showing that each SRB satisfies all clauses of the definition of GSRBs).\<close>
+text \<open>@{cite \<open>proposition 4\<close> rbs} reads (notation adapted): \enquote{$p \leftrightarrow_r q$ iff there exists a GSRB $\mathcal{R}$ with $(p,q) \in \mathcal{R}$. Likewise, $p \leftrightarrow_r^X q$ iff there exists a GSRB $\mathcal{R}$ with $(p,X,q) \in \mathcal{R}$.} We shall now replicate the proof of this proposition. First, we prove that each SRB is a GSRB (by showing that each SRB satisfies all clauses of the definition of GSRBs).\<close>
 
 lemma SRB_is_GSRB:
   assumes \<open>SRB R\<close>
@@ -269,7 +269,7 @@ next
     using SRB_ruleformat(8)[OF assms] by blast
 qed
 
-text \<open>Then, we show that each GSRB can be extended to yield an SRB. First, we define this extension. Generally, GSRBs can be smaller than SRBs when proving reactive bisimilarity of processes, because they require triples $(p,X,q)$ only after encountering $t$-transitions, whereas SRBs require these triples for all processes and all environments. These triples (and also some process pairs $(p,q)$ related to environment time-outs, also omitted in GSRBs) are re-added by this extension.
+text \<open>Then, we show that each GSRB can be extended to yield an SRB. First, we define this extension. Generally, GSRBs can be smaller than SRBs when proving reactive bisimilarity of processes, because they require triples $(p,X,q)$ only after encountering $t$-transitions, whereas SRBs require these triples for all processes and all environments. Furthermore, some process pairs $(p,q)$ related to environment time-outs are also omitted in GSRBs. These tuples are re-added by this extension.
 \pagebreak\<close>
 
 definition GSRB_extension 

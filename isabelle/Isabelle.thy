@@ -7,10 +7,10 @@ theory Isabelle
 begin
 (*>*)
 
-chapter \<open>Isabelle\<close>
+chapter \<open>Introduction to Isabelle\<close>
 text \<open>\label{chap:isabelle}\<close>
 
-text \<open>Isabelle is an interactive proof assistant and Isabelle/HOL is an implementation of \emph{higher-order logic} in Isabelle. With it, one can interactively prove propositions about theories that are formalised in terms of higher-order logic. Many theories have been formalised (and many theorems proven) in Isabelle/HOL and are publicly available.\footnote{see Isabelle's Archive of Formal Proofs at \code{\href{https://www.isa-afp.org}{isa-afp.org}}}
+text \<open>Isabelle is an interactive proof assistant and Isabelle/HOL is an implementation of \emph{higher-order logic} in Isabelle. With it, one can interactively prove propositions about theories that are formalised in terms of higher-order \linebreak logic. Many theories have been formalised (and many theorems proven) in Isabelle/HOL and are publicly available.\footnote{see Isabelle's Archive of Formal Proofs at \code{\href{https://www.isa-afp.org}{isa-afp.org}}}
 
 In this appendix, I will give a short introduction into the most important concepts of Isabelle. For an extensive tutorial, see @{cite prog_prove}. A complete documentation can be found in @{cite isar_ref}.
 \vspace{-.3cm}\<close>
@@ -55,7 +55,7 @@ abbreviation reflexive :: \<open>('a \<Rightarrow> 'a \<Rightarrow> bool) \<Righ
 
 subsubsection \<open>Proving Propositions\<close>
 
-text \<open>Propositions can be given using any of the commands \<open>proposition\<close>, \<open>lemma\<close>, \<open>theorem\<close>, \<open>corollary\<close>, and require a proof.
+text \<open>Propositions can be stated using any of the commands \<open>proposition\<close>, \<open>lemma\<close>, \<open>theorem\<close>, \<open>corollary\<close>, and require a proof.
 
 Since Isabelle is an \emph{interactive} proof assistant, proofs are usually meant to be spelled out in code so as to be readable by humans, and the validity of individual steps is verified by certain automated proof methods (e.g.\@ \<open>simp\<close>, \<open>arith\<close>, \<open>auto\<close>, \<open>fast\<close>, \<open>blast\<close>, \dots). 
 
@@ -113,7 +113,7 @@ inductive even_ind :: \<open>int \<Rightarrow> bool\<close>
 
 subsubsection \<open>Function Definitions\<close>
 
-text \<open>The command \<open>function\<close> also establishes equalities, but usually in more complex ways, so that it may not obvious whether a function is well-defined. Hence, the well-definedness needs to be proved explicitly. (These proofs are usually solved by the automated proof methods.)
+text \<open>The command \<open>function\<close> also establishes equalities, but usually in more complex ways, so that it may not obvious whether a function is well-defined. Hence, the well-definedness needs to be proved explicitly. (These proofs are often solved by the automated proof methods.)
 
 The function is then assumed to be partial. The command \<open>termination\<close> introduces proof obligations to show that the function always terminates (and is thus total). For the example below, this is again proved automatically.
 
@@ -143,9 +143,7 @@ datatype ('a)list =
 
 subsubsection \<open>Locales\<close>
 
-text \<open>Locales define a context consisting of type variables, object variables, and assumptions. These can be accessed in the entire context. Locales can also be instantiated by specifying concrete types (or type variables from another context) for the type variables, and extended to form new locales. We can reenter the context of a locale later on, using the command \<open>context\<close>.
-
-\Cref{sec:LTS} provides a good example for how locales are used in Isabelle to formalise linear transition systems.\<close>
+text \<open>Locales define a context consisting of type variables, object variables, and assumptions. These can be accessed in the entire context. Locales can be instantiated by specifying concrete types/objects (or variables from another context) for the type/object variables, and extended to form new locales. We can reenter the locale contexts later on, using the command \<open>context\<close>. \Cref{sec:LTS} provides a good example for how locales are used in Isabelle to formalise linear transition systems.\<close>
 
 (*<*)
 end

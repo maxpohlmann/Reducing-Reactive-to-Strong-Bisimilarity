@@ -16,6 +16,8 @@
 \usepackage{pdfsetup}
 \usepackage[nameinlink]{cleveref}
 \usepackage{graphicx}
+\usepackage[pass]{geometry}
+\usepackage{pdfpages}
 
 \urlstyle{rm}
 \isabellestyle{tt}
@@ -53,7 +55,7 @@
 
 \begin{document}
 
-\title{Reducing Reactive Bisimilarity\\to Strong Bisimilarity}
+\title{Reducing Strong Reactive Bisimilarity to Strong Bisimilarity}
 \author{Maximilian Pohlmann}
 
 \input{titlepage}
@@ -102,6 +104,8 @@
 \input{german_summary}
 
 \newpage
-\input{statement_of_independence}
+\pdfbookmark{[Statement of Authorship]}{authorship}
+%\input{statement_of_independence}
+\includepdf{statement_of_authorship_exp}
 
 \end{document}

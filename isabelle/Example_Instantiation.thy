@@ -44,7 +44,7 @@ termination using "termination" by blast
 
 text \<open>We show that, with these mappings, any \<open>lts_timeout\<close> (the context we are in) is an \<open>lts_timeout_mappable\<close>: when the variables that were fixed in the locale definition are instantiated by the terms and mappings from the current context, we prove that the assumptions of the locale definition hold. Thus, the reduction works for all \LTSt{}s.\<close>
 
-(* For the following proofs, I gave up on writing readable proofs and simply used what sledgehammer gave me. This is the only part of the the thesis where I do this; sorry... *)
+(* For the following proofs, I gave up on writing readable proofs and simply used what sledgehammer gave me. This is the only part of the the thesis where I do this. I'm \<open>sorry\<close>... *)
 (*<*)
 lemma\<^marker>\<open>tag (proof) unimportant\<close> l1:
   fixes X Y x
@@ -119,7 +119,7 @@ lemma is_mappable: \<open>lts_timeout_mappable
     qed
   qed
   subgoal proof -
-    (* This is an automatically sledgehammer-generated Isar proof in all its beauty... \<open>sorry\<close> *)
+    (* This is an automatically sledgehammer-generated Isar proof in all its beauty... See my apology above...*)
     fix X Y p q
     assume a1: "X \<subseteq> lts_timeout.visible_actions tran_mappable (act \<tau>) (act t)"
     assume a2: "in_env (Some X) p = in_env (Some Y) q"

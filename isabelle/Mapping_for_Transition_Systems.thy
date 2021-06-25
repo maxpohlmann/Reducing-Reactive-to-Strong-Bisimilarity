@@ -53,7 +53,7 @@ $
 \end{tabular}
 \vspace{2\baselineskip}
 
-These rules mirror the clauses of the definition of SRBs (cmp.\@ \cref{sec:reactive_bisimilarity}):
+These rules mirror the clauses of the definition of SRBs (cf.\@ \cref{sec:reactive_bisimilarity}):
 
 \begin{enumerate}[nosep]
     \item $\tau$-transitions can be performed regardless of the environment,

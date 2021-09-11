@@ -1,6 +1,6 @@
 # Reducing Reactive to Strong Bisimilarity
 
-This repository contains all the files related to my Bachelor's thesis. More information can be found in the thesis itself.
+This repository contains all the files related to my [Bachelor's thesis](https://maxpohlmann.github.io/Reducing-Reactive-to-Strong-Bisimilarity/thesis.pdf). More information can be found in the thesis itself.
 
 ## Thesis Abstract
 
